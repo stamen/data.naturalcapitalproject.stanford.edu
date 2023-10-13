@@ -1,0 +1,3 @@
+[submodule "src/ckanext-spatial"]
+	path = src/ckanext-spatial
+	url = git@github.com:ckan/ckanext-spatial.git
