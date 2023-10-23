@@ -57,6 +57,9 @@ RUN apk add --no-cache geos geos-dev proj proj-dev proj-util
 RUN pip3 install -e git+https://github.com/ckan/ckanext-spatial.git@$CKANEXT_SPATIAL_GIT_REVISION#egg=ckanext-spatial && \
     pip3 install -r https://raw.githubusercontent.com/ckan/ckanext-spatial/$CKANEXT_SPATIAL_GIT_REVISION/requirements.txt
 
+# Enable SQLAlchemy support by installing it
+RUN pip3 install Flask-SQLAlchemy "flask<2.4" "Werkzeug<=2.1.2"
+
 COPY patches ${APP_DIR}/patches
 
 RUN for d in $APP_DIR/patches/*; do \
