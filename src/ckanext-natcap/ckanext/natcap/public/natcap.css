@@ -1,0 +1,72 @@
+/*
+body {
+  border-radius: 0;
+}
+*/
+
+/* Login bar way up at the top*/
+body .account-masthead {
+    min-height: 30px;
+    color: #fff;
+    background: #2e2d29;
+}
+
+body .account-masthead .account ul li a {
+    display: block;
+    text-decoration: none;
+    color: #fff;
+    font-size: 13px;
+    font-weight: bold;
+    padding: 0 10px;
+    line-height: 31px;
+}
+
+body .account-masthead .account ul li a:hover {
+    color: #fff;
+    /*background-color: #8c1515;*/
+    background-color: #585754;
+    text-decoration: none;
+}
+
+/* Top menu bar */
+body .masthead {
+    background: #8c1515;
+}
+
+body .masthead .main-navbar ul li:hover a {
+    background-color: #2e2d29;
+}
+
+body .homepage .module-search .search-form {
+    border-radius: 0.25rem;
+    background-color: #8c1515;
+    padding: 30px 20px;
+}
+
+body .homepage .module-search .tags {
+    margin-top: -5px;
+    padding: 5px 10px 10px 10px;
+    background-color: #8c1515;
+}
+
+/* Site footer */
+body .site-footer {
+    background: #8c1515;
+    padding: 20px 0;
+}
+
+body .site-footer a {
+    color: #fff
+}
+
+body  .site-footer .attribution p {
+  color: #fff;
+  font-size: 0.875rem;
+}
+
+body .site-footer label, .site-footer small, .site-footer .small {
+    color: #fff;
+}
+
+
+
