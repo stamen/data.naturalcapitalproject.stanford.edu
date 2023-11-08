@@ -1,0 +1,14 @@
+natcap-js:
+  filter: rjsmin
+  output: ckanext-natcap/%(version)s-natcap.js
+  contents:
+    - js/natcap.js
+  extra:
+    preload:
+      - base/main
+
+natcap-css:
+  filter: cssrewrite
+  output: ckanext-natcap/%(version)s-natcap.css
+  contents:
+    - css/natcap.css
