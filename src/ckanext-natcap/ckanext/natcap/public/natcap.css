@@ -33,10 +33,14 @@ body .masthead {
     background: #8c1515;
 }
 
-body .masthead .main-navbar ul li:hover a {
+body .masthead .main-navbar ul li:hover a,
+body .masthead .main-navbar ul li:focus a,
+body .masthead .main-navbar ul li.active a {
+    border-radius: 0.3rem;
     background-color: #2e2d29;
 }
 
+/* Main body*/
 body .homepage .module-search .search-form {
     border-radius: 0.25rem;
     background-color: #8c1515;
