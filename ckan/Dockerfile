@@ -21,5 +21,5 @@ RUN pip3 install -e git+https://github.com/ckan/ckanext-spatial.git@$CKANEXT_SPA
     pip3 install -r https://raw.githubusercontent.com/ckan/ckanext-spatial/$CKANEXT_SPATIAL_GIT_REVISION/requirements.txt
 
 # Install ckanext-natcap
-RUN pip3 install -r src/ckanext-natcap/requirements.txt && \
-        pip3 install -e src/ckanext-natcap
+RUN pip3 install -r $APP_DIR/src/ckanext-natcap/requirements.txt && \
+        pip3 install -e $APP_DIR/src/ckanext-natcap
