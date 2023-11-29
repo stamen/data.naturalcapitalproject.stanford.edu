@@ -1,7 +1,7 @@
 FROM ckan/ckan-base:2.10.1
 
 # Set up environment variables
-ENV APP_DIR=/srv/app
+ENV APP_DIR=/opt/ckan-catalog/data.naturalcapitalproject.stanford.edu
 ENV TZ=UTC
 RUN echo ${TZ} > /etc/timezone
 
@@ -19,3 +19,7 @@ ENV CKANEXT_SPATIAL_GIT_REVISION=e59a295431247fcd605fe55bb4fd9a2ecfc28d2b
 RUN apk add --no-cache geos geos-dev proj proj-dev proj-util
 RUN pip3 install -e git+https://github.com/ckan/ckanext-spatial.git@$CKANEXT_SPATIAL_GIT_REVISION#egg=ckanext-spatial && \
     pip3 install -r https://raw.githubusercontent.com/ckan/ckanext-spatial/$CKANEXT_SPATIAL_GIT_REVISION/requirements.txt
+
+# Install ckanext-natcap
+RUN pip3 install -r src/ckanext-natcap/requirements.txt && \
+        pip3 install -e src/ckanext-natcap
