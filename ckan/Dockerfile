@@ -1,7 +1,7 @@
 FROM ckan/ckan-base:2.10.1
 
 # Set up environment variables
-ENV APP_DIR=/srv/app
+ENV APP_DIR=/opt/ckan-catalog/data.naturalcapitalproject.stanford.edu
 ENV TZ=UTC
 RUN echo ${TZ} > /etc/timezone
 
