@@ -19,3 +19,7 @@ ENV CKANEXT_SPATIAL_GIT_REVISION=e59a295431247fcd605fe55bb4fd9a2ecfc28d2b
 RUN apk add --no-cache geos geos-dev proj proj-dev proj-util
 RUN pip3 install -e git+https://github.com/ckan/ckanext-spatial.git@$CKANEXT_SPATIAL_GIT_REVISION#egg=ckanext-spatial && \
     pip3 install -r https://raw.githubusercontent.com/ckan/ckanext-spatial/$CKANEXT_SPATIAL_GIT_REVISION/requirements.txt
+
+# NOTE: requires that the build context includes ./src/
+COPY ./src/ckanext-natcap /tmp/ckanext-natcap
+RUN pip3 install -r /tmp/ckanext-natcap/requirements.txt && pip3 install /tmp/ckanext-natcap

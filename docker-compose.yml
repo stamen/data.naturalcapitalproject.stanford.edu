@@ -25,8 +25,8 @@ services:
   ckan:
     container_name: ${CKAN_CONTAINER_NAME}
     build:
-      context: ckan/
-      dockerfile: Dockerfile
+      context: .
+      dockerfile: ckan/Dockerfile
       args:
         - TZ=${TZ}
     networks:
