@@ -23,3 +23,9 @@ RUN pip3 install -e git+https://github.com/ckan/ckanext-spatial.git@$CKANEXT_SPA
 # NOTE: requires that the build context includes ./src/
 COPY ./src/ckanext-natcap /tmp/ckanext-natcap
 RUN pip3 install -r /tmp/ckanext-natcap/requirements.txt && pip3 install /tmp/ckanext-natcap
+
+# Install our custom crontab. Needed for using pageview tracking
+COPY ./ckan/ckan-tracking-update.cron /etc/crontab.d/ckan-tracking.cron
+
+# Modified so that cron (in background) can run alongside CKAN
+CMD ["sh", "-c", "crond && /srv/app/start_ckan.sh"]
