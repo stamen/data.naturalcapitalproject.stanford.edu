@@ -5,48 +5,113 @@ If the dataset already exists, then its attributes are updated.
 Dependencies:
     $ mamba install ckanapi pyyaml
 """
+import datetime
+import hashlib
 import logging
 import os
+import pprint
 import sys
 
+import ckanapi.errors
 import requests
 import yaml
 from ckanapi import RemoteCKAN
 
 logging.basicConfig(level=logging.DEBUG)
+LOGGER = logging.getLogger(os.path.basename(__file__))
 
 URL = "https://data.naturalcapitalproject.stanford.edu"
 
 MODIFIED_APIKEY = os.environ['CKAN_APIKEY']
 
+
+def _hash_file_sha256(filepath):
+    sha256 = hashlib.sha256()
+    with open(filepath, 'rb') as f:
+        while True:
+            data = f.read(2**16)  # read in 64k at a time
+            if not data:
+                break
+            sha256.update(data)
+    return sha256.hexdigest()
+
+
+def _get_created_date(filepath):
+    return datetime.datetime.utcfromtimestamp(
+        os.path.getctime(filepath))
+
+
 def main():
     with open(sys.argv[1]) as yaml_file:
         mcf = yaml.load(yaml_file.read(), Loader=yaml.Loader)
-    #import pdb; pdb.set_trace()
 
     session = requests.Session()
     session.headers.update({'Authorization': MODIFIED_APIKEY})
 
-    #with RemoteCKAN(URL, apikey=os.environ['CKAN_APIKEY']) as catalog:
     with RemoteCKAN(URL, apikey=MODIFIED_APIKEY) as catalog:
         print('list org natcap', catalog.action.organization_list(id='natcap'))
-        #import pdb; pdb.set_trace()
-        #catalog.action.api_token_list(user_id='ff2c99c6-a004-4ade-b8b8-59030320eb4a')
+
+        # create resources
+        #catalog.action.resource_create(
+        #    package_id
+        #)
+
+        # does the package already exist?
+
         try:
             title = mcf['identification']['title']
-            catalog.action.package_create(
-                name=title.lower().replace(' ', '_'),
-                title=title,
-                private=False,
-                owner_org='natcap',
-                groups=[],
-            )
+            name = title.lower().replace(' ', '_')
+
+            # check if the package exists
+            try:
+                LOGGER.info(
+                    f"Checking to see if package exists with name={name}")
+                pkg_dict = catalog.action.package_show(name_or_id=name)
+                LOGGER.info(f"Package already exists name={name}")
+            except ckanapi.errors.NotFound:
+                LOGGER.info(
+                    f"Package not found; creating package with name={name}")
+                pkg_dict = catalog.action.package_create(
+                    name=name,
+                    title=title,
+                    private=False,
+                    owner_org='natcap',
+                    groups=[],
+                )
+            pprint.pprint(pkg_dict)
+
+            # Resources:
+            #   * The file we're referring to (at a different URL)
+            #   * The ISO XML
+            #   * The MCF file
+
+            attached_resources = pkg_dict['resources']
+
+            # if there are no resources, attach the MCF as a resource.
+            if not attached_resources:
+                LOGGER.info(f"Creating resource for {sys.argv[1]}")
+                catalog.action.resource_create(
+                    # URL parameter is not required by CKAN >=2.6
+                    package_id=pkg_dict['id'],
+                    description="Metadata Control File for this dataset",
+                    format="YML",
+                    hash=f"sha256:{_hash_file_sha256(sys.argv[1])}",
+                    name=os.path.basename(sys.argv[1]),
+                    #resource_type=  # not clear what this should be
+                    mimetype='application/yaml',
+                    #mimetype_inner  # what is this??
+                    size=os.path.getsize(sys.argv[1]),
+                    # Assuming "created" is when the metadata was created on ckan,
+                    # but we should decide that officially.
+                    #TODO: what should "created" date represent?
+                    created=datetime.datetime.now().isoformat(),
+                    last_modified=datetime.datetime.now().isoformat(),
+                    cache_last_updated=datetime.datetime.now().isoformat(),
+                    upload=open(sys.argv[1], 'rb')
+                )
+
         except AttributeError:
             print(dir(catalog.action))
-
-        # TODO: upload ISO-rendered metadata object
-        # TODO: upload MCF
-
 
 
 if __name__ == '__main__':
