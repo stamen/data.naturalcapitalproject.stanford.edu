@@ -60,8 +60,35 @@ def _find_license(license_string, license_url, known_licenses):
         return string_to_licenseid[license_string]
 
 
+def _get_from_mcf(mcf, dot_keys):
+    """Retrieve an attribute from an MCF.
+
+    If the attribute is not defined, an empty string is returned.
+
+    Args:
+        mcf (dict): The full MCF dictionary
+        dot_keys (str): A dot-separated sequence of keys to sequentially index
+            into the MCF.  For example: ``identification.abstract``
+
+    Returns:
+        value: The value of the attribute at the specified depth, or the empty
+        string if the attribute indicated by ``dot_keys`` is not found.
+    """
+    current_mcf_value = mcf
+    for key in dot_keys.split('.'):
+        try:
+            current_mcf_value = current_mcf_value[key]
+            if not isinstance(current_mcf_value, dict):
+                return current_mcf_value
+        except KeyError:
+            break
+    LOGGER.warning(f"MCF does not contain {dot_keys}: {key} not found")
+    return ''
+
+
 def main():
     with open(sys.argv[1]) as yaml_file:
+        LOGGER.debug(f"Loading MCF from {sys.argv[1]}")
         mcf = yaml.load(yaml_file.read(), Loader=yaml.Loader)
 
     session = requests.Session()
@@ -108,6 +135,7 @@ def main():
                     author=first_contact_info[author_key],
                     author_email=first_contact_info['email'],
                     owner_org='natcap',
+                    notes=_get_from_mcf(mcf, 'identification.abstract'),
                     groups=[],
                 )
             pprint.pprint(pkg_dict)
