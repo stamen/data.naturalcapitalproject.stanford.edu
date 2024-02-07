@@ -86,6 +86,11 @@ def _get_from_mcf(mcf, dot_keys):
     return ''
 
 
+def _create_tags_dicts(mcf):
+    tags_list = _get_from_mcf(mcf, 'identification.keywords')
+    return [{'name': name} for name in tags_list]
+
+
 def main():
     with open(sys.argv[1]) as yaml_file:
         LOGGER.debug(f"Loading MCF from {sys.argv[1]}")
@@ -104,10 +109,9 @@ def main():
 
         # does the package already exist?
 
+        title = _get_from_mcf(mcf, 'identification.title')
+        name = title.lower().replace(' ', '_')
         try:
-            title = mcf['identification']['title']
-            name = title.lower().replace(' ', '_')
-
             # check if the package exists
             try:
                 LOGGER.info(
@@ -136,6 +140,13 @@ def main():
                     author_email=first_contact_info['email'],
                     owner_org='natcap',
                     notes=_get_from_mcf(mcf, 'identification.abstract'),
+                    url=_get_from_mcf(mcf, 'identification.url'),
+                    version=_get_from_mcf(mcf, 'identification.edition'),
+
+                    # Just use existing tags as CKAN "free" tags
+                    # TODO: support defined vocabularies
+                    tags=_create_tags_dicts(
+                        mcf, 'identification.keywords.default.keywords'),
                     groups=[],
                 )
             pprint.pprint(pkg_dict)
