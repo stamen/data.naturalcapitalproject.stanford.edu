@@ -6,6 +6,7 @@ Dependencies:
     $ mamba install ckanapi pyyaml
 """
 import datetime
+import difflib
 import hashlib
 import logging
 import os
@@ -41,6 +42,24 @@ def _get_created_date(filepath):
         os.path.getctime(filepath))
 
 
+def _find_license(license_string, license_url, known_licenses):
+    string_to_licenseid = {}
+    url_to_licenseid = {}
+    for license_id, license_data in known_licenses:
+        url_to_licenseid[license_data['url']] = license_id
+        string_to_licenseid[license_data['title']] = license_id
+        if 'legacy_ids' in license_data:
+            for legacy_id in license_data['legacy_ids']:
+                string_to_licenseid[legacy_id] = license_id
+
+    # TODO do a difflib comparison for similar strings if no match found
+
+    if license_url:
+        return url_to_licenseid[license_url]
+    else:
+        return string_to_licenseid[license_string]
+
+
 def main():
     with open(sys.argv[1]) as yaml_file:
         mcf = yaml.load(yaml_file.read(), Loader=yaml.Loader)
@@ -51,10 +70,10 @@ def main():
     with RemoteCKAN(URL, apikey=MODIFIED_APIKEY) as catalog:
         print('list org natcap', catalog.action.organization_list(id='natcap'))
 
-        # create resources
-        #catalog.action.resource_create(
-        #    package_id
-        #)
+        # TODO: can we force CKAN to refresh the license list?
+        # It's still using the old 15-license list, not the full list.
+        licenses = catalog.action.license_list()
+        print(f"{len(licenses)} licenses found")
 
         # does the package already exist?
 
