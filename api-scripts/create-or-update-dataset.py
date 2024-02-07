@@ -71,10 +71,23 @@ def main():
             except ckanapi.errors.NotFound:
                 LOGGER.info(
                     f"Package not found; creating package with name={name}")
+
+                # keys into the first contact info listing
+                possible_author_keys = [
+                    'individualname',
+                    'organization',
+                ]
+                first_contact_info = list(mcf['contact'].values())[0]
+                for author_key in possible_author_keys:
+                    if first_contact_info[author_key]:
+                        break  # just keep author_key
+
                 pkg_dict = catalog.action.package_create(
                     name=name,
                     title=title,
                     private=False,
+                    author=first_contact_info[author_key],
+                    author_email=first_contact_info['email'],
                     owner_org='natcap',
                     groups=[],
                 )
