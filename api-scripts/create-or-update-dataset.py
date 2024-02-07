@@ -6,8 +6,8 @@ Dependencies:
     $ mamba install ckanapi pyyaml
 """
 import datetime
-import difflib
 import hashlib
+import json
 import logging
 import os
 import pprint
@@ -91,6 +91,16 @@ def _create_tags_dicts(mcf):
     return [{'name': name} for name in tags_list]
 
 
+def _get_wgs84_bbox(mcf):
+    extent = _get_from_mcf(mcf, 'identification.extents.spatial')[0]
+    assert int(extent['crs']) == 4326, 'CRS must be EPSG:4326'
+
+    minx, miny, maxx, maxy = extent['bbox']
+
+    return [[[minx, maxy], [minx, miny], [maxx, miny], [maxx, maxy],
+             [minx, maxy]]]
+
+
 def main():
     with open(sys.argv[1]) as yaml_file:
         LOGGER.debug(f"Loading MCF from {sys.argv[1]}")
@@ -110,7 +120,7 @@ def main():
         # does the package already exist?
 
         title = _get_from_mcf(mcf, 'identification.title')
-        name = title.lower().replace(' ', '_')
+        name = _get_from_mcf(mcf, 'metadata.identifier')
         try:
             # check if the package exists
             try:
@@ -142,12 +152,21 @@ def main():
                     notes=_get_from_mcf(mcf, 'identification.abstract'),
                     url=_get_from_mcf(mcf, 'identification.url'),
                     version=_get_from_mcf(mcf, 'identification.edition'),
+                    groups=[],
 
                     # Just use existing tags as CKAN "free" tags
                     # TODO: support defined vocabularies
-                    tags=_create_tags_dicts(
-                        mcf, 'identification.keywords.default.keywords'),
-                    groups=[],
+                    tags=_create_tags_dicts(mcf),
+
+                    # We can define the bbox as a polygon using
+                    # ckanext-spatial's spatial extra
+                    extras=[{
+                        'key': 'spatial',
+                        'value': json.dumps({
+                            'type': 'Polygon',
+                            'coordinates': _get_wgs84_bbox(mcf),
+                        }),
+                    }],
                 )
             pprint.pprint(pkg_dict)
 
