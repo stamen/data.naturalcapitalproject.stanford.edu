@@ -103,7 +103,7 @@ def _get_from_mcf(mcf, dot_keys):
 
 
 def _create_tags_dicts(mcf):
-    tags_list = _get_from_mcf(mcf, 'identification.keywords')
+    tags_list = _get_from_mcf(mcf, 'identification.keywords.default.keywords')
     return [{'name': name} for name in tags_list]
 
 
@@ -144,6 +144,44 @@ def main():
 
         title = _get_from_mcf(mcf, 'identification.title')
         name = _get_from_mcf(mcf, 'metadata.identifier')
+
+        # keys into the first contact info listing
+        possible_author_keys = [
+            'individualname',
+            'organization',
+        ]
+        first_contact_info = list(mcf['contact'].values())[0]
+        for author_key in possible_author_keys:
+            if first_contact_info[author_key]:
+                break  # just keep author_key
+
+        package_parameters = {
+            'name': name,
+            'title': title,
+            'private': False,
+            'author': first_contact_info[author_key],
+            'author_email': first_contact_info['email'],
+            'owner_org': 'natcap',
+            'notes': _get_from_mcf(mcf, 'identification.abstract'),
+            'url': _get_from_mcf(mcf, 'identification.url'),
+            'version': _get_from_mcf(mcf, 'identification.edition'),
+            'license_id': license_id,
+            'groups': [],
+
+            # Just use existing tags as CKAN "free" tags
+            # TODO: support defined vocabularies
+            'tags': _create_tags_dicts(mcf),
+
+            # We can define the bbox as a polygon using
+            # ckanext-spatial's spatial extra
+            'extras': [{
+                'key': 'spatial',
+                'value': json.dumps({
+                    'type': 'Polygon',
+                    'coordinates': _get_wgs84_bbox(mcf),
+                }),
+            }],
+        }
         try:
             # check if the package exists
             try:
@@ -151,46 +189,15 @@ def main():
                     f"Checking to see if package exists with name={name}")
                 pkg_dict = catalog.action.package_show(name_or_id=name)
                 LOGGER.info(f"Package already exists name={name}")
+                pkg_dict = catalog.action.package_update(
+                    id=pkg_dict['id'],
+                    **package_parameters
+                )
             except ckanapi.errors.NotFound:
                 LOGGER.info(
                     f"Package not found; creating package with name={name}")
-
-                # keys into the first contact info listing
-                possible_author_keys = [
-                    'individualname',
-                    'organization',
-                ]
-                first_contact_info = list(mcf['contact'].values())[0]
-                for author_key in possible_author_keys:
-                    if first_contact_info[author_key]:
-                        break  # just keep author_key
-
                 pkg_dict = catalog.action.package_create(
-                    name=name,
-                    title=title,
-                    private=False,
-                    author=first_contact_info[author_key],
-                    author_email=first_contact_info['email'],
-                    owner_org='natcap',
-                    notes=_get_from_mcf(mcf, 'identification.abstract'),
-                    url=_get_from_mcf(mcf, 'identification.url'),
-                    version=_get_from_mcf(mcf, 'identification.edition'),
-                    license_id=license_id,
-                    groups=[],
-
-                    # Just use existing tags as CKAN "free" tags
-                    # TODO: support defined vocabularies
-                    tags=_create_tags_dicts(mcf),
-
-                    # We can define the bbox as a polygon using
-                    # ckanext-spatial's spatial extra
-                    extras=[{
-                        'key': 'spatial',
-                        'value': json.dumps({
-                            'type': 'Polygon',
-                            'coordinates': _get_wgs84_bbox(mcf),
-                        }),
-                    }],
+                    **package_parameters
                 )
             pprint.pprint(pkg_dict)
 
