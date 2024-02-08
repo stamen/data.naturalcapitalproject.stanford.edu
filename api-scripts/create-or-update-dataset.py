@@ -68,9 +68,17 @@ def _find_license(license_string, license_url, known_licenses):
     # TODO do a difflib comparison for similar strings if no match found
 
     if license_url:
-        return url_to_licenseid[license_url]
+        try:
+            return url_to_licenseid[license_url]
+        except KeyError:
+            raise ValueError(f"License URL {license_url} not recognized")
     else:
-        return string_to_licenseid[sanitized_license_string]
+        try:
+            return string_to_licenseid[sanitized_license_string]
+        except KeyError:
+            raise ValueError(
+                f"License {license_string} / {sanitized_license_string} not "
+                "recognized")
 
 
 def _get_from_mcf(mcf, dot_keys):
