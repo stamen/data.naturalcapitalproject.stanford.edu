@@ -5,6 +5,7 @@ If the dataset already exists, then its attributes are updated.
 Dependencies:
     $ mamba install ckanapi pyyaml
 """
+import collections
 import datetime
 import hashlib
 import json
@@ -43,9 +44,21 @@ def _get_created_date(filepath):
 
 
 def _find_license(license_string, license_url, known_licenses):
+
+    # CKAN license IDs use:
+    #   - dashes instead of spaces
+    #   - all caps
+    sanitized_license_string = license_string.strip().replace(
+        ' ', '-').upper()
+
+    # CKAN license URLs are expected to have a trailing backslash
+    if not license_url.endswith('/'):
+        license_url = f'{license_url}/'
+
     string_to_licenseid = {}
     url_to_licenseid = {}
-    for license_id, license_data in known_licenses:
+    for license_data in known_licenses:
+        license_id = license_data['id']
         url_to_licenseid[license_data['url']] = license_id
         string_to_licenseid[license_data['title']] = license_id
         if 'legacy_ids' in license_data:
@@ -57,7 +70,7 @@ def _find_license(license_string, license_url, known_licenses):
     if license_url:
         return url_to_licenseid[license_url]
     else:
-        return string_to_licenseid[license_string]
+        return string_to_licenseid[sanitized_license_string]
 
 
 def _get_from_mcf(mcf, dot_keys):
@@ -74,11 +87,14 @@ def _get_from_mcf(mcf, dot_keys):
         value: The value of the attribute at the specified depth, or the empty
         string if the attribute indicated by ``dot_keys`` is not found.
     """
+    print("looking for", dot_keys)
     current_mcf_value = mcf
-    for key in dot_keys.split('.'):
+    mcf_keys = collections.deque(dot_keys.split('.'))
+    while True:
+        key = mcf_keys.popleft()
         try:
             current_mcf_value = current_mcf_value[key]
-            if not isinstance(current_mcf_value, dict):
+            if not mcf_keys:  # we're at the root node
                 return current_mcf_value
         except KeyError:
             break
@@ -116,6 +132,12 @@ def main():
         # It's still using the old 15-license list, not the full list.
         licenses = catalog.action.license_list()
         print(f"{len(licenses)} licenses found")
+
+        if _get_from_mcf(mcf, 'identification.license'):
+            _find_license(
+                _get_from_mcf(mcf, 'identification.license.name'),
+                _get_from_mcf(mcf, 'identification.license.url'),
+                licenses)
 
         # does the package already exist?
 
