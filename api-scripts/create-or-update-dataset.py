@@ -5,6 +5,7 @@ If the dataset already exists, then its attributes are updated.
 Dependencies:
     $ mamba install ckanapi pyyaml
 """
+import collections
 import datetime
 import hashlib
 import json
@@ -43,9 +44,21 @@ def _get_created_date(filepath):
 
 
 def _find_license(license_string, license_url, known_licenses):
+
+    # CKAN license IDs use:
+    #   - dashes instead of spaces
+    #   - all caps
+    sanitized_license_string = license_string.strip().replace(
+        ' ', '-').upper()
+
+    # CKAN license URLs are expected to have a trailing backslash
+    if not license_url.endswith('/'):
+        license_url = f'{license_url}/'
+
     string_to_licenseid = {}
     url_to_licenseid = {}
-    for license_id, license_data in known_licenses:
+    for license_data in known_licenses:
+        license_id = license_data['id']
         url_to_licenseid[license_data['url']] = license_id
         string_to_licenseid[license_data['title']] = license_id
         if 'legacy_ids' in license_data:
@@ -55,9 +68,17 @@ def _find_license(license_string, license_url, known_licenses):
     # TODO do a difflib comparison for similar strings if no match found
 
     if license_url:
-        return url_to_licenseid[license_url]
+        try:
+            return url_to_licenseid[license_url]
+        except KeyError:
+            raise ValueError(f"License URL {license_url} not recognized")
     else:
-        return string_to_licenseid[license_string]
+        try:
+            return string_to_licenseid[sanitized_license_string]
+        except KeyError:
+            raise ValueError(
+                f"License {license_string} / {sanitized_license_string} not "
+                "recognized")
 
 
 def _get_from_mcf(mcf, dot_keys):
@@ -74,11 +95,14 @@ def _get_from_mcf(mcf, dot_keys):
         value: The value of the attribute at the specified depth, or the empty
         string if the attribute indicated by ``dot_keys`` is not found.
     """
+    print("looking for", dot_keys)
     current_mcf_value = mcf
-    for key in dot_keys.split('.'):
+    mcf_keys = collections.deque(dot_keys.split('.'))
+    while True:
+        key = mcf_keys.popleft()
         try:
             current_mcf_value = current_mcf_value[key]
-            if not isinstance(current_mcf_value, dict):
+            if not mcf_keys:  # we're at the root node
                 return current_mcf_value
         except KeyError:
             break
@@ -87,7 +111,7 @@ def _get_from_mcf(mcf, dot_keys):
 
 
 def _create_tags_dicts(mcf):
-    tags_list = _get_from_mcf(mcf, 'identification.keywords')
+    tags_list = _get_from_mcf(mcf, 'identification.keywords.default.keywords')
     return [{'name': name} for name in tags_list]
 
 
@@ -117,10 +141,55 @@ def main():
         licenses = catalog.action.license_list()
         print(f"{len(licenses)} licenses found")
 
+        license_id = ''
+        if _get_from_mcf(mcf, 'identification.license'):
+            license_id = _find_license(
+                _get_from_mcf(mcf, 'identification.license.name'),
+                _get_from_mcf(mcf, 'identification.license.url'),
+                licenses)
+
         # does the package already exist?
 
         title = _get_from_mcf(mcf, 'identification.title')
         name = _get_from_mcf(mcf, 'metadata.identifier')
+
+        # keys into the first contact info listing
+        possible_author_keys = [
+            'individualname',
+            'organization',
+        ]
+        first_contact_info = list(mcf['contact'].values())[0]
+        for author_key in possible_author_keys:
+            if first_contact_info[author_key]:
+                break  # just keep author_key
+
+        package_parameters = {
+            'name': name,
+            'title': title,
+            'private': False,
+            'author': first_contact_info[author_key],
+            'author_email': first_contact_info['email'],
+            'owner_org': 'natcap',
+            'notes': _get_from_mcf(mcf, 'identification.abstract'),
+            'url': _get_from_mcf(mcf, 'identification.url'),
+            'version': _get_from_mcf(mcf, 'identification.edition'),
+            'license_id': license_id,
+            'groups': [],
+
+            # Just use existing tags as CKAN "free" tags
+            # TODO: support defined vocabularies
+            'tags': _create_tags_dicts(mcf),
+
+            # We can define the bbox as a polygon using
+            # ckanext-spatial's spatial extra
+            'extras': [{
+                'key': 'spatial',
+                'value': json.dumps({
+                    'type': 'Polygon',
+                    'coordinates': _get_wgs84_bbox(mcf),
+                }),
+            }],
+        }
         try:
             # check if the package exists
             try:
@@ -128,45 +197,15 @@ def main():
                     f"Checking to see if package exists with name={name}")
                 pkg_dict = catalog.action.package_show(name_or_id=name)
                 LOGGER.info(f"Package already exists name={name}")
+                pkg_dict = catalog.action.package_update(
+                    id=pkg_dict['id'],
+                    **package_parameters
+                )
             except ckanapi.errors.NotFound:
                 LOGGER.info(
                     f"Package not found; creating package with name={name}")
-
-                # keys into the first contact info listing
-                possible_author_keys = [
-                    'individualname',
-                    'organization',
-                ]
-                first_contact_info = list(mcf['contact'].values())[0]
-                for author_key in possible_author_keys:
-                    if first_contact_info[author_key]:
-                        break  # just keep author_key
-
                 pkg_dict = catalog.action.package_create(
-                    name=name,
-                    title=title,
-                    private=False,
-                    author=first_contact_info[author_key],
-                    author_email=first_contact_info['email'],
-                    owner_org='natcap',
-                    notes=_get_from_mcf(mcf, 'identification.abstract'),
-                    url=_get_from_mcf(mcf, 'identification.url'),
-                    version=_get_from_mcf(mcf, 'identification.edition'),
-                    groups=[],
-
-                    # Just use existing tags as CKAN "free" tags
-                    # TODO: support defined vocabularies
-                    tags=_create_tags_dicts(mcf),
-
-                    # We can define the bbox as a polygon using
-                    # ckanext-spatial's spatial extra
-                    extras=[{
-                        'key': 'spatial',
-                        'value': json.dumps({
-                            'type': 'Polygon',
-                            'coordinates': _get_wgs84_bbox(mcf),
-                        }),
-                    }],
+                    **package_parameters
                 )
             pprint.pprint(pkg_dict)
 
