@@ -133,8 +133,9 @@ def main():
         licenses = catalog.action.license_list()
         print(f"{len(licenses)} licenses found")
 
+        license_id = ''
         if _get_from_mcf(mcf, 'identification.license'):
-            _find_license(
+            license_id = _find_license(
                 _get_from_mcf(mcf, 'identification.license.name'),
                 _get_from_mcf(mcf, 'identification.license.url'),
                 licenses)
@@ -174,6 +175,7 @@ def main():
                     notes=_get_from_mcf(mcf, 'identification.abstract'),
                     url=_get_from_mcf(mcf, 'identification.url'),
                     version=_get_from_mcf(mcf, 'identification.edition'),
+                    license_id=license_id,
                     groups=[],
 
                     # Just use existing tags as CKAN "free" tags
