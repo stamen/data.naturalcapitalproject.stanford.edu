@@ -10,14 +10,16 @@ import datetime
 import hashlib
 import json
 import logging
+import mimetypes
 import os
 import pprint
 import sys
 
 import ckanapi.errors
-import requests
-import yaml
-from ckanapi import RemoteCKAN
+import requests  # mamba install requests
+import yaml  # mamba install pyyaml
+from ckanapi import RemoteCKAN  # mamba install ckanapi
+from google.cloud import storage  # mamba install google-cloud-storage
 
 logging.basicConfig(level=logging.DEBUG)
 LOGGER = logging.getLogger(os.path.basename(__file__))
@@ -25,6 +27,13 @@ LOGGER = logging.getLogger(os.path.basename(__file__))
 URL = "https://data.naturalcapitalproject.stanford.edu"
 
 MODIFIED_APIKEY = os.environ['CKAN_APIKEY']
+
+# Add ESRI shapefile component files as mimetypes
+for extension, mimetype in [
+        ('.shp', 'application/octet-stream'),
+        ('.dbf', 'application/dbase'),
+        ('.shx', 'application/octet-stream')]:
+    mimetypes.add_type(extension, mimetype, strict=False)
 
 
 def _hash_file_sha256(filepath):
@@ -41,6 +50,61 @@ def _hash_file_sha256(filepath):
 def _get_created_date(filepath):
     return datetime.datetime.utcfromtimestamp(
         os.path.getctime(filepath))
+
+
+def _create_resource_dict_from_file(
+        filepath, description, upload=False):
+    now = datetime.datetime.now().isoformat()
+    resource = {
+        'description': description,
+        # strip out the `.` from the extension
+        'format': os.path.splitext(filepath)[1][1:].upper(),
+        'hash': f"sha256:{_hash_file_sha256(filepath)}",
+        'name': os.path.basename(filepath),
+        'size': os.path.getsize(filepath),
+        'created': now,
+        'cache_last_updated': now,
+    }
+
+    print(filepath)
+    mimetype, _ = mimetypes.guess_type(filepath)
+    if mimetype:  # will be None if mimetype unknown
+        resource['mimetype'] = mimetype
+
+    if upload:
+        resource['upload'] = open(filepath, 'rb')
+    return resource
+
+
+def _create_resource_dict_from_url(url, description):
+    now = datetime.datetime.now().isoformat()
+
+    if url.startswith('https://storage.cloud.google.com'):
+        domain, bucket_name, key = url[8:].split('/', maxsplit=2)
+
+        storage_client = storage.Client()
+        bucket = storage_client.bucket(bucket_name)
+        blob = bucket.get_blob(key)
+
+        checksum = f"crc32c:{blob.crc32c}"
+        size = blob.size
+    else:
+        raise NotImplementedError(
+            f"Don't know how to check url for metadata: {url}")
+
+    resource = {
+        'description': description,
+        'format': os.path.splitext(url)[1][1:].upper(),
+        'hash': checksum,
+        'name': os.path.basename(url),
+        'size': size,
+        'created': now,
+        'cache_last_updated': now,
+    }
+    mimetype, _ = mimetypes.guess_type(url)
+    if mimetype:  # will be None if mimetype unknown
+        resource['mimetype'] = mimetype
+    return resource
 
 
 def _find_license(license_string, license_url, known_licenses):
@@ -163,6 +227,18 @@ def main():
             if first_contact_info[author_key]:
                 break  # just keep author_key
 
+        resources = [
+            _create_resource_dict_from_file(
+                sys.argv[1], (
+                    'Metadata Control File for this dataset, describing '
+                    'metadata in a YML file format.'), upload=True),
+        ]
+        for distribution in _get_from_mcf(mcf, 'distribution').values():
+            if distribution['function'].lower() == 'download':
+                resources.append(
+                    _create_resource_dict_from_url(
+                        distribution['url'], distribution['description']))
+
         package_parameters = {
             'name': name,
             'title': title,
@@ -215,28 +291,11 @@ def main():
             #   * The MCF file
 
             attached_resources = pkg_dict['resources']
-
-            # if there are no resources, attach the MCF as a resource.
-            if not attached_resources:
-                LOGGER.info(f"Creating resource for {sys.argv[1]}")
+            assert not attached_resources
+            for resource in resources:
                 catalog.action.resource_create(
-                    # URL parameter is not required by CKAN >=2.6
                     package_id=pkg_dict['id'],
-                    description="Metadata Control File for this dataset",
-                    format="YML",
-                    hash=f"sha256:{_hash_file_sha256(sys.argv[1])}",
-                    name=os.path.basename(sys.argv[1]),
-                    #resource_type=  # not clear what this should be
-                    mimetype='application/yaml',
-                    #mimetype_inner  # what is this??
-                    size=os.path.getsize(sys.argv[1]),
-                    # Assuming "created" is when the metadata was created on ckan,
-                    # but we should decide that officially.
-                    #TODO: what should "created" date represent?
-                    created=datetime.datetime.now().isoformat(),
-                    last_modified=datetime.datetime.now().isoformat(),
-                    cache_last_updated=datetime.datetime.now().isoformat(),
-                    upload=open(sys.argv[1], 'rb')
+                    **resource
                 )
 
         except AttributeError:
