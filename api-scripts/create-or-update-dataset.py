@@ -3,7 +3,15 @@
 If the dataset already exists, then its attributes are updated.
 
 Dependencies:
-    $ mamba install ckanapi pyyaml
+    $ mamba install ckanapi pyyaml google-cloud-storage requests
+
+Note:
+    You will need to authenticate with the google cloud api in order to do
+    anything with assets located on GCP.  To do this, install the google cloud
+    SDK (https://cloud.google.com/sdk/docs/install) and then run this command
+    at your shell:
+
+        $ gcloud auth application-default login
 """
 import collections
 import datetime
