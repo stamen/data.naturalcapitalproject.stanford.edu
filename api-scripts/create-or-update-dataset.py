@@ -101,6 +101,7 @@ def _create_resource_dict_from_url(url, description):
             f"Don't know how to check url for metadata: {url}")
 
     resource = {
+        'url': url,
         'description': description,
         'format': os.path.splitext(url)[1][1:].upper(),
         'hash': checksum,
@@ -255,7 +256,7 @@ def main():
             'author_email': first_contact_info['email'],
             'owner_org': 'natcap',
             'notes': _get_from_mcf(mcf, 'identification.abstract'),
-            'url': _get_from_mcf(mcf, 'identification.url'),
+            #'url': _get_from_mcf(mcf, 'identification.url'),
             'version': _get_from_mcf(mcf, 'identification.edition'),
             'license_id': license_id,
             'groups': [],
@@ -275,7 +276,6 @@ def main():
             }],
         }
         try:
-            # check if the package exists
             try:
                 LOGGER.info(
                     f"Checking to see if package exists with name={name}")
