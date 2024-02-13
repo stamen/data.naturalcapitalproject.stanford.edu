@@ -3,7 +3,7 @@
 If the dataset already exists, then its attributes are updated.
 
 Dependencies:
-    $ mamba install ckanapi pyyaml google-cloud-storage requests
+    $ mamba install ckanapi pyyaml google-cloud-storage requests gdal
 
 Note:
     You will need to authenticate with the google cloud api in order to do
@@ -29,6 +29,7 @@ import requests  # mamba install requests
 import yaml  # mamba install pyyaml
 from ckanapi import RemoteCKAN  # mamba install ckanapi
 from google.cloud import storage  # mamba install google-cloud-storage
+from osgeo import gdal
 
 logging.basicConfig(level=logging.DEBUG)
 LOGGER = logging.getLogger(os.path.basename(__file__))
@@ -104,10 +105,21 @@ def _create_resource_dict_from_url(url, description):
         raise NotImplementedError(
             f"Don't know how to check url for metadata: {url}")
 
+    # attempt to get the format from GDAL
+    fmt = os.path.splitext(url)[1][1:].upper()  # default to file extension
+
+    try:
+        gdal_url = f'/vsicurl/{url}'
+        gdal_ds = gdal.OpenEx(gdal_url)
+        if gdal_ds is not None:
+            fmt = gdal_ds.GetDriver().LongName()
+    finally:
+        gdal_ds = None
+
     resource = {
         'url': url,
         'description': description,
-        'format': os.path.splitext(url)[1][1:].upper(),
+        'format': fmt,
         'hash': checksum,
         'name': os.path.basename(url),
         'size': size,
