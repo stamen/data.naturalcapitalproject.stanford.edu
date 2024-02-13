@@ -73,6 +73,8 @@ def _create_resource_dict_from_file(
         'size': os.path.getsize(filepath),
         'created': now,
         'cache_last_updated': now,
+        # resource_type appears to just be a string, e.g. api, service,
+        # download, etc, and it's user-defined, not an enum
     }
 
     print(filepath)
@@ -110,6 +112,8 @@ def _create_resource_dict_from_url(url, description):
         'size': size,
         'created': now,
         'cache_last_updated': now,
+        # resource_type appears to just be a string, e.g. api, service,
+        # download, etc, and it's user-defined, not an enum
     }
     mimetype, _ = mimetypes.guess_type(url)
     if mimetype:  # will be None if mimetype unknown
@@ -302,10 +306,11 @@ def main():
             attached_resources = pkg_dict['resources']
             assert not attached_resources
             for resource in resources:
-                catalog.action.resource_create(
+                created_resource = catalog.action.resource_create(
                     package_id=pkg_dict['id'],
                     **resource
                 )
+                pprint.pprint(created_resource)
 
         except AttributeError:
             print(dir(catalog.action))
