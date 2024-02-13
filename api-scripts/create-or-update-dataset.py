@@ -21,6 +21,7 @@ import logging
 import mimetypes
 import os
 import pprint
+import re
 import sys
 
 import ckanapi.errors
@@ -243,15 +244,19 @@ def main():
 
         resources = [
             _create_resource_dict_from_file(
-                sys.argv[1], (
-                    'Metadata Control File for this dataset, describing '
-                    'metadata in a YML file format.'), upload=True),
+                sys.argv[1], "YML Metadata Control File", upload=True),
         ]
         for distribution in _get_from_mcf(mcf, 'distribution').values():
             if distribution['function'].lower() == 'download':
                 resources.append(
                     _create_resource_dict_from_url(
                         distribution['url'], distribution['description']))
+
+        # If sidecar .xml exists, add it as ISO XML.
+        sidecar_xml = re.sub(".yml$", ".xml", sys.argv[1])
+        if os.path.exists(sidecar_xml):
+            resources.append(_create_resource_dict_from_file(
+                sidecar_xml, "ISO 19139 Metadata XML", upload=True))
 
         package_parameters = {
             'name': name,
