@@ -36,12 +36,13 @@ URL = "https://data.naturalcapitalproject.stanford.edu"
 
 MODIFIED_APIKEY = os.environ['CKAN_APIKEY']
 
-# Add ESRI shapefile component files as mimetypes
+# Add a few mimetypes for extensions we're likely to encounter
 for extension, mimetype in [
         ('.shp', 'application/octet-stream'),
         ('.dbf', 'application/dbase'),
-        ('.shx', 'application/octet-stream')]:
-    mimetypes.add_type(extension, mimetype, strict=False)
+        ('.shx', 'application/octet-stream'),
+        ('.geojson', 'application/json')]:
+    mimetypes.add_type(mimetype, extension)
 
 
 def _hash_file_sha256(filepath):
