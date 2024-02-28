@@ -25,11 +25,14 @@ import re
 import sys
 
 import ckanapi.errors
+import pygeoprocessing  # mamba install pygeoprocessing
 import requests  # mamba install requests
 import yaml  # mamba install pyyaml
 from ckanapi import RemoteCKAN  # mamba install ckanapi
 from google.cloud import storage  # mamba install google-cloud-storage
 from osgeo import gdal
+from osgeo import ogr
+from osgeo import osr
 
 logging.basicConfig(level=logging.DEBUG)
 LOGGER = logging.getLogger(os.path.basename(__file__))
@@ -101,6 +104,10 @@ def _create_resource_dict_from_url(url, description):
 
         checksum = f"crc32c:{blob.crc32c}"
         size = blob.size
+    elif url.startswith('https://drive.google.com'):
+        # TODO: figure out how we want to get these attributes
+        checksum = None
+        size = None
     else:
         raise NotImplementedError(
             f"Don't know how to check url for metadata: {url}")
@@ -109,10 +116,14 @@ def _create_resource_dict_from_url(url, description):
     fmt = os.path.splitext(url)[1][1:].upper()  # default to file extension
 
     try:
+        LOGGER.debug(f"Attempting to use GDAL to access {url}")
         gdal_url = f'/vsicurl/{url}'
         gdal_ds = gdal.OpenEx(gdal_url)
         if gdal_ds is not None:
             fmt = gdal_ds.GetDriver().LongName()
+        else:
+            LOGGER.debug(f"Could not access url with GDAL: {url}")
+
     finally:
         gdal_ds = None
 
@@ -208,17 +219,46 @@ def _create_tags_dicts(mcf):
 
 def _get_wgs84_bbox(mcf):
     extent = _get_from_mcf(mcf, 'identification.extents.spatial')[0]
-    assert int(extent['crs']) == 4326, 'CRS must be EPSG:4326'
+    try:
+        minx, miny, maxx, maxy = extent['bbox']
+    except ValueError:
+        LOGGER.error(f"Could not extract bbox from {extent}")
+        return None
 
-    minx, miny, maxx, maxy = extent['bbox']
+    # Suuuuper hacky, but I think we have a malformed CRS here.
+    if int(extent['crs']) == 6326:
+        print("Mangling the CRS")
+        extent['crs'] = 4326
+
+    if int(extent['crs']) != 4326:
+        LOGGER.debug(f"Transforming bounding box from {extent['crs']} to 4326")
+        source_srs = osr.SpatialReference()
+
+        for prefix in ('EPSG', 'ESRI'):
+            LOGGER.debug(f"Trying {prefix}:{extent['crs']}")
+            result = source_srs.SetFromUserInput(f"{prefix}:{extent['crs']}")
+            if result == ogr.OGRERR_NONE:
+                break
+
+        source_srs_wkt = source_srs.ExportToWkt()
+        dest_srs = osr.SpatialReference()
+        dest_srs.ImportFromEPSG(4326)
+        dest_srs_wkt = dest_srs.ExportToWkt()
+
+        try:
+            minx, miny, maxx, maxy = pygeoprocessing.transform_bounding_box(
+                [minx, maxx, miny, maxy], source_srs_wkt, dest_srs_wkt)
+        except:
+            LOGGER.error(f"Failed to transform bounding box from {source_srs_wkt} to {dest_srs_wkt}")
+            LOGGER.warning("Assuming original bounding box is in WGS84")
 
     return [[[minx, maxy], [minx, miny], [maxx, miny], [maxx, maxy],
              [minx, maxy]]]
 
 
-def main():
-    with open(sys.argv[1]) as yaml_file:
-        LOGGER.debug(f"Loading MCF from {sys.argv[1]}")
+def main(mcf_path, private=False, group=None):
+    with open(mcf_path) as yaml_file:
+        LOGGER.debug(f"Loading MCF from {mcf_path}")
         mcf = yaml.load(yaml_file.read(), Loader=yaml.Loader)
 
     session = requests.Session()
@@ -227,8 +267,6 @@ def main():
     with RemoteCKAN(URL, apikey=MODIFIED_APIKEY) as catalog:
         print('list org natcap', catalog.action.organization_list(id='natcap'))
 
-        # TODO: can we force CKAN to refresh the license list?
-        # It's still using the old 15-license list, not the full list.
         licenses = catalog.action.license_list()
         print(f"{len(licenses)} licenses found")
 
@@ -256,7 +294,7 @@ def main():
 
         resources = [
             _create_resource_dict_from_file(
-                sys.argv[1], "YML Metadata Control File", upload=True),
+                mcf_path, "YML Metadata Control File", upload=True),
         ]
         for distribution in _get_from_mcf(mcf, 'distribution').values():
             if distribution['function'].lower() == 'download':
@@ -265,15 +303,29 @@ def main():
                         distribution['url'], distribution['description']))
 
         # If sidecar .xml exists, add it as ISO XML.
-        sidecar_xml = re.sub(".yml$", ".xml", sys.argv[1])
+        sidecar_xml = re.sub(".yml$", ".xml", mcf_path)
         if os.path.exists(sidecar_xml):
             resources.append(_create_resource_dict_from_file(
                 sidecar_xml, "ISO 19139 Metadata XML", upload=True))
 
+
+        # We can define the bbox as a polygon using
+        # ckanext-spatial's spatial extra
+        extras = []
+        if _get_from_mcf(mcf, 'identification.extents.spatial')[0]:
+            extras.append({
+                'key': 'spatial',
+                'value': json.dumps({
+                    'type': 'Polygon',
+                    'coordinates': _get_wgs84_bbox(mcf),
+                }),
+            })
+
+
         package_parameters = {
             'name': name,
             'title': title,
-            'private': False,
+            'private': private,
             'author': first_contact_info[author_key],
             'author_email': first_contact_info['email'],
             'owner_org': 'natcap',
@@ -281,21 +333,13 @@ def main():
             #'url': _get_from_mcf(mcf, 'identification.url'),
             'version': _get_from_mcf(mcf, 'identification.edition'),
             'license_id': license_id,
-            'groups': [],
+            'groups': [] if not group else [{'id': group}],
 
             # Just use existing tags as CKAN "free" tags
             # TODO: support defined vocabularies
             'tags': _create_tags_dicts(mcf),
 
-            # We can define the bbox as a polygon using
-            # ckanext-spatial's spatial extra
-            'extras': [{
-                'key': 'spatial',
-                'value': json.dumps({
-                    'type': 'Polygon',
-                    'coordinates': _get_wgs84_bbox(mcf),
-                }),
-            }],
+            'extras': extras
         }
         try:
             try:
@@ -334,4 +378,4 @@ def main():
 
 
 if __name__ == '__main__':
-    main()
+    main(sys.argv[1])
