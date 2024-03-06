@@ -74,7 +74,6 @@ dataset_fields:
   label: Suggested Citation
   form_placeholder: Natural Capital Project, 2024. InVEST 3.14.1. Stanford University, University of Minnesota, Chinese Academy of Sciences, The Nature Conservancy, World Wildlife Fund, Stockholm Resilience Centre and the Royal Swedish Academy of Sciences. https://naturalcapitalproject.stanford.edu/software/invest
   help_text: Provide a citation in plain text
-  output_validators: ignore_missing
 
 resource_fields:
 
