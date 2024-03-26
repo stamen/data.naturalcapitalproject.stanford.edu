@@ -299,9 +299,26 @@ def main(mcf_path, private=False, group=None):
         ]
         for distribution in _get_from_mcf(mcf, 'distribution').values():
             if distribution['function'].lower() == 'download':
-                resources.append(
-                    _create_resource_dict_from_url(
-                        distribution['url'], distribution['description']))
+                try:
+                    resource_dict = _create_resource_dict_from_url(
+                        distribution['url'], distribution['description'])
+                except NotImplementedError:
+                    resource_dict = {
+                        'url': distribution['url'],
+                        'description': distribution['description'],
+                        'format': os.path.splitext(distribution['url'])[1],
+                        'hash': None,
+                        'name': os.path.basename(distribution['url']),
+                        'size': None,
+                        'created': datetime.datetime.now().isoformat(),
+                        'cache_last_updated': datetime.datetime.now().isoformat(),
+                    }
+                    mimetype, _ = mimetypes.guess_type(distributino['url'])
+                    if mimetype:  # will be None if mimetype unknown
+                        resource_dict['mimetype'] = mimetype
+                resources.append(resource_dict)
+
+
 
         # If sidecar .xml exists, add it as ISO XML.
         sidecar_xml = re.sub(".yml$", ".xml", mcf_path)
