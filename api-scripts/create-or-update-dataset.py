@@ -303,7 +303,7 @@ def main(mcf_path, private=False, group=None):
                 _create_resource_dict_from_file(
                     mcf_path, os.path.basename(identification_url)))
         for distribution in _get_from_mcf(mcf, 'distribution').values():
-            if distribution['function'].lower() == 'download':
+            if distribution['function'].lower() == 'download' and distribution['url']:
                 try:
                     resource_dict = _create_resource_dict_from_url(
                         distribution['url'], distribution['description'])
@@ -322,8 +322,10 @@ def main(mcf_path, private=False, group=None):
                     if mimetype:  # will be None if mimetype unknown
                         resource_dict['mimetype'] = mimetype
                 resources.append(resource_dict)
-
-
+            else:
+                LOGGER.info(
+                    f"Skipping distribution {distribution['url']} because it "
+                    "is not a downloadable resource.")
 
         # If sidecar .xml exists, add it as ISO XML.
         sidecar_xml = re.sub(".yml$", ".xml", mcf_path)
