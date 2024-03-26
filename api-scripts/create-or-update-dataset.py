@@ -318,7 +318,7 @@ def main(mcf_path, private=False, group=None):
                         'created': datetime.datetime.now().isoformat(),
                         'cache_last_updated': datetime.datetime.now().isoformat(),
                     }
-                    mimetype, _ = mimetypes.guess_type(distributino['url'])
+                    mimetype, _ = mimetypes.guess_type(distribution['url'])
                     if mimetype:  # will be None if mimetype unknown
                         resource_dict['mimetype'] = mimetype
                 resources.append(resource_dict)
