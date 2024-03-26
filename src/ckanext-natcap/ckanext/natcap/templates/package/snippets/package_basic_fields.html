@@ -1,0 +1,9 @@
+{# Copied from https://docs.ckan.org/en/2.9/extensions/adding-custom-fields.html#updating-templates
+#}
+
+{% ckan_extends %}
+
+{% block package_basic_fields_custom %}
+  {{ form.input('suggested_citation', label=_('Suggested Citation'), id='field-suggested_citation',
+     placeholder=_('Enter a citation here'), value=data.custom_text, error=errors.custom_text, classes=['control-medium']) }}
+{% endblock %}

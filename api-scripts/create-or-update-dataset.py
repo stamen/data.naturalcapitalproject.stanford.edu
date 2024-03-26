@@ -99,7 +99,7 @@ def _create_resource_dict_from_url(url, description):
             url.startswith('https://storage.googleapis.com')):
         domain, bucket_name, key = url[8:].split('/', maxsplit=2)
 
-        storage_client = storage.Client()
+        storage_client = storage.Client(project="sdss-natcap-gef-ckan")
         bucket = storage_client.bucket(bucket_name)
         blob = bucket.get_blob(key)
 
@@ -121,7 +121,7 @@ def _create_resource_dict_from_url(url, description):
         gdal_url = f'/vsicurl/{url}'
         gdal_ds = gdal.OpenEx(gdal_url)
         if gdal_ds is not None:
-            fmt = gdal_ds.GetDriver().LongName()
+            fmt = gdal_ds.GetDriver().LongName
         else:
             LOGGER.debug(f"Could not access url with GDAL: {url}")
 
