@@ -346,7 +346,6 @@ def main(mcf_path, private=False, group=None):
                 }),
             })
 
-
         package_parameters = {
             'name': name,
             'title': title,
@@ -358,6 +357,8 @@ def main(mcf_path, private=False, group=None):
             'notes': _get_from_mcf(mcf, 'identification.abstract'),
             #'url': _get_from_mcf(mcf, 'identification.url'),
             'version': _get_from_mcf(mcf, 'identification.edition'),
+            'suggested_citation': _get_from_mcf(
+                mcf, 'identification.citation'),
             'license_id': license_id,
             'groups': [] if not group else [{'id': group}],
 
