@@ -67,14 +67,17 @@ def _get_created_date(filepath):
 
 
 def _create_resource_dict_from_file(
-        filepath, description, upload=False):
+        filepath, description, upload=False, filename=None):
     now = datetime.datetime.now().isoformat()
+
+    if not filename:
+        filename = os.path.basename(filepath)
     resource = {
         'description': description,
         # strip out the `.` from the extension
         'format': os.path.splitext(filepath)[1][1:].upper(),
         'hash': f"sha256:{_hash_file_sha256(filepath)}",
-        'name': os.path.basename(filepath),
+        'name': filename,
         'size': os.path.getsize(filepath),
         'created': now,
         'cache_last_updated': now,
@@ -143,6 +146,7 @@ def _create_resource_dict_from_url(url, description):
     mimetype, _ = mimetypes.guess_type(url)
     if mimetype:  # will be None if mimetype unknown
         resource['mimetype'] = mimetype
+    LOGGER.info('mimetype: %s', mimetype)
     return resource
 
 
@@ -301,7 +305,8 @@ def main(mcf_path, private=False, group=None):
         if identification_url:
             resources.append(
                 _create_resource_dict_from_file(
-                    mcf_path, os.path.basename(identification_url)))
+                    mcf_path, os.path.basename(identification_url),
+                    filename=os.path.basename(identification_url)))
         for distribution in _get_from_mcf(mcf, 'distribution').values():
             if distribution['function'].lower() == 'download' and distribution['url']:
                 try:
