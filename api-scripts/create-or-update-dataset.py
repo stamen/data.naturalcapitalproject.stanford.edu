@@ -304,9 +304,8 @@ def main(mcf_path, private=False, group=None):
         identification_url = _get_from_mcf(mcf, 'identification.url')
         if identification_url:
             resources.append(
-                _create_resource_dict_from_file(
-                    mcf_path, os.path.basename(identification_url),
-                    filename=os.path.basename(identification_url)))
+                _create_resource_dict_from_url(
+                    mcf_path, os.path.basename(identification_url))
         for distribution in _get_from_mcf(mcf, 'distribution').values():
             if distribution['function'].lower() == 'download' and distribution['url']:
                 try:
