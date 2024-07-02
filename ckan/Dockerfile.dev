@@ -17,12 +17,12 @@ RUN if ! [ /usr/share/zoneinfo/${TZ} -ef /etc/localtime ]; then \
 #   This can be done by creating an overriding start_ckan_dev_development.sh file:
 #   (https://github.com/ckan/ckan-docker-base/blob/main/ckan-2.9/dev/setup/start_ckan_development.sh) ie: updating the 'ckan config-tool' lines
 #   For more on config-tool please see https://docs.ckan.org/en/latest/maintaining/cli.html#config-tool-tool-for-editing-options-in-a-ckan-config-file
-#   or using Crudini (https://github.com/pixelb/crudini) 
+#   or using Crudini (https://github.com/pixelb/crudini)
 #
 # For instance:
 #
 ### XLoader ###
-#RUN pip3 install -e 'git+https://github.com/ckan/ckanext-xloader.git@master#egg=ckanext-xloader' && \ 
+#RUN pip3 install -e 'git+https://github.com/ckan/ckanext-xloader.git@master#egg=ckanext-xloader' && \
 #    pip3 install -r ${APP_DIR}/src/ckanext-xloader/requirements.txt && \
 #    pip3 install -U requests[security]
 
@@ -55,7 +55,7 @@ ENV PROJ_INCDIR=/usr/include
 ENV CKANEXT_SPATIAL_GIT_REVISION=938308469892e4bcf7389cb4adee5ccdd5a0ccca
 RUN apk add --no-cache geos geos-dev proj proj-dev proj-util
 RUN pip3 install -e git+https://github.com/ckan/ckanext-spatial.git@$CKANEXT_SPATIAL_GIT_REVISION#egg=ckanext-spatial && \
-    pip3 install -r https://raw.githubusercontent.com/ckan/ckanext-spatial/$CKANEXT_SPATIAL_GIT_REVISION/requirements.txt
+    pip3 install -r https://raw.githubusercontent.com/ckan/ckanext-spatial/$CKANEXT_SPATIAL_GIT_REVISION/requirements.txt "numpy<2"
 RUN pip3 install -e 'git+https://github.com/ckan/ckanext-scheming.git@master#egg=ckanext-scheming'
 
 # Enable SQLAlchemy support by installing it
