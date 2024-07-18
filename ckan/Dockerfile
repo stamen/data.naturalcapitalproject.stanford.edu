@@ -29,7 +29,7 @@ RUN pip3 install -r /tmp/ckanext-natcap/requirements.txt && pip3 install /tmp/ck
 # See Dockerfile.dev for more details and examples
 
 # Copy custom initialization scripts
-COPY ./src/docker-entrypoint.d/* /docker-entrypoint.d/
+COPY ./docker-entrypoint.d/* /docker-entrypoint.d/
 
 # Apply any patches needed to CKAN core or any of the built extensions (not the
 # runtime mounted ones)
