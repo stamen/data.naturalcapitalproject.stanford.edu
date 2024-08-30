@@ -188,22 +188,23 @@ def _find_license(license_string, license_url, known_licenses):
                 "recognized")
 
 
-def _get_from_mcf(mcf, dot_keys):
-    """Retrieve an attribute from an MCF.
+def get_from_config(config, dot_keys):
+    """Retrieve an attribute from a nested dictionary structure.
 
     If the attribute is not defined, an empty string is returned.
 
     Args:
-        mcf (dict): The full MCF dictionary
+        config (dict): The full config dictionary
         dot_keys (str): A dot-separated sequence of keys to sequentially index
-            into the MCF.  For example: ``identification.abstract``
+            into the nested dicts in config.
+            For example: ``identification.abstract``
 
     Returns:
         value: The value of the attribute at the specified depth, or the empty
         string if the attribute indicated by ``dot_keys`` is not found.
     """
     print("looking for", dot_keys)
-    current_mcf_value = mcf
+    current_mcf_value = config
     mcf_keys = collections.deque(dot_keys.split('.'))
     while True:
         key = mcf_keys.popleft()
@@ -213,58 +214,56 @@ def _get_from_mcf(mcf, dot_keys):
                 return current_mcf_value
         except KeyError:
             break
-    LOGGER.warning(f"MCF does not contain {dot_keys}: {key} not found")
+    LOGGER.warning(f"Config does not contain {dot_keys}: {key} not found")
     return ''
 
 
-def _create_tags_dicts(mcf):
-    tags_list = _get_from_mcf(mcf, 'identification.keywords.default.keywords')
+def _create_tags_dicts(config):
+    tags_list = get_from_config(config, 'keywords')
     return [{'name': name} for name in tags_list]
 
 
-def _get_wgs84_bbox(mcf):
-    extent = _get_from_mcf(mcf, 'identification.extents.spatial')[0]
+def _get_wgs84_bbox(config):
+    extent = get_from_config(config, 'spatial')[0]
     try:
-        minx, miny, maxx, maxy = extent['bbox']
+        minx, miny, maxx, maxy = extent['bounding_box']
     except ValueError:
         LOGGER.error(f"Could not extract bbox from {extent}")
         return None
 
-    # Suuuuper hacky, but I think we have a malformed CRS here.
-    if int(extent['crs']) == 6326:
-        print("Mangling the CRS")
-        extent['crs'] = 4326
-
-    if int(extent['crs']) != 4326:
-        LOGGER.debug(f"Transforming bounding box from {extent['crs']} to 4326")
+    if (re.match('(EPSG)|(ESRI):[1-9][0-9]*', str(extent['crs'])) or
+            re.match('[0-9][0-9]*', str(extent['crs']))):
         source_srs = osr.SpatialReference()
-
         for prefix in ('EPSG', 'ESRI'):
             LOGGER.debug(f"Trying {prefix}:{extent['crs']}")
             result = source_srs.SetFromUserInput(f"{prefix}:{extent['crs']}")
             if result == ogr.OGRERR_NONE:
                 break
-
         source_srs_wkt = source_srs.ExportToWkt()
-        dest_srs = osr.SpatialReference()
-        dest_srs.ImportFromEPSG(4326)
-        dest_srs_wkt = dest_srs.ExportToWkt()
+    else:
+        source_srs_wkt = extent['crs']
 
-        try:
-            minx, miny, maxx, maxy = pygeoprocessing.transform_bounding_box(
-                [minx, maxx, miny, maxy], source_srs_wkt, dest_srs_wkt)
-        except:
-            LOGGER.error(f"Failed to transform bounding box from {source_srs_wkt} to {dest_srs_wkt}")
-            LOGGER.warning("Assuming original bounding box is in WGS84")
+    dest_srs = osr.SpatialReference()
+    dest_srs.ImportFromEPSG(4326)  # Assume lat/lon for dest.
+    dest_srs_wkt = dest_srs.ExportToWkt()
+
+    try:
+        minx, miny, maxx, maxy = pygeoprocessing.transform_bounding_box(
+            [minx, maxx, miny, maxy], source_srs_wkt, dest_srs_wkt)
+    except (ValueError, RuntimeError):
+        LOGGER.error(
+            f"Failed to transform bounding box from {source_srs_wkt} "
+            f"to {dest_srs_wkt}")
+        LOGGER.warning("Assuming original bounding box is in WGS84")
 
     return [[[minx, maxy], [minx, miny], [maxx, miny], [maxx, maxy],
              [minx, maxy]]]
 
 
-def main(mcf_path, private=False, group=None):
-    with open(mcf_path) as yaml_file:
-        LOGGER.debug(f"Loading MCF from {mcf_path}")
-        mcf = yaml.load(yaml_file.read(), Loader=yaml.Loader)
+def main(gmm_yaml_path, private=False, group=None):
+    with open(gmm_yaml_path) as yaml_file:
+        LOGGER.debug(f"Loading geometamaker yaml from {gmm_yaml_path}")
+        gmm_yaml = yaml.load(yaml_file.read(), Loader=yaml.Loader)
 
     session = requests.Session()
     session.headers.update({'Authorization': MODIFIED_APIKEY})
@@ -276,80 +275,86 @@ def main(mcf_path, private=False, group=None):
         print(f"{len(licenses)} licenses found")
 
         license_id = ''
-        if _get_from_mcf(mcf, 'identification.license'):
+        if gmm_yaml['licenses']:
             license_id = _find_license(
-                _get_from_mcf(mcf, 'identification.license.name'),
-                _get_from_mcf(mcf, 'identification.license.url'),
+                gmm_yaml['licenses'][0]['title'],
+                gmm_yaml['licenses'][0]['path'],
                 licenses)
 
         # does the package already exist?
+        title = gmm_yaml['title']
 
-        title = _get_from_mcf(mcf, 'identification.title')
-        name = _get_from_mcf(mcf, 'metadata.identifier')
+        # Name is uniqely identifiable on CKAN, used in the URL.
+        # Example: sha256-1234567890abcdef
+        name = f'{gmm_yaml["hash"].replace(":", "-")}'
 
         # keys into the first contact info listing
         possible_author_keys = [
-            'individualname',
+            'individual_name',
             'organization',
         ]
-        first_contact_info = list(mcf['contact'].values())[0]
+        contact_info = [gmm_yaml['contact']]
         for author_key in possible_author_keys:
-            if first_contact_info[author_key]:
+            if contact_info[author_key]:
                 break  # just keep author_key
 
         resources = [
             _create_resource_dict_from_file(
-                mcf_path, "YML Metadata Control File", upload=True),
+                gmm_yaml_path, "Geometamaker YML", upload=True),
         ]
-        identification_url = _get_from_mcf(mcf, 'identification.url')
+        identification_url = None
+        for path_key in ('path', 'url'):
+            try:
+                identification_url = gmm_yaml[path_key]
+            except KeyError:
+                pass
         if identification_url:
-            identification_title = _get_from_mcf(mcf, 'identification.title')
-            if not identification_title:
+            try:
+                identification_title = gmm_yaml['name']
+            except KeyError:
                 identification_title = os.path.basename(identification_url)
             resources.append(
                 _create_resource_dict_from_url(
                     identification_url, identification_title))
-        for distribution in _get_from_mcf(mcf, 'distribution').values():
-            if distribution['function'].lower() == 'download' and distribution['url']:
-                try:
-                    resource_dict = _create_resource_dict_from_url(
-                        distribution['url'], distribution['description'])
-                except NotImplementedError:
-                    resource_dict = {
-                        'url': distribution['url'],
-                        'description': distribution['description'],
-                        'format': os.path.splitext(distribution['url'])[1],
-                        'hash': None,
-                        'name': os.path.basename(distribution['url']),
-                        'size': None,
-                        'created': datetime.datetime.now().isoformat(),
-                        'cache_last_updated': datetime.datetime.now().isoformat(),
-                    }
-                    mimetype, _ = mimetypes.guess_type(distribution['url'])
-                    if mimetype:  # will be None if mimetype unknown
-                        resource_dict['mimetype'] = mimetype
-                resources.append(resource_dict)
-            else:
-                LOGGER.info(
-                    f"Skipping distribution {distribution['url']} because it "
-                    "is not a downloadable resource.")
+        else:
+            raise ValueError(
+                "Identification URL not found in geometamaker YAML")
+
+        for distribution in get_from_config(gmm_yaml, 'distribution').values():
+            try:
+                resource_dict = _create_resource_dict_from_url(
+                    distribution['url'], distribution['description'])
+            except NotImplementedError:
+                resource_dict = {
+                    'url': distribution['url'],
+                    'description': distribution['description'],
+                    'format': os.path.splitext(distribution['url'])[1],
+                    'hash': None,
+                    'name': os.path.basename(distribution['url']),
+                    'size': None,
+                    'created': datetime.datetime.now().isoformat(),
+                    'cache_last_updated': datetime.datetime.now().isoformat(),
+                }
+                mimetype, _ = mimetypes.guess_type(distribution['url'])
+                if mimetype:  # will be None if mimetype unknown
+                    resource_dict['mimetype'] = mimetype
+            resources.append(resource_dict)
 
         # If sidecar .xml exists, add it as ISO XML.
-        sidecar_xml = re.sub(".yml$", ".xml", mcf_path)
+        sidecar_xml = re.sub(".yml$", ".xml", gmm_yaml_path)
         if os.path.exists(sidecar_xml):
             resources.append(_create_resource_dict_from_file(
                 sidecar_xml, "ISO 19139 Metadata XML", upload=True))
 
-
         # We can define the bbox as a polygon using
         # ckanext-spatial's spatial extra
         extras = []
-        if _get_from_mcf(mcf, 'identification.extents.spatial')[0]:
+        if get_from_config(gmm_yaml, 'spatial.bounding_box')[0]:
             extras.append({
                 'key': 'spatial',
                 'value': json.dumps({
                     'type': 'Polygon',
-                    'coordinates': _get_wgs84_bbox(mcf),
+                    'coordinates': _get_wgs84_bbox(gmm_yaml),
                 }),
             })
 
@@ -357,21 +362,20 @@ def main(mcf_path, private=False, group=None):
             'name': name,
             'title': title,
             'private': private,
-            'author': first_contact_info[author_key],
-            'author_email': first_contact_info['email'],
+            'author': contact_info[author_key],
+            'author_email': contact_info['email'],
             'owner_org': 'natcap',
             'type': 'dataset',
-            'notes': _get_from_mcf(mcf, 'identification.abstract'),
-            #'url': _get_from_mcf(mcf, 'identification.url'),
-            'version': _get_from_mcf(mcf, 'identification.edition'),
-            'suggested_citation': _get_from_mcf(
-                mcf, 'identification.citation'),
+            'notes': gmm_yaml['description'],
+            # 'url': gmm_yaml['url'],
+            'version': gmm_yaml['edition'],
+            'suggested_citation': gmm_yaml['citation'],
             'license_id': license_id,
             'groups': [] if not group else [{'id': group}],
 
             # Just use existing tags as CKAN "free" tags
             # TODO: support defined vocabularies
-            'tags': _create_tags_dicts(mcf),
+            'tags': _create_tags_dicts(gmm_yaml),
 
             'extras': extras
         }
