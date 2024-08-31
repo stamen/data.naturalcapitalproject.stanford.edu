@@ -224,7 +224,7 @@ def _create_tags_dicts(config):
 
 
 def _get_wgs84_bbox(config):
-    extent = get_from_config(config, 'spatial')[0]
+    extent = config['spatial']
     try:
         minx, miny, maxx, maxy = extent['bounding_box']
     except ValueError:
@@ -293,7 +293,7 @@ def main(gmm_yaml_path, private=False, group=None):
             'individual_name',
             'organization',
         ]
-        contact_info = [gmm_yaml['contact']]
+        contact_info = gmm_yaml['contact']
         for author_key in possible_author_keys:
             if contact_info[author_key]:
                 break  # just keep author_key
@@ -320,25 +320,27 @@ def main(gmm_yaml_path, private=False, group=None):
             raise ValueError(
                 "Identification URL not found in geometamaker YAML")
 
-        for distribution in get_from_config(gmm_yaml, 'distribution').values():
-            try:
-                resource_dict = _create_resource_dict_from_url(
-                    distribution['url'], distribution['description'])
-            except NotImplementedError:
-                resource_dict = {
-                    'url': distribution['url'],
-                    'description': distribution['description'],
-                    'format': os.path.splitext(distribution['url'])[1],
-                    'hash': None,
-                    'name': os.path.basename(distribution['url']),
-                    'size': None,
-                    'created': datetime.datetime.now().isoformat(),
-                    'cache_last_updated': datetime.datetime.now().isoformat(),
-                }
-                mimetype, _ = mimetypes.guess_type(distribution['url'])
-                if mimetype:  # will be None if mimetype unknown
-                    resource_dict['mimetype'] = mimetype
-            resources.append(resource_dict)
+        # Create a resource dict.  GMM yaml only has 1 possible resource, which
+        # is accessed by URL.
+        try:
+            resource_dict = _create_resource_dict_from_url(
+                gmm_yaml[path_key], gmm_yaml['description'])
+        except NotImplementedError:
+            resource_path = gmm_yaml[path_key]
+            resource_dict = {
+                'url': resource_path,
+                'description': gmm_yaml['description'],
+                'format': os.path.splitext(resource_path)[1],
+                'hash': None,
+                'name': os.path.basename(resource_path),
+                'size': None,
+                'created': datetime.datetime.now().isoformat(),
+                'cache_last_updated': datetime.datetime.now().isoformat(),
+            }
+            mimetype, _ = mimetypes.guess_type(resource_path)
+            if mimetype:  # will be None if mimetype unknown
+                resource_dict['mimetype'] = mimetype
+        resources.append(resource_dict)
 
         # If sidecar .xml exists, add it as ISO XML.
         sidecar_xml = re.sub(".yml$", ".xml", gmm_yaml_path)

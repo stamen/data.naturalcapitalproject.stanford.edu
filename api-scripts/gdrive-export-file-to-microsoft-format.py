@@ -1,3 +1,9 @@
+"""Download a Google Drive File in an appropriate Microsoft format.
+
+This script uses the Google Drive MIME type to identify the appropriate
+microsoft file format to download the file as.
+"""
+
 import os
 import pprint
 import sys
