@@ -9,14 +9,21 @@ for attrname in dir(zipfile):
 
 
 def list_zipfile_compression(zipname):
+    n_problem_files = 0
     with zipfile.ZipFile(zipname, 'r') as zip:
         for info in zip.infolist():
             if info.compress_type not in ZIPFILE_CONSTANTS:
+                n_problem_files += 1
                 problem = "PROBLEM"
             else:
                 problem = "OK     "
             print(zipfile.compressor_names[info.compress_type] + "\t",
                   problem, info.filename)
+
+    print("\nNumber of files compressed with unsupported codecs:",
+          n_problem_files)
+    if n_problem_files:
+        sys.exit(1)
 
 
 if __name__ == '__main__':
