@@ -11,8 +11,12 @@ for attrname in dir(zipfile):
 def list_zipfile_compression(zipname):
     with zipfile.ZipFile(zipname, 'r') as zip:
         for info in zip.infolist():
-            print(ZIPFILE_CONSTANTS[info.compress_type] + "\t",
-                  info.filename)
+            if info.compress_type not in ZIPFILE_CONSTANTS:
+                problem = "PROBLEM"
+            else:
+                problem = "OK     "
+            print(zipfile.compressor_names[info.compress_type] + "\t",
+                  problem, info.filename)
 
 
 if __name__ == '__main__':
