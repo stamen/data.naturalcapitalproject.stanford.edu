@@ -285,8 +285,9 @@ def main(gmm_yaml_path, private=False, group=None):
         title = gmm_yaml['title']
 
         # Name is uniqely identifiable on CKAN, used in the URL.
-        # Example: sha256-1234567890abcdef
-        name = f'{gmm_yaml["hash"].replace(":", "-")}'
+        # Example: sts-1234567890abcdef
+        name = str(gmm_yaml['uid'].replace(':', '-').replace(
+            'sizetimestamp', 'sts'))
 
         # keys into the first contact info listing
         possible_author_keys = [
