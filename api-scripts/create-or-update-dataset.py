@@ -275,10 +275,10 @@ def main(gmm_yaml_path, private=False, group=None):
         print(f"{len(licenses)} licenses found")
 
         license_id = ''
-        if gmm_yaml['licenses']:
+        if gmm_yaml['license']:
             license_id = _find_license(
-                gmm_yaml['licenses'][0]['title'],
-                gmm_yaml['licenses'][0]['path'],
+                gmm_yaml['license']['title'],
+                gmm_yaml['license']['path'],
                 licenses)
 
         # does the package already exist?
