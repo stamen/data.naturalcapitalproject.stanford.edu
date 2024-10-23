@@ -352,14 +352,18 @@ def main(gmm_yaml_path, private=False, group=None):
         # We can define the bbox as a polygon using
         # ckanext-spatial's spatial extra
         extras = []
-        if get_from_config(gmm_yaml, 'spatial.bounding_box')[0]:
-            extras.append({
-                'key': 'spatial',
-                'value': json.dumps({
-                    'type': 'Polygon',
-                    'coordinates': _get_wgs84_bbox(gmm_yaml),
-                }),
-            })
+        try:
+            if get_from_config(gmm_yaml, 'spatial.bounding_box')[0]:
+                extras.append({
+                    'key': 'spatial',
+                    'value': json.dumps({
+                        'type': 'Polygon',
+                        'coordinates': _get_wgs84_bbox(gmm_yaml),
+                    }),
+                })
+        except IndexError:
+            # IndexError: When there's nothing to index into
+            pass
 
         package_parameters = {
             'name': name,
