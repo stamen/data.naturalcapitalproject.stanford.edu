@@ -308,7 +308,7 @@ def main(gmm_yaml_path, private=False, group=None):
         # is accessed by URL.
         path_key = None
         for _path_key in ('path', 'url'):
-            if hasattr(gmm_yaml, _path_key) and gmm_yaml[_path_key]:
+            if _path_key in gmm_yaml and gmm_yaml[_path_key]:
                 path_key = _path_key
                 break
         if not path_key:
