@@ -303,26 +303,18 @@ def main(gmm_yaml_path, private=False, group=None):
             _create_resource_dict_from_file(
                 gmm_yaml_path, "Geometamaker YML", upload=True),
         ]
-        identification_url = None
-        for path_key in ('path', 'url'):
-            try:
-                identification_url = gmm_yaml[path_key]
-            except KeyError:
-                pass
-        if identification_url:
-            try:
-                identification_title = gmm_yaml['name']
-            except KeyError:
-                identification_title = os.path.basename(identification_url)
-            resources.append(
-                _create_resource_dict_from_url(
-                    identification_url, identification_title))
-        else:
-            raise ValueError(
-                "Identification URL not found in geometamaker YAML")
 
         # Create a resource dict.  GMM yaml only has 1 possible resource, which
         # is accessed by URL.
+        path_key = None
+        for _path_key in ('path', 'url'):
+            if hasattr(gmm_yaml, _path_key) and gmm_yaml[_path_key]:
+                path_key = _path_key
+                break
+        if not path_key:
+            raise ValueError(
+                "The YAML has neither a valid URL nor path key; "
+                "cannot create any resources.")
         try:
             resource_dict = _create_resource_dict_from_url(
                 gmm_yaml[path_key], gmm_yaml['description'])
