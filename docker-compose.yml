@@ -18,7 +18,9 @@ services:
       ckan:
         condition: service_healthy
     ports:
-      - "0.0.0.0:${NGINX_SSLPORT_HOST}:${NGINX_SSLPORT}"
+      # - "0.0.0.0:${NGINX_SSLPORT_HOST}:${NGINX_SSLPORT}"
+      # - "0.0.0.0:${NGINX_PORT_HOST}:5001"
+      - "5001:${NGINX_PORT}"
 
   ckan:
     build:
@@ -42,6 +44,7 @@ services:
         condition: service_healthy
     volumes:
       - ckan_storage:/var/lib/ckan
+      - ./src:/srv/app/src_extensions
       - pip_cache:/root/.cache/pip
       - site_packages:/usr/lib/python3.10/site-packages
     restart: unless-stopped

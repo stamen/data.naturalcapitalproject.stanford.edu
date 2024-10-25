@@ -34,7 +34,7 @@ COPY ./ckan/docker-entrypoint.d/* /docker-entrypoint.d/
 
 # Apply any patches needed to CKAN core or any of the built extensions (not the
 # runtime mounted ones)
-COPY patches ${APP_DIR}/patches
+COPY ./ckan/patches ${APP_DIR}/patches
 
 RUN for d in $APP_DIR/patches/*; do \
         if [ -d $d ]; then \

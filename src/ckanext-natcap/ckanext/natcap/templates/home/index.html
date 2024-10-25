@@ -1,0 +1,35 @@
+{% ckan_extends %}
+
+{% block promoted %}
+{% endblock %}
+
+{% block primary_content %}
+<div role="main">
+  <div class="main hero">
+    <div class="container">
+      <div class="home-site-title">
+        <div>Natural Capital</div>
+        <div><strong>Geospatial Data Catalogue</strong></div>
+      </div>
+      <div class="home-site-subtitle">
+        Empowering sustainable decision-making with open-source geospatial data
+      </div>
+      {% block search %}
+      {% snippet 'home/snippets/search.html', search_facets=search_facets %}
+      {% endblock %}
+    </div>
+  </div>
+
+  <div class="home-topics-container">
+      {% block home_topics %}
+      {% snippet 'home/snippets/topics.html' %}
+      {% endblock %}
+  </div>
+
+  <div class="home-location-search-container">
+      {% block home_location_search %}
+      {% snippet 'home/snippets/location_search.html' %}
+      {% endblock %}
+  </div>
+</div>
+{% endblock %}
