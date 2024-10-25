@@ -22,6 +22,9 @@ RUN pip3 install -e git+https://github.com/ckan/ckanext-spatial.git@$CKANEXT_SPA
 RUN pip3 install -e 'git+https://github.com/ckan/ckanext-scheming.git@3af6056bbe16c3f8c6257f18cb2a0805370f85de#egg=ckanext-scheming'
 RUN pip3 install "numpy<2"
 
+RUN pip3 install -e 'git+https://github.com/keitaroinc/ckanext-suggest.git@main#egg=ckanext-suggest'
+RUN pip3 install -r https://raw.githubusercontent.com/keitaroinc/ckanext-suggest/main/requirements.txt
+
 # NOTE: requires that the build context includes ./src/
 COPY ./src/ckanext-natcap /tmp/ckanext-natcap
 RUN pip3 install -r /tmp/ckanext-natcap/requirements.txt && pip3 install /tmp/ckanext-natcap
