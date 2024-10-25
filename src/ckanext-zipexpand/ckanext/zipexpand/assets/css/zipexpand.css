@@ -1,0 +1,42 @@
+/*
+body {
+  border-radius: 0;
+}
+*/
+
+.zipexpand-contents-list {
+  font-weight: bold;
+  list-style: none;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  font-size: 0.9em;
+  margin-left: -30px;
+  border-left: 1px solid black;
+  padding-left: 30px;
+}
+
+.zipexpand-contents-list .format-label {
+  display: inline-block;
+  position: relative;
+  transform: scale(0.4);
+  top: unset;
+  left: unset;
+  margin-right: -20px;
+  margin-bottom: -20px;
+}
+
+.zipexpand-contents-item {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.zipexpand-contents-item-line {
+  border-bottom: 1px solid black;
+  display: inline-block;
+  margin-left: -30px;
+  height: 1px;
+  width: 1em;
+}
