@@ -1,0 +1,9 @@
+.mappreview .map {
+  height: 500px;
+  width: 100%;
+}
+
+.mappreview .mappreview-mapboxgl-popup .mapboxgl-popup-content {
+  max-height: 200px;
+  overflow-y: auto;
+}
