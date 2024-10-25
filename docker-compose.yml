@@ -18,9 +18,7 @@ services:
       ckan:
         condition: service_healthy
     ports:
-      # - "0.0.0.0:${NGINX_SSLPORT_HOST}:${NGINX_SSLPORT}"
-      # - "0.0.0.0:${NGINX_PORT_HOST}:5001"
-      - "5001:${NGINX_PORT}"
+      - "0.0.0.0:${NGINX_SSLPORT_HOST}:${NGINX_SSLPORT}"
 
   ckan:
     build:
