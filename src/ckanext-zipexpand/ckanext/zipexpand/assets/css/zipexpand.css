@@ -33,10 +33,19 @@ body {
   gap: 0.5rem;
 }
 
+.zipexpand-contents-item.has-children {
+  align-items: flex-start;
+  flex-direction: column;
+}
+
 .zipexpand-contents-item-line {
   border-bottom: 1px solid black;
   display: inline-block;
   margin-left: -30px;
   height: 1px;
   width: 1em;
+}
+
+.zipexpand-contents-item .zipexpand-contents-list {
+  margin-left: 0.5rem;
 }

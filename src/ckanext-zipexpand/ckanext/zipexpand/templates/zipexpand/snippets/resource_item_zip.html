@@ -1,59 +1,21 @@
 <div class="resource-item-zip">
   <ol class="zipexpand-contents-list">
-    <li class="zipexpand-contents-item">
-      <span class="zipexpand-contents-item-line"></span>
-      <span class="format-label" property="dc:format" data-format="shp">SHP</span>
-      airport.shp
-    </li>
-    <li class="zipexpand-contents-item">
-      <span class="zipexpand-contents-item-line"></span>
-      <span class="format-label" property="dc:format" data-format="shp">SHP</span>
-      andros_aoi.shp
-    </li>
-    <li class="zipexpand-contents-item">
-      <span class="zipexpand-contents-item-line"></span>
-      <span class="format-label" property="dc:format" data-format="shp">SHP</span>
-      beaches.shp
-    </li>
-    <li class="zipexpand-contents-item">
-      <span class="zipexpand-contents-item-line"></span>
-      <span class="format-label" property="dc:format" data-format="shp">SHP</span>
-      bonefish.shp
-    </li>
-    <li class="zipexpand-contents-item">
-      <span class="zipexpand-contents-item-line"></span>
-      <span class="format-label" property="dc:format" data-format="tif">TIF</span>
-      dem90m.tif
-    </li>
-    <li class="zipexpand-contents-item">
-      <span class="zipexpand-contents-item-line"></span>
-      <span class="format-label" property="dc:format" data-format="shp">SHP</span>
-      dredged_ports.shp
-    </li>
-    <li class="zipexpand-contents-item">
-      <span class="zipexpand-contents-item-line"></span>
-      <span class="format-label" property="dc:format" data-format="csv">CSV</span>
-      predictors.csv
-    </li>
-    <li class="zipexpand-contents-item">
-      <span class="zipexpand-contents-item-line"></span>
-      <span class="format-label" property="dc:format" data-format="csv">CSV</span>
-      predictors_scenario.csv
-    </li>
-    <li class="zipexpand-contents-item">
-      <span class="zipexpand-contents-item-line"></span>
-      <span class="format-label" property="dc:format" data-format="shp">SHP</span>
-      recreation_andros.invs.json
-    </li>
-    <li class="zipexpand-contents-item">
-      <span class="zipexpand-contents-item-line"></span>
-      <span class="format-label" property="dc:format" data-format="shp">SHP</span>
-      roads_simple.shp
-    </li>
-    <li class="zipexpand-contents-item">
-      <span class="zipexpand-contents-item-line"></span>
-      <span class="format-label" property="dc:format" data-format="shp">SHP</span>
-      roads_simple_buf.shp
-    </li>
+    {% for source in h.zipexpand_parse_sources(sources) %}
+      <li class="zipexpand-contents-item {% if source.children %}has-children{% endif %}">
+        {{ source.name }}
+
+        {% if source.children %}
+          <ol class="zipexpand-contents-list">
+            {% for child in source.children %}
+              <li class="zipexpand-contents-item">
+                <span class="zipexpand-contents-item-line"></span>
+                <span class="format-label" property="dc:format" data-format="{{ child.extension }}">{{ child.extension }}</span>
+                {{ child.name }}
+              </li>
+            {% endfor %}
+          </ol>
+        {% endif %}
+      </li>
+    {% endfor %}
   </ol>
 </div>
