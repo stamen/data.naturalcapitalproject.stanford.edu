@@ -114,6 +114,16 @@ body .homepage .module-search .tags {
     gap: 2rem;
 }
 
+.home-topics-list {
+    list-style: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 2rem;
+}
+
 .additional-info .table {
     --bs-table-striped-bg: none;
 }

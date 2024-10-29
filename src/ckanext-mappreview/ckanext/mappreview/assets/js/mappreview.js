@@ -9,7 +9,7 @@ ckan.module("mappreview", function ($, _) {
       titilerUrl: 'https://titiler-897938321824.us-west1.run.app',
     },
 
-    getRasterTilejsonUrl: function (layer) {
+    _getRasterTilejsonUrl: function (layer) {
       const base = this.options.titilerUrl;
       const endpoint = '/cog/WebMercatorQuad/tilejson.json';
       const params = {
@@ -31,7 +31,10 @@ ckan.module("mappreview", function ($, _) {
     },
 
     initialize: function () {
+      console.log('initialize');
+      console.log(this.options);
       const config = JSON.parse(this.options.config.replace(/'/g, '"'));
+      jQuery.proxyAll(this, '_getRasterTilejsonUrl');
       console.log(config);
 
       // TODO get from config / constants
@@ -46,7 +49,7 @@ ckan.module("mappreview", function ($, _) {
 
       const sources = config.layers.map(l => {
         if (l.type === 'raster') {
-          const url = this.getRasterTilejsonUrl(l);
+          const url = this._getRasterTilejsonUrl(l);
           console.log(url);
           return {
             id: l.name,
