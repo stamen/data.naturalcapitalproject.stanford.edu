@@ -1,10 +1,5 @@
 {% ckan_extends %}
 
-{% block extras %}
-  {% if pkg_dict.suggested_citation %}
-    <tr>
-      <th scope="row" class="dataset-label">{{ _("Suggested Citation") }}</th>
-      <td class="dataset-details">{{ pkg_dict.suggested_citation}}</td>
-    </tr>
-  {% endif %}
+{% block package_additional_info %}
+  {{ super() }}
 {% endblock %}

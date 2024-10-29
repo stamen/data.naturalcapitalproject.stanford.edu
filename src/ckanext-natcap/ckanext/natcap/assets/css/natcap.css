@@ -100,6 +100,22 @@ body .homepage .module-search .tags {
     gap: 2rem;
 }
 
+.additional-info .table {
+    --bs-table-striped-bg: none;
+}
+
+.additional-info .table,
+.additional-info .table tbody,
+.additional-info .table th,
+.additional-info .table tr,
+.additional-info .table td {
+    border: none;
+}
+
+.additional-info .table > thead {
+    display: none;
+}
+
 /* Site footer */
 body .site-footer {
     background: #734675;
