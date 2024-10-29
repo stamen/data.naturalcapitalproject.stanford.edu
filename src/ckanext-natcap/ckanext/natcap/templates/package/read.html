@@ -8,3 +8,32 @@
 
 {% block package_resources %}
 {% endblock %}
+
+
+{% block primary_content_inner %}
+  {% if h.mappreview_should_show(pkg) %}
+    {% snippet "package/snippets/mappreview.html", pkg=pkg %}
+  {% endif %}
+ 
+  <div class="row">
+    <div class="col-md-6">
+      {# TODO use scheming snippet #}
+      {% snippet "package/snippets/additional_info.html", pkg_dict=pkg %}
+    </div>
+    <div class="col-md-6">
+      {% block package_usage %}
+        <div class="package-usage">
+          {% block package_citation %}
+            {% snippet "package/snippets/citation.html", pkg=pkg %}
+          {% endblock %}
+          {% block package_map_embed %}
+            {% snippet "package/snippets/map_embed.html", pkg=pkg %}
+          {% endblock %}
+          {% block package_code_copy %}
+            {% snippet "package/snippets/code_copy.html", pkg=pkg %}
+          {% endblock %}
+        </div>
+      {% endblock %}
+    </div>
+  </div>
+{% endblock %}

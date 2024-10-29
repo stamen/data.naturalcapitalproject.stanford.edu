@@ -4,6 +4,12 @@ body {
 }
 */
 
+body {
+  font-family: "Source Sans 3", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
 /* Login bar way up at the top*/
 body .account-masthead {
     min-height: 30px;
@@ -41,6 +47,12 @@ body .masthead .main-navbar ul li.active a {
     background-color: #2e2d29;
 }
 
+body .masthead .navbar .navbar-left {
+  font-family: "Albert Sans", sans-serif;
+  font-optical-sizing: auto;
+  font-style: normal;
+}
+
 /* Main body*/
 body .homepage .module-search .search-form {
     border-radius: 0.25rem;
@@ -71,10 +83,12 @@ body .homepage .module-search .tags {
 }
 
 .homepage .main.hero .container .home-site-title {
+    font-family: "Albert Sans", sans-serif;
     font-size: 1.5rem;
 }
 
 .homepage .main.hero .container .home-site-subtitle {
+    font-family: "Albert Sans", sans-serif;
     font-size: 1.5rem;
 }
 
@@ -114,6 +128,21 @@ body .homepage .module-search .tags {
 
 .additional-info .table > thead {
     display: none;
+}
+
+.package-usage {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.package-usage h3 {
+    color: #009B76;
+    font-size: 0.9rem;
+}
+
+.package-usage-textarea[readonly] {
+    background: white;
 }
 
 /* Site footer */
