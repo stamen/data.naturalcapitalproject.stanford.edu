@@ -2,118 +2,80 @@ ckan.module("mappreview", function ($, _) {
   "use strict";
   return {
     options: {
+      config: {},
       debug: false,
+      mapboxApiToken: 'pk.eyJ1Ijoic3RhbWVuIiwiYSI6ImNtMWkzNm16ZzBsZDYya3B4anI5cG9tN3kifQ.i91AOKPswRy5EA1zi7PO-w', // TODO from constants / env
+      mapboxStyle: 'mapbox://styles/mapbox/light-v11',
+      titilerUrl: 'https://titiler-897938321824.us-west1.run.app',
+    },
+
+    getRasterTilejsonUrl: function (layer) {
+      const base = this.options.titilerUrl;
+      const endpoint = '/cog/WebMercatorQuad/tilejson.json';
+      const params = {
+        tile_scale: 2,
+        url: layer.url,
+        bidx: 1,
+        colormap_name: 'blues',
+        // rescale: '355,5000',
+        // TODO use q98?
+        // rescale: `${layer.pixel_min_value},${layer.pixel_max_value}`,
+        rescale: `${layer.pixel_percentile_2},${layer.pixel_percentile_98}`,
+      };
+
+      const paramsPrepared = Object.entries(params)
+        .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
+        .join('&');
+
+      return `${base}${endpoint}?${paramsPrepared}`;
     },
 
     initialize: function () {
-      mapboxgl.accessToken = 'pk.eyJ1Ijoic3RhbWVuIiwiYSI6ImNtMWkzNm16ZzBsZDYya3B4anI5cG9tN3kifQ.i91AOKPswRy5EA1zi7PO-w';
+      const config = JSON.parse(this.options.config.replace(/'/g, '"'));
+      console.log(config);
+
+      // TODO get from config / constants
+      mapboxgl.accessToken = this.options.mapboxApiToken;
       const map = new mapboxgl.Map({
-          container: 'map',
-          center: [-122.420679, 37.772537],
-          zoom: 13,
-          style: 'mapbox://styles/mapbox/light-v11',
-          bounds: [-79.365234,23.120154,-76.453857,25.849337],
+        container: 'map',
+        style: this.options.mapboxStyle,
+        bounds: config.map.bounds,
+        minZoom: config.map.minzoom,
+        maxZoom: config.map.maxzoom,
       });
 
-      const sources = [
-        { id: 'airport', url: '/data/recreation/airport.geojson' },
-        { id: 'dredged-ports', url: '/data/recreation/dredged-ports.geojson' },
-        { id: 'beaches', url: '/data/recreation/beaches.geojson' },
-        { id: 'roads-simple', url: '/data/recreation/roads-simple.geojson' },
-        { id: 'roads-simple-buf', url: '/data/recreation/roads-simple-buf.geojson' },
-        { id: 'bonefish', url: '/data/recreation/bonefish.geojson' },
-        { id: 'andros-aoi', url: '/data/recreation/andros-aoi.geojson' },
-      ];
+      const sources = config.layers.map(l => {
+        if (l.type === 'raster') {
+          const url = this.getRasterTilejsonUrl(l);
+          console.log(url);
+          return {
+            id: l.name,
+            type: 'raster',
+            url,
+          };
+        }
+      });
+
+      const layers = config.layers.map(l => {
+        if (l.type === 'raster') {
+          return {
+            id: l.name,
+            type: 'raster',
+            source: l.name,
+          };
+        }
+      });
 
       map.on('load', () => {
         sources.forEach((source) => {
-          map.addSource(source.id, {
-            type: 'geojson',
-            data: source.url,
-          });
+          map.addSource(source.id, source);
         });
 
-        map.addLayer({
-          id: 'andros-aoi',
-          type: 'fill',
-          source: 'andros-aoi',
-          paint: {
-            'fill-color': '#0088ff',
-            'fill-opacity': 0.2,
-          },
+        layers.forEach((layer) => {
+          map.addLayer(layer);
         });
 
-        map.addLayer({
-          id: 'bonefish',
-          type: 'fill',
-          source: 'bonefish',
-          paint: {
-            'fill-color': '#ff44ef',
-            'fill-opacity': 0.2,
-          },
-        });
-
-        map.addLayer({
-          id: 'roads-simple-buf',
-          type: 'fill',
-          source: 'roads-simple-buf',
-          paint: {
-            'fill-color': '#91522d',
-            'fill-opacity': 0.5,
-          },
-        });
-
-        map.addLayer({
-          id: 'beaches',
-          type: 'line',
-          source: 'beaches',
-          paint: {
-            'line-color': 'brown',
-            'line-opacity': 1,
-            'line-width': 2,
-          },
-        });
-
-        map.addLayer({
-          id: 'roads-simple',
-          type: 'line',
-          source: 'roads-simple',
-          paint: {
-            'line-color': 'black',
-            'line-opacity': 0.5,
-            'line-width': 0.5,
-          },
-        });
-
-        map.addLayer({
-          id: 'airport',
-          type: 'circle',
-          source: 'airport',
-          paint: {
-            'circle-color': '#ff0000',
-            'circle-radius': 5,
-          },
-        });
-
-        map.addLayer({
-          id: 'dredged-ports',
-          type: 'circle',
-          source: 'dredged-ports',
-          paint: {
-            'circle-color': '#00ff00',
-            'circle-radius': 5,
-          },
-        });
-
-        const targets = {
-          'andros-aoi': 'Andros AOI',
-          'bonefish': 'Bonefish',
-          'beaches': 'Beaches',
-          'roads-simple': 'Roads',
-          'roads-simple-buf': 'Roads Buffer',
-          'dredged-ports': 'Dredged Ports',
-          'airport': 'Airport',
-        };
+        const targets = Object.fromEntries(config.layers.map(l => [l.name, l.name]));
 
         map.addControl(new MapboxLegendControl(targets, {
           showDefault: false, 
@@ -123,13 +85,14 @@ ckan.module("mappreview", function ($, _) {
         }), 'top-right');
       });
 
+      // TODO only for vector layers?
       map.on('click', sources.map(s => s.id), (e) => {
         console.log(e.features);
         let content = '';
 
         e.features.forEach(f => {
           content += `<h3>${f.layer.id}</h3>
-          <ul>
+            <ul>
             ${Object.keys(f.properties).map(k => `<li>${k}: ${f.properties[k]}</li>`).join('')}
           </ul>`;
         });

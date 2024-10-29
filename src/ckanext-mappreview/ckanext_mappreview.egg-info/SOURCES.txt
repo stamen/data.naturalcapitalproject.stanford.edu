@@ -15,7 +15,7 @@ ckanext/mappreview/assets/js/mappreview.js
 ckanext/mappreview/assets/js/vendor/mapbox-gl-legend.js
 ckanext/mappreview/assets/js/vendor/mapbox-gl.js
 ckanext/mappreview/templates/base.html
-ckanext/mappreview/templates/package/snippets/resources_list.html
+ckanext/mappreview/templates/package/snippets/mappreview.html
 ckanext/mappreview/tests/__init__.py
 ckanext/mappreview/tests/test_plugin.py
 ckanext_mappreview.egg-info/PKG-INFO
