@@ -31,11 +31,8 @@ ckan.module("mappreview", function ($, _) {
     },
 
     initialize: function () {
-      console.log('initialize');
-      console.log(this.options);
       const config = JSON.parse(this.options.config.replace(/'/g, '"'));
       jQuery.proxyAll(this, '_getRasterTilejsonUrl');
-      console.log(config);
 
       // TODO get from config / constants
       mapboxgl.accessToken = this.options.mapboxApiToken;
@@ -50,7 +47,6 @@ ckan.module("mappreview", function ($, _) {
       const sources = config.layers.map(l => {
         if (l.type === 'raster') {
           const url = this._getRasterTilejsonUrl(l);
-          console.log(url);
           return {
             id: l.name,
             type: 'raster',
@@ -90,7 +86,6 @@ ckan.module("mappreview", function ($, _) {
 
       // TODO only for vector layers?
       map.on('click', sources.map(s => s.id), (e) => {
-        console.log(e.features);
         let content = '';
 
         e.features.forEach(f => {
