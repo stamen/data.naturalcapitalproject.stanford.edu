@@ -1,9 +1,9 @@
 {% ckan_extends %}
 
+{% block wrapper_class %} {{ super() }} package-search-wrapper{% endblock %}
+
 {% block secondary_content %}
-
     {% snippet "spatial/snippets/spatial_query.html" %}
-
 {% endblock %}
 
 {% block form %}
