@@ -1,5 +1,9 @@
 FROM ckan/ckan-base:2.10.4
 
+ARG GITHUB_USER
+ARG GITHUB_REPO
+ARG GITHUB_BRANCH
+
 # Set up environment variables
 ENV APP_DIR=/opt/ckan-catalog/data.naturalcapitalproject.stanford.edu
 ENV TZ=UTC
