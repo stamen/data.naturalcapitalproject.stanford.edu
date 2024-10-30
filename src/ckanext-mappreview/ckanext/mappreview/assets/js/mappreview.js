@@ -3,14 +3,17 @@ ckan.module("mappreview", function ($, _) {
   return {
     options: {
       config: {},
+      globalConfig: {},
       debug: false,
-      mapboxApiToken: 'pk.eyJ1Ijoic3RhbWVuIiwiYSI6ImNtMWkzNm16ZzBsZDYya3B4anI5cG9tN3kifQ.i91AOKPswRy5EA1zi7PO-w', // TODO from constants / env
-      mapboxStyle: 'mapbox://styles/mapbox/light-v11',
       titilerUrl: 'https://titiler-897938321824.us-west1.run.app',
     },
 
+    _getGlobalConfig: function () {
+      return JSON.parse(this.options.globalConfig.replace(/'/g, '"'));
+    },
+
     _getRasterTilejsonUrl: function (layer) {
-      const base = this.options.titilerUrl;
+      const base = this._getGlobalConfig().titiler_url;
       const endpoint = '/cog/WebMercatorQuad/tilejson.json';
       const params = {
         tile_scale: 2,
@@ -31,14 +34,16 @@ ckan.module("mappreview", function ($, _) {
     },
 
     initialize: function () {
-      const config = JSON.parse(this.options.config.replace(/'/g, '"'));
+      jQuery.proxyAll(this, '_getGlobalConfig');
       jQuery.proxyAll(this, '_getRasterTilejsonUrl');
 
-      // TODO get from config / constants
-      mapboxgl.accessToken = this.options.mapboxApiToken;
+      const config = JSON.parse(this.options.config.replace(/'/g, '"'));
+      const globalConfig = this._getGlobalConfig();
+
+      mapboxgl.accessToken = globalConfig.mapbox_api_key;
       const map = new mapboxgl.Map({
         container: 'map',
-        style: this.options.mapboxStyle,
+        style: globalConfig.mapbox_style,
         bounds: config.map.bounds,
         minZoom: config.map.minzoom,
         maxZoom: config.map.maxzoom,

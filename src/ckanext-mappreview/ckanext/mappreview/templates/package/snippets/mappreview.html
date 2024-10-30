@@ -1,3 +1,4 @@
-<div class="mappreview" data-module="mappreview" data-module-config="{{ h.mappreview_parse_metadata(pkg) }}">
+<!-- use helpers to cget config -->
+<div class="mappreview" data-module="mappreview" data-module-config="{{ h.mappreview_parse_metadata(pkg) }}" data-module-global-config="{{ h.mappreview_get_config() }}">
   <div id="map" class="map"></div>
 </div>

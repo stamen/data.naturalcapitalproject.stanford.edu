@@ -1,6 +1,12 @@
 import json
+from ckan.common import config
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
+
+
+def get_config():
+    namespace = 'ckanext.mappreview.'
+    return dict([(k.replace(namespace, ''), v) for k, v in config.items() if k.startswith(namespace)])
 
 
 def get_mappreview(pkg):
@@ -26,6 +32,7 @@ class MappreviewPlugin(plugins.SingletonPlugin):
 
     def get_helpers(self):
         return {
+            'mappreview_get_config': get_config,
             'mappreview_parse_metadata': parse_metadata,
             'mappreview_should_show': should_show,
         }
