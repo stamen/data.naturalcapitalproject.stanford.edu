@@ -27,7 +27,7 @@ RUN pip3 install -r https://raw.githubusercontent.com/keitaroinc/ckanext-suggest
 
 # NOTE: requires that the build context includes ./src/
 # NOTE: Adding version.json to bust cache
-ADD https://api.github.com/repos/$GITHUB_USER/$GITHUB_REPO/git/refs/heads/$GITHUB_BRANCH version.json
+ADD https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/git/refs/heads/${GITHUB_BRANCH} version.json
 COPY ./src/ckanext-natcap /tmp/ckanext-natcap
 RUN pip3 install -r /tmp/ckanext-natcap/requirements.txt && pip3 install /tmp/ckanext-natcap
 
