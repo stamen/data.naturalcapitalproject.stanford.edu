@@ -33,8 +33,20 @@ ckan.module("mappreview", function ($, _) {
       return `${base}${endpoint}?${paramsPrepared}`;
     },
 
+    _getRasterLayer: function (layer) {
+      return {
+        id: layer.name,
+        type: 'raster',
+        source: layer.name,
+        paint: {
+          'raster-opacity': ['interpolate', ['linear'], ['zoom'], 0, 0.5, 12, 1],
+        },
+      };
+    },
+
     initialize: function () {
       jQuery.proxyAll(this, '_getGlobalConfig');
+      jQuery.proxyAll(this, '_getRasterLayer');
       jQuery.proxyAll(this, '_getRasterTilejsonUrl');
 
       const config = JSON.parse(this.options.config.replace(/'/g, '"'));
@@ -62,11 +74,7 @@ ckan.module("mappreview", function ($, _) {
 
       const layers = config.layers.map(l => {
         if (l.type === 'raster') {
-          return {
-            id: l.name,
-            type: 'raster',
-            source: l.name,
-          };
+          return this._getRasterLayer(l);
         }
       });
 
