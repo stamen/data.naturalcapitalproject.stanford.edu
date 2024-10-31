@@ -15,15 +15,53 @@ ckan.module("mappreview", function ($, _) {
     _getRasterTilejsonUrl: function (layer) {
       const base = this._getGlobalConfig().titiler_url;
       const endpoint = '/cog/WebMercatorQuad/tilejson.json';
+
+      // Generate custom color map
+      const colors = [
+        '#6DB31E',
+        '#008F5F',
+        '#00646E',
+        '#1C3A6D',
+        '#27003B',
+      ];
+
+      let steps = [];
+
+      colors.forEach((c, i) => {
+        if (i === colors.length - 1) return;
+
+        const c1 = new Color(colors[i]);
+        const c2 = new Color(colors[i + 1]);
+
+        const innerSteps = c1.steps(c2, {
+          space: 'lch',
+          steps: Math.ceil(256 / (colors.length - 1)),
+          outputSpace: 'srgb',
+        });
+
+        steps = steps.concat(innerSteps);
+      });
+
+      const rgbas = steps.map((c, i) => {
+        return [
+          ...c.coords.map(coord => Math.floor(coord * 255)),
+          i <= 6 ? 50 : 255
+          // 255
+        ];
+      });
+
+      const colormap = rgbas.map((rgba, i) => [[i, i + 1], rgba]);
+
       const params = {
         tile_scale: 2,
         url: layer.url,
         bidx: 1,
-        colormap_name: 'blues',
-        // rescale: '355,5000',
-        // TODO use q98?
-        // rescale: `${layer.pixel_min_value},${layer.pixel_max_value}`,
-        rescale: `${layer.pixel_percentile_2},${layer.pixel_percentile_98}`,
+        rescale: `${layer.pixel_min_value},${layer.pixel_max_value}`,
+        // rescale: `${layer.pixel_percentile_2},${layer.pixel_percentile_98}`,
+        colormap: JSON.stringify(colormap),
+        // colormap_name: 'viridis_r',
+        // colormap_name: 'viridis_r',
+        // colormap_name: 'blues',
       };
 
       const paramsPrepared = Object.entries(params)
@@ -39,7 +77,7 @@ ckan.module("mappreview", function ($, _) {
         type: 'raster',
         source: layer.name,
         paint: {
-          'raster-opacity': ['interpolate', ['linear'], ['zoom'], 0, 0.5, 12, 1],
+          'raster-opacity': ['interpolate', ['linear'], ['zoom'], 0, 0.75, 12, 1],
         },
       };
     },
@@ -57,7 +95,7 @@ ckan.module("mappreview", function ($, _) {
         container: 'map',
         style: globalConfig.mapbox_style,
         bounds: config.map.bounds,
-        minZoom: config.map.minzoom,
+        minZoom: config.map.minzoom + 2,
         maxZoom: config.map.maxzoom,
       });
 

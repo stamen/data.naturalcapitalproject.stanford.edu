@@ -12,6 +12,8 @@ ckanext/mappreview/assets/css/mappreview.css
 ckanext/mappreview/assets/css/vendor/mapbox-gl-legend.css
 ckanext/mappreview/assets/css/vendor/mapbox-gl.css
 ckanext/mappreview/assets/js/mappreview.js
+ckanext/mappreview/assets/js/vendor/color.global.min.js
+ckanext/mappreview/assets/js/vendor/d3.min.js
 ckanext/mappreview/assets/js/vendor/mapbox-gl-legend.js
 ckanext/mappreview/assets/js/vendor/mapbox-gl.js
 ckanext/mappreview/templates/base.html

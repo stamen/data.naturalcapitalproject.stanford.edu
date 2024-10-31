@@ -2,6 +2,7 @@ mappreview-js:
   filter: rjsmin
   output: ckanext-mappreview/%(version)s-mappreview.js
   contents:
+    - js/vendor/color.global.min.js
     - js/vendor/mapbox-gl.js
     - js/vendor/mapbox-gl-legend.js
     - js/mappreview.js
