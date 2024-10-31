@@ -7,6 +7,7 @@
     --color-light-gray: #F0F6F4;
     --color-gray: #CBD2D0;
     --color-off-white: #F8F8F8;
+    --color-purple: #734675;
 }
 
 body {
@@ -39,7 +40,7 @@ body .account-masthead .account ul li a:hover {
 
 /* Top menu bar */
 body .masthead {
-    background: #734675;
+    background: var(--color-purple);
     color: #fff;
 }
 
@@ -155,7 +156,12 @@ body .homepage .module-search .tags {
     align-items: center;
     justify-content: center;
     text-align: center;
-    gap: 2rem;
+    gap: 1rem;
+}
+
+.home-topics h2 {
+    color: var(--color-purple);
+    margin: 0;
 }
 
 .home-topics-list {
@@ -165,7 +171,19 @@ body .homepage .module-search .tags {
     align-items: center;
     justify-content: center;
     text-align: center;
-    gap: 2rem;
+    gap: 4rem;
+}
+
+.home-topics-list-item {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 1rem;
+    font-weight: bold;
+    font-size: 1.25rem;
+    color: var(--color-purple);
 }
 
 .additional-info .table {
@@ -201,7 +219,7 @@ body .homepage .module-search .tags {
 
 /* Site footer */
 body .site-footer {
-    background: #734675;
+    background: var(--color-purple);
     padding: 20px 0;
 }
 
