@@ -4,10 +4,12 @@
 
     --font-headers: "Source Sans 3", sans-serif;
     --color-blue: #007C92;
+    --color-green: #009B76;
     --color-light-gray: #F0F6F4;
     --color-gray: #CBD2D0;
     --color-off-white: #F8F8F8;
     --color-purple: #734675;
+    --color-black: #333333;
 }
 
 body {
@@ -310,4 +312,91 @@ body .site-footer label, .site-footer small, .site-footer .small {
 
 #autocomplete-list {
     color: black;
+}
+
+.search-filters-title {
+    font-weight: bold;
+}
+
+.search-filters-section {
+    border-bottom: 1px solid var(--color-gray);
+    padding: 1rem 0.5rem 0.5rem 0.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.search-filters-section-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    cursor: pointer;
+}
+
+.search-filters-section-header-left {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.search-filters-section-title {
+    color: var(--color-green);
+    font-weight: bold;
+}
+
+.search-filters label {
+    font-weight: normal;
+}
+
+.search-filters label::after {
+    content: '';
+}
+
+.search-filters-list {
+    list-style: none;
+    padding: 0;
+}
+
+.search-filters .nav-item > a {
+    padding: 0;
+    margin: 0;
+}
+
+.search-filters .nav-item > a:hover {
+    background: none;
+}
+
+.search-filters .nav-item.active {
+    background: none;
+}
+
+.search-filters .nav-item.active > a {
+    background: none;
+    color: var(--color-black);
+}
+
+.search-filters .nav-item.active > a:hover {
+    background: none;
+    color: var(--color-black);
+}
+
+.search-filters .nav-item.active > a:before {
+    border: none;
+}
+
+.search-filters .nav-simple > li {
+    border: none;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0;
+}
+
+.search-filters .module-footer {
+    border: none;
+    padding-left: 0;
+    padding-right: 0;
 }

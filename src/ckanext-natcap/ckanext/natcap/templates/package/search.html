@@ -3,7 +3,7 @@
 {% block wrapper_class %} {{ super() }} package-search-wrapper{% endblock %}
 
 {% block secondary_content %}
-    {% snippet "spatial/snippets/spatial_query.html" %}
+    {% snippet "package/snippets/search_filters.html", search_facets=search_facets %}
 {% endblock %}
 
 {% block form %}
