@@ -11,3 +11,7 @@
 
 {% endblock %}
 
+{% block scripts %}
+  {{ super() }}
+  {% asset 'natcap/natcap-js' %}
+{% endblock %}

@@ -2,49 +2,49 @@
 {% set tags = h.get_facet_items_dict('tags', search_facets) %}
 
 <div class="search-filters">
-    <div class="search-filters-title">Filter by</div>
-    <div class="search-filters-content">
-        <div class="search-filters-section">
-            <div class="search-filters-section-header">
-                <div class="search-filters-section-header-left">
-                    <img src="/img/filters-place.png" />
-                    <div class="search-filters-section-title">Place</div>
-                </div>
-                <div class="search-filters-section-header-right">
-                    <img src="/img/icon-toggle.png" />
-                </div>
-            </div>
-            <div class="search-filters-section-content">
-                {% snippet "spatial/snippets/spatial_query.html" %}
-            </div>
+  <div class="search-filters-title">Filter by</div>
+  <div class="search-filters-content">
+    <div class="search-filters-section" data-module="natcap-facet-collapse">
+      <div class="search-filters-section-header collapsed">
+        <div class="search-filters-section-header-left">
+          <img src="/img/filters-place.png" />
+          <div class="search-filters-section-title">Place</div>
         </div>
-        <div class="search-filters-section">
-            <div class="search-filters-section-header">
-                <div class="search-filters-section-header-left">
-                    <img src="/img/filters-file-type.png" />
-                    <div class="search-filters-section-title">File type</div>
-                </div>
-                <div class="search-filters-section-header-right">
-                    <img src="/img/icon-toggle.png" />
-                </div>
-            </div>
-            <div class="search-filters-section-content">
-                {% snippet 'snippets/facet_list.html', title='File type', name='res_format', search_facets=search_facets %}
-            </div>
+        <div class="search-filters-section-header-right">
+          <img class="search-filters-toggle-icon" src="/img/icon-toggle.png" />
         </div>
-        <div class="search-filters-section">
-            <div class="search-filters-section-header">
-                <div class="search-filters-section-header-left">
-                    <img src="/img/filters-tag.png" />
-                    <div class="search-filters-section-title">Tag</div>
-                </div>
-                <div class="search-filters-section-header-right">
-                    <img src="/img/icon-toggle.png" />
-                </div>
-            </div>
-            <div class="search-filters-section-content">
-                {% snippet 'snippets/facet_list.html', title='Tags', name='tags', search_facets=search_facets %}
-            </div>
-        </div>
+      </div>
+      <div class="search-filters-section-content">
+        {% snippet "spatial/snippets/spatial_query.html" %}
+      </div>
     </div>
+    <div class="search-filters-section" data-module="natcap-facet-collapse">
+      <div class="search-filters-section-header collapsed">
+        <div class="search-filters-section-header-left">
+          <img src="/img/filters-file-type.png" />
+          <div class="search-filters-section-title">File type</div>
+        </div>
+        <div class="search-filters-section-header-right">
+          <img class="search-filters-toggle-icon" src="/img/icon-toggle.png" />
+        </div>
+      </div>
+      <div class="search-filters-section-content">
+        {% snippet 'snippets/facet_list.html', title='File type', name='res_format', search_facets=search_facets %}
+      </div>
+    </div>
+    <div class="search-filters-section" data-module="natcap-facet-collapse">
+      <div class="search-filters-section-header collapsed">
+        <div class="search-filters-section-header-left">
+          <img src="/img/filters-tag.png" />
+          <div class="search-filters-section-title">Tag</div>
+        </div>
+        <div class="search-filters-section-header-right">
+          <img class="search-filters-toggle-icon" src="/img/icon-toggle.png" />
+        </div>
+      </div>
+      <div class="search-filters-section-content">
+        {% snippet 'snippets/facet_list.html', title='Tags', name='tags', search_facets=search_facets %}
+      </div>
+    </div>
+  </div>
 </div>

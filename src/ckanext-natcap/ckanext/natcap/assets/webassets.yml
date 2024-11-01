@@ -2,7 +2,7 @@ natcap-js:
   filter: rjsmin
   output: ckanext-natcap/%(version)s-natcap.js
   contents:
-    - js/natcap.js
+    - js/natcap-facet-collapse.js
   extra:
     preload:
       - base/main
