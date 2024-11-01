@@ -95,7 +95,8 @@ ckan.module("mappreview", function ($, _) {
         container: 'map',
         style: globalConfig.mapbox_style,
         bounds: config.map.bounds,
-        minZoom: config.map.minzoom + 2,
+        zoom: config.map.minzoom + 2,
+        minZoom: config.map.minzoom,
         maxZoom: config.map.maxzoom,
       });
 
