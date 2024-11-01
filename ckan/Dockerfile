@@ -33,13 +33,16 @@ RUN pip3 install -r https://raw.githubusercontent.com/keitaroinc/ckanext-suggest
 # NOTE: Adding version.json to bust cache
 ADD https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/git/refs/heads/${GITHUB_BRANCH} version.json
 COPY ./src/ckanext-natcap /tmp/ckanext-natcap
-RUN pip3 install -r /tmp/ckanext-natcap/requirements.txt && pip3 install /tmp/ckanext-natcap
+RUN pip3 install -r /tmp/ckanext-natcap/requirements.txt 
+RUN pip3 install /tmp/ckanext-natcap
 
 COPY ./src/ckanext-mappreview /tmp/ckanext-mappreview
-RUN pip3 install -r /tmp/ckanext-mappreview/requirements.txt && pip3 install /tmp/ckanext-mappreview
+RUN pip3 install -r /tmp/ckanext-mappreview/requirements.txt 
+RUN pip3 install /tmp/ckanext-mappreview
 
 COPY ./src/ckanext-zipexpand /tmp/ckanext-zipexpand
-RUN pip3 install -r /tmp/ckanext-zipexpand/requirements.txt && pip3 install /tmp/ckanext-zipexpand
+RUN pip3 install -r /tmp/ckanext-zipexpand/requirements.txt 
+RUN pip3 install /tmp/ckanext-zipexpand
 
 # Install any extensions needed by your CKAN instance
 # See Dockerfile.dev for more details and examples
