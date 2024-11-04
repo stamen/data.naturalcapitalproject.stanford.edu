@@ -4,6 +4,8 @@ import ckan.plugins.toolkit as toolkit
 
 
 def parse_sources(sources):
+    if not sources:
+        return None
     sources_arr = sorted(json.loads(sources))
     output_arr = []
 
