@@ -29,6 +29,16 @@ def parse_sources(sources):
     return output_arr
 
 
+def sources_for_resource(sources, resource):
+    if not resource['name'].endswith('.zip'):
+        return None
+    zip_name = resource['name'].split('.')[0]
+    for s in sources:
+        if s['name'] == zip_name:
+            return s['children']
+    return None
+
+
 class ZipexpandPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.ITemplateHelpers)
@@ -39,4 +49,7 @@ class ZipexpandPlugin(plugins.SingletonPlugin):
         toolkit.add_resource("assets", "zipexpand")
 
     def get_helpers(self):
-        return {'zipexpand_parse_sources': parse_sources}
+        return {
+            'zipexpand_parse_sources': parse_sources,
+            'zipexpand_sources_for_resource': sources_for_resource,
+        }

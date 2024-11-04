@@ -81,6 +81,74 @@ body .homepage .module-search .tags {
     padding: 1.5rem;
 }
 
+.context-info h1.heading {
+    color: var(--color-green);
+    font-weight: bold;
+    font-size: 1.5em;
+}
+
+.resources {
+    --resource-item-padding: 0.5rem;
+}
+
+.resources h2 {
+    color: var(--color-black);
+    font-size: 1em;
+    font-weight: bold;
+}
+
+.resources .resource-list {
+    border-radius: 6px;
+    border: 1px solid var(--color-gray);
+    margin: 0;
+    background-color: var(--color-off-white);
+}
+
+.resources .resource-list li {
+    padding: var(--resource-item-padding);
+    border-bottom: 1px solid var(--color-gray);
+}
+
+.resources .resource-list li:last-of-type {
+    border-bottom: none;
+}
+
+.resources .resource-list li a {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
+    justify-content: space-between;
+}
+
+.resources .zipexpand-contents-list {
+    list-style: none;
+    padding: 0;
+    margin-left: calc(-1 * var(--resource-item-padding));
+    margin-right: calc(-1 * var(--resource-item-padding));
+    margin-top: var(--resource-item-padding);
+    border-top: 1px solid var(--color-gray);
+}
+
+.resources .zipexpand-contents-list li {
+    padding-left: calc(2 * var(--resource-item-padding));
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.resources .zipexpand-contents-item {
+    display: flex;
+    flex-direction: row;
+    overflow: hidden;
+}
+
+.resources .zipexpand-filename {
+    text-overflow: ellipsis;
+    white-space: nowrap; 
+    overflow: hidden;
+}
+
 .dataset-item .dataset-heading-wrapper {
     display: flex;
     flex-direction: row;

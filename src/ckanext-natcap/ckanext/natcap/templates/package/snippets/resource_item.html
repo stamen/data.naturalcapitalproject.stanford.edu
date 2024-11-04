@@ -1,0 +1,30 @@
+{% ckan_extends %}
+
+{% block resource_item_title %}
+  {% set name_or_id = res.name or res.id %}
+  <a class="heading" href="{{ res.url }}" aria-label="{{ _('Download resource: {name_or_id}').format(name_or_id=name_or_id)}}">
+    {{ h.resource_display_name(res) | truncate(50) }}
+    <img src="/img/icon-download.png" />
+  </a>
+
+  {% set sources = h.get_pkg_dict_extra(c.pkg_dict, 'sources', '') %}
+  {% set parsed_sources = h.zipexpand_parse_sources(sources) %}
+  {% set resource_sources = h.zipexpand_sources_for_resource(parsed_sources, res) %}
+  {% if resource_sources %}
+    <ol class="zipexpand-contents-list">
+      {% for source in resource_sources %}
+      {% set parts = source.name.split('.') %}
+        <li class="zipexpand-contents-item">
+          <div class="zipexpand-filename">{{ parts[0] }}</div>
+          <div class="zipexpand-extension">.{{ '.'.join(parts[1:]) }}</div>
+        </li>
+      {% endfor %}
+    </ol>
+  {% endif %}
+{% endblock %}
+
+{% block resource_item_description %}
+{% endblock %}
+
+{% block resource_item_explore %}
+{% endblock %}

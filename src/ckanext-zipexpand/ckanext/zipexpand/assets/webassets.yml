@@ -7,8 +7,8 @@
 #     preload:
 #       - base/main
 
-zipexpand-css:
-  filter: cssrewrite
-  output: ckanext-zipexpand/%(version)s-zipexpand.css
-  contents:
-    - css/zipexpand.css
+# zipexpand-css:
+#   filter: cssrewrite
+#   output: ckanext-zipexpand/%(version)s-zipexpand.css
+#   contents:
+#     - css/zipexpand.css

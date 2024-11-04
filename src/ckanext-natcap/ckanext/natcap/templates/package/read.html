@@ -9,6 +9,11 @@
 {% block package_resources %}
 {% endblock %}
 
+{% block page_header %}
+  {% if c.userobj %}
+    {{ super() }}
+  {% endif %}
+{% endblock %}
 
 {% block primary_content_inner %}
   {% if h.mappreview_should_show(pkg) %}

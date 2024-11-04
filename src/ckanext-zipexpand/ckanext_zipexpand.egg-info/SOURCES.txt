@@ -9,9 +9,7 @@ ckanext/zipexpand/__init__.py
 ckanext/zipexpand/plugin.py
 ckanext/zipexpand/assets/script.js
 ckanext/zipexpand/assets/webassets.yml
-ckanext/zipexpand/assets/css/zipexpand.css
 ckanext/zipexpand/templates/base.html
-ckanext/zipexpand/templates/zipexpand/snippets/resource_item_zip.html
 ckanext/zipexpand/tests/__init__.py
 ckanext/zipexpand/tests/test_plugin.py
 ckanext_zipexpand.egg-info/PKG-INFO
