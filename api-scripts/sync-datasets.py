@@ -57,12 +57,37 @@ def get_map_settings(layers):
         ],
     }
 
-def get_mappreview_metadata(dataset):
+def get_mappreview_metadata(dataset, zip_sources):
     # TODO vectors
     raster_resources = [r for r in dataset['resources'] if r['format'] == 'GeoTIFF']
     layers = []
 
+    zip_resource = next((r for r in dataset['resources'] if r['format'] == 'ZIP'), None)
+
+    if zip_resource and zip_sources:
+        # Look at zip sources for a GeoTIFF, add
+
+        tif_source = next((s for s in zip_sources if s.endswith('tif')), None)
+
+        if tif_source:
+            path = tif_source.replace('\\', '/')
+            base = '/'.join(zip_resource['url'].split('/')[0:-1])
+            url = f'{base}/{path}'
+            name = path.split('/')[-1]
+
+            raster_resources.append({
+                'name': name,
+                'url': url,
+            })
+
     for r in raster_resources:
+        # Does this GeoTIFF exist?
+        head_request = requests.head(r['url'])
+        if head_request.status_code != 200:
+            print('Failed to access GeoTIFF', r['url'])
+            continue
+
+        # If it exists, get all the info about it
         info = get_raster_info(r['url'])
         stats = get_raster_statistics(r['url'])
 
@@ -130,7 +155,7 @@ def sync_datasets(src, dst, dst_apikey):
             # TODO maybe better on the resource itself?
             package['extras'].append({'key': 'sources', 'value': json.dumps(sources)})
 
-        mappreview_metadata = get_mappreview_metadata(package)
+        mappreview_metadata = get_mappreview_metadata(package, sources)
         if mappreview_metadata:
             package['extras'].append({'key': 'mappreview', 'value': json.dumps(mappreview_metadata)})
 
