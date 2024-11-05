@@ -3,6 +3,7 @@ natcap-js:
   output: ckanext-natcap/%(version)s-natcap.js
   contents:
     - js/natcap-facet-collapse.js
+    - js/natcap-textarea-copy.js
   extra:
     preload:
       - base/main
