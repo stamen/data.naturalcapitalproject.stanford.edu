@@ -272,6 +272,19 @@ body .homepage .module-search .tags {
     display: none;
 }
 
+.additional-info .table th {
+    width: 25%;
+}
+
+.additional-info .table td {
+    width: 75%;
+}
+
+.additional-info .table th,
+.additional-info .table-striped > tbody > tr:nth-of-type(odd) > th {
+    color: var(--color-green);
+}
+
 .package-usage {
     display: flex;
     flex-direction: column;
