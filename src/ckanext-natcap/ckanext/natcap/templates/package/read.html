@@ -20,7 +20,7 @@
     {% snippet "package/snippets/mappreview.html", pkg=pkg %}
   {% endif %}
  
-  <div class="row">
+  <div class="row package-details-row">
     <div class="col-md-6">
       {# TODO use scheming snippet #}
       {% snippet "package/snippets/additional_info.html", pkg_dict=pkg %}
@@ -29,13 +29,13 @@
       {% block package_usage %}
         <div class="package-usage">
           {% block package_citation %}
-            {% snippet "package/snippets/citation.html", pkg=pkg %}
+            {% snippet "package/snippets/textarea_copy.html", title='Cite this dataset', content='Not implemented yet.' %}
           {% endblock %}
           {% block package_map_embed %}
-            {% snippet "package/snippets/map_embed.html", pkg=pkg %}
+            {% snippet "package/snippets/textarea_copy.html", title='Embed this map into your website', content='Not implemented yet.' %}
           {% endblock %}
           {% block package_code_copy %}
-            {% snippet "package/snippets/code_copy.html", pkg=pkg %}
+            {% snippet "package/snippets/textarea_copy.html", title='Use this data in Python (geopandas)', content='Not implemented yet.' %}
           {% endblock %}
         </div>
       {% endblock %}

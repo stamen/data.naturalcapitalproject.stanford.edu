@@ -256,6 +256,10 @@ body .homepage .module-search .tags {
     color: var(--color-purple);
 }
 
+.package-details-row {
+    margin-top: 1rem;
+}
+
 .additional-info .table {
     --bs-table-striped-bg: none;
 }
@@ -294,6 +298,8 @@ body .homepage .module-search .tags {
 .package-usage h3 {
     color: #009B76;
     font-size: 0.9rem;
+    font-weight: bold;
+    margin: 0;
 }
 
 .package-usage-textarea[readonly] {
@@ -492,4 +498,17 @@ body .site-footer label, .site-footer small, .site-footer .small {
 
 .search-filters .search-filters-section-content {
     display: none;
+}
+
+.package-textarea-copy {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.package-textarea-copy-header {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 1rem;
 }
