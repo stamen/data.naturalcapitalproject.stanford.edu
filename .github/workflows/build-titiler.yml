@@ -1,10 +1,11 @@
-name: Build containers
+name: Build custom titiler
 
 on:
     workflow_dispatch:
     push:
         paths:
             - 'tileserver/*'
+            - '.github/workflows/build-titiler.yml'
 
 concurrency:
     # make sure only one run of this workflow for a given PR or a given branch
@@ -27,7 +28,7 @@ env:
 
 jobs:
     build:
-        name: Build containers
+        name: Build custom titiler
         runs-on: ubuntu-latest
         permissions:
             packages: write
