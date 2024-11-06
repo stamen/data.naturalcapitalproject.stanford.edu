@@ -84,11 +84,7 @@ def get_mappreview_metadata(dataset, zip_sources):
         # Does this GeoTIFF exist?
         url = r['url']
 
-        # (temporary?) Fix 'retetion'
-        if 'retetion' in url:
-            url = url.replace('retetion', 'retention')
-
-        # (temporary?) Fix 'storage.cloud.google.com'
+        # Avoid redirect from 'storage.cloud.google.com'
         if url.startswith('https://storage.cloud.google.com/'):
             url = url.replace('https://storage.cloud.google.com/', 'https://storage.googleapis.com/')
 
