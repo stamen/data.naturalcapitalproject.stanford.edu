@@ -425,8 +425,12 @@ body .site-footer label, .site-footer small, .site-footer .small {
     transform: rotate(90deg);
 }
 
-.search-filters-section-header.collapsed .search-filters-toggle-icon {
+.search-filters-section.collapsed .search-filters-toggle-icon {
     transform: rotate(0deg);
+}
+
+.search-filters-section.collapsed .search-filters-section-content {
+    display: none;
 }
 
 .search-filters-section-header-left {
@@ -494,10 +498,6 @@ body .site-footer label, .site-footer small, .site-footer .small {
     border: none;
     padding-left: 0;
     padding-right: 0;
-}
-
-.search-filters .search-filters-section-content {
-    display: none;
 }
 
 .package-textarea-copy {

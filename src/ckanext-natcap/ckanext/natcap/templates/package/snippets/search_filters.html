@@ -18,7 +18,9 @@
         {% snippet "spatial/snippets/spatial_query.html" %}
       </div>
     </div>
-    <div class="search-filters-section" data-module="natcap-facet-collapse">
+
+    {% set open = h.get_facet_items_dict('res_format', search_facets)|map(attribute='active')|sum %}
+    <div class="search-filters-section {% if open == 0 %}collapsed{% endif %}" data-module="natcap-facet-collapse">
       <div class="search-filters-section-header collapsed">
         <div class="search-filters-section-header-left">
           <img src="/img/filters-file-type.png" />
@@ -32,8 +34,10 @@
         {% snippet 'snippets/facet_list.html', title='File type', name='res_format', search_facets=search_facets %}
       </div>
     </div>
-    <div class="search-filters-section" data-module="natcap-facet-collapse">
-      <div class="search-filters-section-header collapsed">
+
+    {% set open = h.get_facet_items_dict('tags', search_facets)|map(attribute='active')|sum %}
+    <div class="search-filters-section {% if open == 0 %}collapsed{% endif %}" data-module="natcap-facet-collapse">
+      <div class="search-filters-section-header">
         <div class="search-filters-section-header-left">
           <img src="/img/filters-tag.png" />
           <div class="search-filters-section-title">Tag</div>

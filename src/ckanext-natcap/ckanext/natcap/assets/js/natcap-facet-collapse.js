@@ -7,12 +7,10 @@ ckan.module("natcap-facet-collapse", function ($, _) {
 
     initialize: function () {
       const header = $(this.el).find('.search-filters-section-header');
-      const content = $(this.el).find('.search-filters-section-content');
+      const root = $(this.el);
 
-      // TODO open if any active
       header.click(() => {
-        content.toggle();
-        header.toggleClass('collapsed');
+        root.toggleClass('collapsed');
       });
     },
   };
