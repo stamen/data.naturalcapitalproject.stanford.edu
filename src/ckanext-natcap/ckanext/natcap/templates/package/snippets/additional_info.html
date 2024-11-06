@@ -35,6 +35,24 @@
           </tr>
         {% endif %}
 
+        {% if pkg_dict.tags %}
+          <tr>
+            <th scope="row" class="dataset-label">{{ _('Tags') }}</th>
+            <td class="dataset-details" property="dc:subject">
+              <ol class="additional-info-tag-list">
+                {% for tag in pkg_dict.tags %}
+                  <li class="additional-info-tag">
+                    <a href="{% url_for 'dataset.search', tags=tag.name %}" aria-label="{{ _('Search datasets with the tag: {name}').format(name=tag.display_name) }}">
+                      <img src="/img/filters-tag.png" />
+                      {{ tag.display_name }}
+                    </a>
+                  </li>
+                {% endfor %}
+              </ol>
+            </td>
+          </tr>
+        {% endif %}
+
         {% if pkg_dict.maintainer_email %}
           <tr>
             <th scope="row" class="dataset-label">{{ _('Maintainer') }}</th>
@@ -77,6 +95,8 @@
             </td>
           </tr>
         {% endif %}
+
+        {# TODO tags #}
 
       {% block extras scoped %}
         {% for extra in h.sorted_extras(pkg_dict.extras, True, None, ['mappreview', 'sources']) %}

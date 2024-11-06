@@ -289,6 +289,30 @@ body .homepage .module-search .tags {
     color: var(--color-green);
 }
 
+.additional-info-tag-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: row;
+    gap: 0.5rem;
+    flex-wrap: wrap;
+}
+
+.additional-info-tag a {
+    color: var(--color-black);
+    border-radius: 100px;
+    background: var(--color-light-gray);
+    padding: 0.25rem 0.75rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.additional-info-tag a:hover {
+    text-decoration: none;
+}
+
 .package-usage {
     display: flex;
     flex-direction: column;
