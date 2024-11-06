@@ -5,11 +5,15 @@ ckan.module("mappreview", function ($, _) {
       config: {},
       globalConfig: {},
       debug: false,
-      titilerUrl: 'https://titiler-897938321824.us-west1.run.app',
     },
 
     _getGlobalConfig: function () {
       return JSON.parse(this.options.globalConfig.replace(/'/g, '"'));
+    },
+
+    _getRasterPoint: async function (layer, lngLat) {
+      const response = await fetch(`${this._getGlobalConfig().titiler_url}/cog/point/${lngLat.lng},${lngLat.lat}?url=${encodeURIComponent(layer.url)}`);
+      return (await response.json());
     },
 
     _getRasterTilejsonUrl: function (layer) {
@@ -43,8 +47,6 @@ ckan.module("mappreview", function ($, _) {
         .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
         .join('&');
 
-      console.log(paramsPrepared);
-
       return `${base}${endpoint}?${paramsPrepared}`;
     },
 
@@ -63,6 +65,7 @@ ckan.module("mappreview", function ($, _) {
       jQuery.proxyAll(this, '_getGlobalConfig');
       jQuery.proxyAll(this, '_getRasterLayer');
       jQuery.proxyAll(this, '_getRasterTilejsonUrl');
+      jQuery.proxyAll(this, '_getRasterPoint');
 
       const config = JSON.parse(this.options.config.replace(/'/g, '"'));
       const globalConfig = this._getGlobalConfig();
@@ -113,8 +116,7 @@ ckan.module("mappreview", function ($, _) {
         }), 'top-right');
       });
 
-      // TODO only for vector layers?
-      map.on('click', sources.map(s => s.id), (e) => {
+      map.on('click', sources.filter(s => s.type === 'vector').map(s => s.id), (e) => {
         let content = '';
 
         e.features.forEach(f => {
@@ -129,6 +131,25 @@ ckan.module("mappreview", function ($, _) {
           .setMaxWidth("300px")
           .setHTML(content)
           .addTo(map);
+      });
+
+      map.on('click', async (e) => {
+        if (config.layers.length === 1 && config.layers[0].type === 'raster') {
+          const point = await this._getRasterPoint(config.layers[0], e.lngLat);
+          if (!point) return;
+
+          const content = `<h3>${config.layers[0].name}</h3>
+            <div class="popup-row">
+                <div class="popup-key">value</div>
+                <div class="popup-value">${point.values[0]}</div>
+            </div>`;
+
+          const popup = new mapboxgl.Popup({ className: 'mappreview-mapboxgl-popup' })
+            .setLngLat(e.lngLat)
+            .setMaxWidth("300px")
+            .setHTML(content)
+            .addTo(map);
+        }
       });
     },
   };

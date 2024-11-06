@@ -7,3 +7,24 @@
   max-height: 200px;
   overflow-y: auto;
 }
+
+.mappreview .mapboxgl-popup-close-button {
+  font-size: 2em;
+}
+
+.mappreview .mappreview-mapboxgl-popup h3 {
+  font-size: 1.25em;
+  color: var(--color-purple);
+  margin-right: 2rem;
+}
+
+.mappreview .popup-row {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  gap: 1.5rem;
+}
+
+.mappreview .popup-key {
+  font-weight: bold;
+}
