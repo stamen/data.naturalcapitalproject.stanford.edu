@@ -63,6 +63,7 @@ jobs:
               with:
                   project_id: 'sdss-natcap-gef-ckan'
                   workload_identity_provider: 'https://iam.googleapis.com/projects/897938321824/locations/global/workloadIdentityPools/github-identity-pool/providers/github'
+                  audience: '//iam.googleapis.com/projects/897938321824/locations/global/workloadIdentityPools/github-identity-pool/providers/github'
 
             - name: Push docker
               if: github.event_name != 'pull_request'
