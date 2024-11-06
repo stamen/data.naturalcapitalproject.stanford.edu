@@ -82,19 +82,30 @@ def get_mappreview_metadata(dataset, zip_sources):
 
     for r in raster_resources:
         # Does this GeoTIFF exist?
-        head_request = requests.head(r['url'])
-        if head_request.status_code != 200:
-            print('Failed to access GeoTIFF', r['url'])
+        url = r['url']
+
+        # (temporary?) Fix 'retetion'
+        if 'retetion' in url:
+            url = url.replace('retetion', 'retention')
+
+        # (temporary?) Fix 'storage.cloud.google.com'
+        if url.startswith('https://storage.cloud.google.com/'):
+            url = url.replace('https://storage.cloud.google.com/', 'https://storage.googleapis.com/')
+
+        head_request = requests.head(url)
+        if head_request.status_code != 200 and 'retetion' in url:
+            print('Failed to access GeoTIFF', url)
+            print('Status code:', head_request.status_code)
             continue
 
         # If it exists, get all the info about it
-        info = get_raster_info(r['url'])
-        stats = get_raster_statistics(r['url'])
+        info = get_raster_info(url)
+        stats = get_raster_statistics(url)
 
         layers.append({
             'name': r['name'],
             'type': 'raster',
-            'url': r['url'],
+            'url': url,
             'pixel_min_value': stats['min'],
             'pixel_max_value': stats['max'],
             'pixel_percentile_2': stats['percentile_2'],
