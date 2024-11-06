@@ -330,14 +330,14 @@ body .homepage .module-search .tags {
     background: white;
 }
 
-/* Site footer */
 body .site-footer {
     background: var(--color-purple);
-    padding: 20px 0;
+    color: var(--color-off-white);
+    padding: 5rem;
 }
 
-body .site-footer a {
-    color: #fff
+body .site-footer img {
+    max-width: 100%;
 }
 
 body  .site-footer .attribution p {
