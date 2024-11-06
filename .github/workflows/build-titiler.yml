@@ -52,7 +52,7 @@ jobs:
                         -t ghcr.io/${{ github.repository_owner }}/${{ env.CONTAINER_NAME }}:latest \
                         -t ghcr.io/${{ github.repository_owner }}/${{ env.CONTAINER_NAME }}:${{ github.sha }} \
                         -t ghcr.io/${{ github.repository_owner }}/${{ env.CONTAINER_NAME }}:${SANITIZED_REF} \
-                        -t us-west1-docker.pkg.dev/sdss-natcap-gef-ckan/titiler
+                        -t us-west1-docker.pkg.dev/sdss-natcap-gef-ckan/titiler \
                         .
 
             - name: Test that titler imports
