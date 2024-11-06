@@ -37,6 +37,11 @@ jobs:
         steps:
             - uses: actions/checkout@v4
 
+            - uses: 'google-github-actions/auth@v2'
+              with:
+                  project_id: sdss-natcap-gef-ckan
+                  workload_identity_provider: //iam.googleapis.com/projects/897938321824/locations/global/workloadIdentityPools/github-identity-pool/providers/github
+
             - name: login to GitHub Container Registry
               uses: docker/login-action@v3
               with:
@@ -58,12 +63,6 @@ jobs:
             - name: Test that titler imports
               run: |
                   docker run --rm ghcr.io/${{ github.repository_owner }}/${{ env.CONTAINER_NAME }}:latest python -c "import titiler"
-
-            - uses: 'google-github-actions/auth@v2'
-              with:
-                  project_id: sdss-natcap-gef-ckan
-                  workload_identity_provider: https://iam.googleapis.com/projects/897938321824/locations/global/workloadIdentityPools/github-identity-pool/providers/github
-                  audience: //iam.googleapis.com/projects/897938321824/locations/global/workloadIdentityPools/github-identity-pool/providers/github
 
             - name: Push docker
               if: github.event_name != 'pull_request'
