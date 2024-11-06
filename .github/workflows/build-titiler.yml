@@ -57,7 +57,7 @@ jobs:
 
             - name: Test that titler imports
               run: |
-                  docker run --rm ghcr.io/${{ github.repository_owner }}/${{ env.CONTAINER_NAME }}:latest python -m titiler --version
+                  docker run --rm ghcr.io/${{ github.repository_owner }}/${{ env.CONTAINER_NAME }}:latest python -c "import titiler"
 
             - uses: 'google-github-actions/auth@v2'
               with:
