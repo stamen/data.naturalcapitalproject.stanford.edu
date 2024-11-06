@@ -43,10 +43,6 @@ jobs:
                   username: ${{ github.actor }}
                   password: ${{ secrets.GITHUB_TOKEN }}
 
-            - name: Create environment file
-              run: |
-                  python scripts/convert-requirements-to-conda-yml.py requirements.txt > docker/environment.yml
-
             - name: Build docker
               run: |
                   # Replace / (invalid tag character) with .
