@@ -1,0 +1,74 @@
+name: Build containers
+
+on:
+    workflow_dispatch:
+    push:
+        paths:
+            - 'tileserver/*'
+
+concurrency:
+    # make sure only one run of this workflow for a given PR or a given branch
+    # can happen at one time. previous queued or started runs will be cancelled.
+    # github.workflow is the workflow name
+    # github.ref is the ref that triggered the workflow run
+    # on push, this is refs/heads/<branch name>
+    # on pull request, this is refs/pull/<pull request number>/merge
+    group: ${{ github.workflow }}-${{ github.ref }}
+    cancel-in-progress: true
+
+defaults:
+    run:
+        shell: bash -l {0}
+
+env:
+    # Customize this name if needed.
+    # The repo name is a very reasonable default!
+    CONTAINER_NAME: titiler
+
+jobs:
+    build:
+        name: Build containers
+        runs-on: ubuntu-latest
+        permissions:
+            packages: write
+            id-token: write  # This is required for requesting the JWT for identity federation
+
+        steps:
+            - uses: actions/checkout@v4
+
+            - name: login to GitHub Container Registry
+              uses: docker/login-action@v3
+              with:
+                  registry: ghcr.io
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Create environment file
+              run: |
+                  python scripts/convert-requirements-to-conda-yml.py requirements.txt > docker/environment.yml
+
+            - name: Build docker
+              run: |
+                  # Replace / (invalid tag character) with .
+                  SANITIZED_REF="$(echo ${{github.ref_name}} | sed 's|/|.|g')"
+                  cd docker && docker build \
+                        -t ghcr.io/${{ github.repository_owner }}/${{ env.CONTAINER_NAME }}:latest \
+                        -t ghcr.io/${{ github.repository_owner }}/${{ env.CONTAINER_NAME }}:${{ github.sha }} \
+                        -t ghcr.io/${{ github.repository_owner }}/${{ env.CONTAINER_NAME }}:${SANITIZED_REF} \
+                        -t us-west1-docker.pkg.dev/sdss-natcap-gef-ckan/titiler
+                        .
+
+            - name: Test that titler imports
+              run: |
+                  docker run --rm ghcr.io/${{ github.repository_owner }}/${{ env.CONTAINER_NAME }}:latest python -m titiler --version
+
+            - uses: 'google-github-actions/auth@v2'
+              with:
+                  project_id: 'sdss-natcap-gef-ckan'
+                  workload_identity_provider: 'https://iam.googleapis.com/projects/897938321824/locations/global/workloadIdentityPools/github-identity-pool/providers/github'
+
+            - name: Push docker
+              if: github.event_name != 'pull_request'
+              run: |-
+                  gcloud auth configure-docker us-west1-docker.pkg.dev
+                  docker image push us-west1-docker.pkg.dev/sdss-natcap-gef-ckan/titiler
