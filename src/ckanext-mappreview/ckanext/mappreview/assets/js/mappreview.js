@@ -17,6 +17,8 @@ ckan.module("mappreview", function ($, _) {
       const endpoint = '/cog/WebMercatorQuad/tilejson.json';
 
       // Generate custom color map
+      // TODO desired colors
+      /*
       const colors = [
         '#6DB31E',
         '#008F5F',
@@ -24,42 +26,15 @@ ckan.module("mappreview", function ($, _) {
         '#1C3A6D',
         '#27003B',
       ];
-
-      let steps = [];
-
-      colors.forEach((c, i) => {
-        if (i === colors.length - 1) return;
-
-        const c1 = new Color(colors[i]);
-        const c2 = new Color(colors[i + 1]);
-
-        const innerSteps = c1.steps(c2, {
-          space: 'lch',
-          steps: Math.ceil(256 / (colors.length - 1)),
-          outputSpace: 'srgb',
-        });
-
-        steps = steps.concat(innerSteps);
-      });
-
-      const rgbas = steps.map((c, i) => {
-        return [
-          ...c.coords.map(coord => Math.floor(coord * 255)),
-          i <= 6 ? 50 : 255
-          // 255
-        ];
-      });
-
-      const colormap = rgbas.map((rgba, i) => [[i, i + 1], rgba]);
+      */
 
       const params = {
         tile_scale: 2,
         url: layer.url,
         bidx: 1,
-        rescale: `${layer.pixel_min_value},${layer.pixel_max_value}`,
-        // rescale: `${layer.pixel_percentile_2},${layer.pixel_percentile_98}`,
-        colormap: JSON.stringify(colormap),
-        // colormap_name: 'viridis_r',
+        // rescale: `${layer.pixel_min_value},${layer.pixel_max_value}`,
+        rescale: `${layer.pixel_percentile_2},${layer.pixel_percentile_98}`,
+        colormap_name: 'viridis',
         // colormap_name: 'viridis_r',
         // colormap_name: 'blues',
       };
@@ -67,6 +42,8 @@ ckan.module("mappreview", function ($, _) {
       const paramsPrepared = Object.entries(params)
         .map(([k, v]) => `${k}=${encodeURIComponent(v)}`)
         .join('&');
+
+      console.log(paramsPrepared);
 
       return `${base}${endpoint}?${paramsPrepared}`;
     },
