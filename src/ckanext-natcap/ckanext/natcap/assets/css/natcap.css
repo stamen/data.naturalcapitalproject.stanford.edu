@@ -216,6 +216,11 @@ body .homepage .module-search .tags {
     padding: 8rem;
 }
 
+.home-topics-description {
+    font-size: 1.25em;
+    max-width: 500px;
+}
+
 .home-location-search-container {
     padding: 8rem;
 }
