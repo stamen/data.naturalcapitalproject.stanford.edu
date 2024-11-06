@@ -67,5 +67,6 @@ jobs:
             - name: Push docker
               if: github.event_name != 'pull_request'
               run: |-
+                  gcloud auth login
                   gcloud auth configure-docker us-west1-docker.pkg.dev
                   docker image push us-west1-docker.pkg.dev/sdss-natcap-gef-ckan/titiler
