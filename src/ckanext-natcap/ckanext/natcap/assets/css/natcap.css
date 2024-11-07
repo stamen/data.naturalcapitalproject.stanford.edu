@@ -341,8 +341,18 @@ body .site-footer {
     padding: 5rem;
 }
 
+body .site-footer .row > div:first-of-type {
+    justify-self: flex-end;
+}
+
+body .site-footer .icon-link {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-end;
+}
+
 body .site-footer img {
-    max-width: 100%;
+    max-width: min(100%, 200px);
 }
 
 body  .site-footer .attribution p {
