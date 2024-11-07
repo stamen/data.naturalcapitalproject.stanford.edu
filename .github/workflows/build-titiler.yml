@@ -39,6 +39,7 @@ jobs:
             - uses: actions/checkout@v4
 
             - uses: 'google-github-actions/auth@v2'
+              id: googleauth
               with:
                   project_id: sdss-natcap-gef-ckan
                   workload_identity_provider: projects/897938321824/locations/global/workloadIdentityPools/github-identity-pool/providers/github
@@ -50,7 +51,7 @@ jobs:
               with:
                   registry: us-west1-docker.pkg.dev
                   username: 'oauth2accesstoken'
-                  password: '${{ steps.auth.outputs.access_token }}'
+                  password: ${{ steps.googleauth.outputs.access_token }}
 
             - name: Build docker
               run: |
