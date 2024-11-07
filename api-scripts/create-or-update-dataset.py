@@ -225,11 +225,17 @@ def _create_tags_dicts(config):
 
 def _get_wgs84_bbox(config):
     extent = config['spatial']
-    try:
+    bbox = extent['bounding_box']
+    if isinstance(bbox, list):
         minx, miny, maxx, maxy = extent['bounding_box']
-    except ValueError:
-        LOGGER.error(f"Could not extract bbox from {extent}")
-        return None
+    elif isinstance(bbox, dict):
+        minx = bbox['xmin']
+        miny = bbox['ymin']
+        maxx = bbox['xmax']
+        maxy = bbox['ymax']
+    else:
+        raise NotImplementedError(
+            f"Bounding box is neither a list nor a dict: {bbox}")
 
     if (re.match('(EPSG)|(ESRI):[1-9][0-9]*', str(extent['crs'])) or
             re.match('[0-9][0-9]*', str(extent['crs']))):
@@ -345,7 +351,7 @@ def main(gmm_yaml_path, private=False, group=None):
         # ckanext-spatial's spatial extra
         extras = []
         try:
-            if get_from_config(gmm_yaml, 'spatial.bounding_box')[0]:
+            if get_from_config(gmm_yaml, 'spatial.bounding_box'):
                 extras.append({
                     'key': 'spatial',
                     'value': json.dumps({
@@ -353,8 +359,8 @@ def main(gmm_yaml_path, private=False, group=None):
                         'coordinates': _get_wgs84_bbox(gmm_yaml),
                     }),
                 })
-        except IndexError:
-            # IndexError: When there's nothing to index into
+        except Exception:
+            LOGGER.exception("Something happened when loading the bbox")
             pass
 
         try:
