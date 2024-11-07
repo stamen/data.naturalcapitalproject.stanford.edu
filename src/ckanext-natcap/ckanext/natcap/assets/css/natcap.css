@@ -181,11 +181,20 @@ body {
     background-color: var(--color-light-gray);
 }
 
+.home-container {
+    font-size: 1.1rem;
+    padding: 4rem 8rem;
+}
+
+.home-container h2 {
+    font-weight: bold;
+    font-size: 2rem;
+}
+
 .homepage .main.hero {
     background: none;
     background-color: #009B76;
     color: white;
-    padding: 4rem 8rem;
 }
 
 .homepage .main.hero .container {
@@ -199,7 +208,7 @@ body {
 
 .homepage .main.hero .container .home-site-title {
     font-family: var(--font-headers);
-    font-size: 1.5rem;
+    font-size: 2rem;
 }
 
 .homepage .main.hero .container .home-site-subtitle {
@@ -212,17 +221,33 @@ body {
     padding: 0;
 }
 
-.home-topics-container {
-    padding: 4rem 8rem;
-}
-
 .home-topics-description {
     font-size: 1.25em;
     max-width: 600px;
 }
 
+.home-location-search .row {
+    align-items: center;
+}
+
+.home-location-search #dataset-map .module-heading {
+    display: none;
+}
+
+.home-location-search .leaflet-container {
+    border-radius: 30px;
+}
+
 .home-location-search-container {
-    padding: 8rem;
+    background-color: var(--color-light-gray);
+}
+
+.home-location-search-text {
+    text-align: right;
+}
+
+.home-location-search-text h2 {
+    color: var(--color-blue);
 }
 
 .home-topics {
@@ -261,6 +286,18 @@ body {
     font-weight: bold;
     font-size: 1.25rem;
     color: var(--color-purple);
+}
+
+.home-invest-container {
+    background-color: white;
+}
+
+.home-invest .row {
+    align-items: center;
+}
+
+.home-invest img {
+    max-width: 100%;
 }
 
 .package-details-row {
@@ -558,8 +595,7 @@ body {
 }
 
 @media (max-width: 576px) {
-    .homepage .main.hero,
-    .homepage .home-topics-container {
+    .home-container {
         padding: 4rem 1rem;
     }
 
