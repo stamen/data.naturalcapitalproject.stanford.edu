@@ -357,6 +357,15 @@ def main(gmm_yaml_path, private=False, group=None):
             # IndexError: When there's nothing to index into
             pass
 
+        try:
+            extras.append({
+                'key': 'placenames',
+                'value': json.dumps(gmm_yaml['placenames'])
+            })
+        except KeyError:
+            # KeyError: when no placenames provided.
+            pass
+
         package_parameters = {
             'name': name,
             'title': title,
