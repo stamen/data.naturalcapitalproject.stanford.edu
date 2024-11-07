@@ -18,13 +18,13 @@ body {
 }
 
 /* Login bar way up at the top*/
-body .account-masthead {
+.account-masthead {
     min-height: 30px;
     color: #fff;
     background: #2e2d29;
 }
 
-body .account-masthead .account ul li a {
+.account-masthead .account ul li a {
     display: block;
     text-decoration: none;
     color: #fff;
@@ -34,37 +34,37 @@ body .account-masthead .account ul li a {
     line-height: 31px;
 }
 
-body .account-masthead .account ul li a:hover {
+.account-masthead .account ul li a:hover {
     color: #fff;
     background-color: #585754;
     text-decoration: none;
 }
 
 /* Top menu bar */
-body .masthead {
+.masthead {
     background: var(--color-purple);
     color: #fff;
 }
 
-body .masthead .main-navbar ul li:hover a,
-body .masthead .main-navbar ul li:focus a,
-body .masthead .main-navbar ul li.active a {
+.masthead .main-navbar ul li:hover a,
+.masthead .main-navbar ul li:focus a,
+.masthead .main-navbar ul li.active a {
     border-radius: 0.3rem;
     background-color: #2e2d29;
 }
 
-body .masthead .navbar .navbar-left {
+.masthead .navbar .navbar-left {
   font-family: var(--font-headers);
 }
 
 /* Main body*/
-body .homepage .module-search .search-form {
+.homepage .module-search .search-form {
     border-radius: 0.25rem;
     background-color: #8c1515;
     padding: 0;
 }
 
-body .homepage .module-search .tags {
+.homepage .module-search .tags {
     margin-top: -5px;
     padding: 5px 10px 10px 10px;
     background-color: #8c1515;
@@ -213,12 +213,12 @@ body .homepage .module-search .tags {
 }
 
 .home-topics-container {
-    padding: 8rem;
+    padding: 4rem 8rem;
 }
 
 .home-topics-description {
     font-size: 1.25em;
-    max-width: 500px;
+    max-width: 600px;
 }
 
 .home-location-search-container {
@@ -240,6 +240,7 @@ body .homepage .module-search .tags {
 }
 
 .home-topics-list {
+    margin-top: 2rem;
     list-style: none;
     display: flex;
     flex-direction: row;
@@ -247,6 +248,7 @@ body .homepage .module-search .tags {
     justify-content: center;
     text-align: center;
     gap: 4rem;
+    flex-wrap: wrap;
 }
 
 .home-topics-list-item {
@@ -335,32 +337,28 @@ body .homepage .module-search .tags {
     background: white;
 }
 
-body .site-footer {
+.site-footer {
     background: var(--color-purple);
     color: var(--color-off-white);
     padding: 5rem;
 }
 
-body .site-footer .row > div:first-of-type {
-    justify-self: flex-end;
-}
-
-body .site-footer .icon-link {
+.site-footer .icon-link {
     display: flex;
     flex-direction: row;
     justify-content: flex-end;
 }
 
-body .site-footer img {
+.site-footer img {
     max-width: min(100%, 200px);
 }
 
-body  .site-footer .attribution p {
+ .site-footer .attribution p {
   color: #fff;
   font-size: 0.875rem;
 }
 
-body .site-footer label, .site-footer small, .site-footer .small {
+.site-footer label, .site-footer small, .site-footer .small {
     color: #fff;
 }
 
@@ -557,4 +555,19 @@ body .site-footer label, .site-footer small, .site-footer .small {
     background: none;
     border: none;
     cursor: pointer;
+}
+
+@media (max-width: 576px) {
+    .homepage .main.hero,
+    .homepage .home-topics-container {
+        padding: 4rem 1rem;
+    }
+
+    .site-footer .icon-link {
+        justify-content: center;
+    }
+
+    .site-footer .row {
+        gap: 2rem;
+    }
 }
