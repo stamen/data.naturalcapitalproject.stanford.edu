@@ -45,12 +45,12 @@ jobs:
                   service_account: ${{ env.SERVICE_ACCOUNT_EMAIL }}
                   create_credentials_file: 'true'
 
-            - name: login to GitHub Container Registry
+            - name: Log in to GitHub Container Registry
               uses: docker/login-action@v3
               with:
-                  registry: ghcr.io
-                  username: ${{ github.actor }}
-                  password: ${{ secrets.GITHUB_TOKEN }}
+                  registry: us-west1-docker.pkg.dev
+                  username: 'oauth2accesstoken'
+                  password: '${{ steps.auth.outputs.access_token }}'
 
             - name: Build docker
               run: |
@@ -70,5 +70,4 @@ jobs:
             - name: Push docker
               if: github.event_name != 'pull_request'
               run: |-
-                  gcloud auth configure-docker us-west1-docker.pkg.dev
                   docker image push us-west1-docker.pkg.dev/sdss-natcap-gef-ckan/titiler
