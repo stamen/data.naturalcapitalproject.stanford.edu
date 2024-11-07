@@ -25,6 +25,7 @@ env:
     # Customize this name if needed.
     # The repo name is a very reasonable default!
     CONTAINER_NAME: titiler
+    SERVICE_ACCOUNT_EMAIL: github-titiler-container-build@sdss-natcap-gef-ckan.iam.gserviceaccount.com
 
 jobs:
     build:
@@ -41,7 +42,7 @@ jobs:
               with:
                   project_id: sdss-natcap-gef-ckan
                   workload_identity_provider: projects/897938321824/locations/global/workloadIdentityPools/github-identity-pool/providers/github
-                  service_account: github-titiler-container-build@sdss-natcap-gef-ckan.iam.gserviceaccount.com
+                  service_account: ${{ env.SERVICE_ACCOUNT_EMAIL }}
 
             - name: login to GitHub Container Registry
               uses: docker/login-action@v3
@@ -68,4 +69,5 @@ jobs:
             - name: Push docker
               if: github.event_name != 'pull_request'
               run: |-
+                  gcloud --impersonate-service-account=${{ env.SERVICE_ACCOUNT_EMAIL }} auth configure-docker us-west1-docker.pkg.dev
                   docker image push us-west1-docker.pkg.dev/sdss-natcap-gef-ckan/titiler
