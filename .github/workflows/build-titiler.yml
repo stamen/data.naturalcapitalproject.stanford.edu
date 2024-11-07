@@ -41,6 +41,7 @@ jobs:
               with:
                   project_id: sdss-natcap-gef-ckan
                   workload_identity_provider: projects/897938321824/locations/global/workloadIdentityPools/github-identity-pool/providers/github
+                  service_account: github-titiler-container-build@sdss-natcap-gef-ckan.iam.gserviceaccount.com
 
             - name: login to GitHub Container Registry
               uses: docker/login-action@v3
@@ -67,6 +68,5 @@ jobs:
             - name: Push docker
               if: github.event_name != 'pull_request'
               run: |-
-                  gcloud auth login
                   gcloud auth configure-docker us-west1-docker.pkg.dev
                   docker image push us-west1-docker.pkg.dev/sdss-natcap-gef-ckan/titiler
