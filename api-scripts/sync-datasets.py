@@ -95,21 +95,26 @@ def get_mappreview_metadata(dataset, zip_sources):
             continue
 
         # If it exists, get all the info about it
-        info = get_raster_info(url)
-        stats = get_raster_statistics(url)
+        try:
+            info = get_raster_info(url)
+            stats = get_raster_statistics(url)
 
-        layers.append({
-            'name': r['name'],
-            'type': 'raster',
-            'url': url,
-            'pixel_min_value': stats['min'],
-            'pixel_max_value': stats['max'],
-            'pixel_percentile_2': stats['percentile_2'],
-            'pixel_percentile_98': stats['percentile_98'],
-            'bounds': info['bounds'],
-            'minzoom': info['minzoom'],
-            'maxzoom': info['maxzoom'],
-        })
+            layers.append({
+                'name': r['name'],
+                'type': 'raster',
+                'url': url,
+                'pixel_min_value': stats['min'],
+                'pixel_max_value': stats['max'],
+                'pixel_percentile_2': stats['percentile_2'],
+                'pixel_percentile_98': stats['percentile_98'],
+                'bounds': info['bounds'],
+                'minzoom': info['minzoom'],
+                'maxzoom': info['maxzoom'],
+            })
+        except Exception as e:
+            print('Failed to access GeoTIFF', url)
+            print('Status code:', head_request.status_code)
+            continue
 
     if len(layers) > 0:
         return {
