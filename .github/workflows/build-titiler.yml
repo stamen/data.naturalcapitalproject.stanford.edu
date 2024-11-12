@@ -63,7 +63,7 @@ jobs:
                         -t ghcr.io/${{ github.repository_owner }}/${{ env.CONTAINER_NAME }}:latest \
                         -t ghcr.io/${{ github.repository_owner }}/${{ env.CONTAINER_NAME }}:${{ github.sha }} \
                         -t ghcr.io/${{ github.repository_owner }}/${{ env.CONTAINER_NAME }}:${SANITIZED_REF} \
-                        -t ${{ env.REGISTRY_URL }} \
+                        -t ${{ env.REGISTRY_URL }}/titiler \
                         .
 
             - name: Test that titler imports
@@ -73,4 +73,4 @@ jobs:
             - name: Push docker
               if: github.event_name != 'pull_request'
               run: |-
-                  docker image push ${{ env.REGISTRY_URL }}
+                  docker image push ${{ env.REGISTRY_URL }}/titiler
