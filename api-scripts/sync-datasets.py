@@ -158,7 +158,13 @@ def sync_datasets(src, dst, dst_apikey):
             organization_id = organization_post_response.json()['result']['id']
 
         package = package_response.json()['result']
-        package['extras'] = [] # XXX skipping extras for now
+
+        for extra in package['extras']:
+            if extra['key'] == 'suggested_citation':
+                package['suggested_citation'] = extra['value']
+
+        package['extras'] = [e for e in package['extras'] if e['key'] not in
+                             ('suggested_citation',)]
 
         # If dataset has metadata with sources in it, add those
         metadata = get_dataset_metadata(package)
