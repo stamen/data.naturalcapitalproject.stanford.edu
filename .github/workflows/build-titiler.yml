@@ -83,6 +83,7 @@ jobs:
               with:
                   service: titiler
                   image: ${{ env.REGISTRY_URL }}:${{ github.sha }}
+                  region: us-west1
                   env_vars: |-
                       WORKERS_PER_CORE=1
                       FORWARDED_ALLOW_IPS=*
