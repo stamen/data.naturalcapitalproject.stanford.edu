@@ -44,7 +44,7 @@ jobs:
               id: googleauth
               with:
                   project_id: sdss-natcap-gef-ckan
-                  workload_identity_provider: projects/897938321823/locations/global/workloadIdentityPools/github-identity-pool/providers/github-actions-provider
+                  workload_identity_provider: projects/897938321824/locations/global/workloadIdentityPools/github-identity-pool/providers/github-actions-provider
                   service_account: ${{ env.SERVICE_ACCOUNT_EMAIL }}
                   token_format: 'access_token'
 
