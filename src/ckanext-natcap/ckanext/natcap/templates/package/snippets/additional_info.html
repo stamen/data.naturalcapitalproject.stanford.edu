@@ -96,8 +96,6 @@
           </tr>
         {% endif %}
 
-        {# TODO tags #}
-
       {% block extras scoped %}
         {% for extra in h.sorted_extras(pkg_dict.extras, True, None, ['mappreview', 'spatial', 'sources']) %}
           {% set key, value = extra %}
