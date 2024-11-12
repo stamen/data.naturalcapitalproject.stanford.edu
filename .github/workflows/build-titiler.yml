@@ -74,7 +74,8 @@ jobs:
             - name: Push docker
               if: github.event_name != 'pull_request'
               run: |-
-                  docker image push ${{ env.REGISTRY_URL }}:${{ github.sha }} ${{ env.REGISTRY_URL }}:latest
+                  docker image push ${{ env.REGISTRY_URL }}:${{ github.sha }}
+                  docker image push ${{ env.REGISTRY_URL }}:latest
 
             - name: Deploy to Cloud Run
               if : github.event_name == 'push' && github.ref == 'refs/heads/master'
