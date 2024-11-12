@@ -64,6 +64,7 @@ jobs:
                         -t ghcr.io/${{ github.repository_owner }}/${{ env.CONTAINER_NAME }}:${{ github.sha }} \
                         -t ghcr.io/${{ github.repository_owner }}/${{ env.CONTAINER_NAME }}:${SANITIZED_REF} \
                         -t ${{ env.REGISTRY_URL }}:${{ github.sha }} \
+                        -t ${{ env.REGISTRY_URL }}:latest \
                         .
 
             - name: Test that titler imports
@@ -73,7 +74,7 @@ jobs:
             - name: Push docker
               if: github.event_name != 'pull_request'
               run: |-
-                  docker image push ${{ env.REGISTRY_URL }}:${{ github.sha }}
+                  docker image push ${{ env.REGISTRY_URL }}:${{ github.sha }} ${{ env.REGISTRY_URL }}:latest
 
             - name: Deploy to Cloud Run
               if : github.event_name == 'push' && github.ref == 'refs/heads/master'
