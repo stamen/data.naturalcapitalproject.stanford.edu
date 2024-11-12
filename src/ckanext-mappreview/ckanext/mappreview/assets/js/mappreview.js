@@ -38,6 +38,13 @@ ckan.module("mappreview", function ($, _) {
         bidx: 1,
         // rescale: `${layer.pixel_min_value},${layer.pixel_max_value}`,
         rescale: `${layer.pixel_percentile_2},${layer.pixel_percentile_98}`,
+        /*
+        colormap: JSON.stringify({
+          0: [255, 0, 0, 255],
+          255: [0, 255, 0, 255],
+        }),
+        colormap_type: 'linear',
+        */
         colormap_name: 'viridis',
         // colormap_name: 'viridis_r',
         // colormap_name: 'blues',
