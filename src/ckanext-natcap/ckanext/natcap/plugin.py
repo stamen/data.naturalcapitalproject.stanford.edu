@@ -1,14 +1,21 @@
 # encoding=utf-8
 from __future__ import annotations
 
+import json
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 from ckan.types import Schema
 
 
+def parse_json(json_str):
+    return json.loads(json_str)
+
+
 class NatcapPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IDatasetForm)
+    plugins.implements(plugins.IFacets)
+    plugins.implements(plugins.ITemplateHelpers)
 
     # IConfigurer
 
@@ -51,3 +58,13 @@ class NatcapPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         # This plugin doesn't handle any special package types, it just
         # registers itself as the default (above).
         return []
+
+    def get_helpers(self):
+        return {
+            'natcap_parse_json': parse_json,
+        }
+
+    def dataset_facets(self, facets_dict, package_type):
+        print(facets_dict) 
+        facets_dict['extras_placenames'] = toolkit._('Places')
+        return facets_dict
