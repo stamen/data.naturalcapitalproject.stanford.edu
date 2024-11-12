@@ -26,7 +26,7 @@ env:
     # The repo name is a very reasonable default!
     CONTAINER_NAME: titiler
     SERVICE_ACCOUNT_EMAIL: github-titiler-container-build@sdss-natcap-gef-ckan.iam.gserviceaccount.com
-    REGISTRY_URL: us-west1-docker.pkg.dev/sdss-natcap-gef-ckan/titiler
+    REGISTRY_URL: us-west1-docker.pkg.dev/sdss-natcap-gef-ckan/titiler/titiler
 
 jobs:
     build:
@@ -63,7 +63,7 @@ jobs:
                         -t ghcr.io/${{ github.repository_owner }}/${{ env.CONTAINER_NAME }}:latest \
                         -t ghcr.io/${{ github.repository_owner }}/${{ env.CONTAINER_NAME }}:${{ github.sha }} \
                         -t ghcr.io/${{ github.repository_owner }}/${{ env.CONTAINER_NAME }}:${SANITIZED_REF} \
-                        -t ${{ env.REGISTRY_URL }}/titiler \
+                        -t ${{ env.REGISTRY_URL }}:${{ github.sha }} \
                         .
 
             - name: Test that titler imports
@@ -73,4 +73,14 @@ jobs:
             - name: Push docker
               if: github.event_name != 'pull_request'
               run: |-
-                  docker image push ${{ env.REGISTRY_URL }}/titiler
+                  docker image push ${{ env.REGISTRY_URL }}:${{ github.sha }}
+
+            - name: Deploy to Cloud Run
+              if : github.event_name == 'push' && github.ref == 'refs/heads/master'
+              uses: google-github-actions/cloud-run-deploy@v2
+              with:
+                  service: titiler
+                  image: ${{ env.REGISTRY_URL }}:${{ github.sha }}
+                  env_vars: |-
+                      WORKERS_PER_CORE=1
+                      FORWARDED_ALLOW_IPS=*
