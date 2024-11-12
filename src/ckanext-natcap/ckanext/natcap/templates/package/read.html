@@ -22,14 +22,13 @@
  
   <div class="row package-details-row">
     <div class="col-md-6">
-      {# TODO use scheming snippet #}
       {% snippet "package/snippets/additional_info.html", pkg_dict=pkg %}
     </div>
     <div class="col-md-6">
       {% block package_usage %}
         <div class="package-usage">
           {% block package_citation %}
-            {% snippet "package/snippets/textarea_copy.html", title='Cite this dataset', content='Not implemented yet.' %}
+            {% snippet "package/snippets/textarea_copy.html", title='Cite this dataset', content=pkg_dict.suggested_citation %}
           {% endblock %}
           {% block package_map_embed %}
             {% snippet "package/snippets/textarea_copy.html", title='Embed this map into your website', content='Not implemented yet.' %}
