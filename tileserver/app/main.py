@@ -3,7 +3,7 @@
 This was downloaded from https://github.com/developmentseed/titiler/blob/main/src/titiler/application/titiler/application/main.py
 at commit 575cb7259431bb489a3ebb2f233a866c7fc5146b in order to provide the same basic functionality as titiler, but with a custom colormap.
 
-This file (minus modifications) was originally licensed udner the MIT license.
+This file (minus modifications) was originally licensed under the MIT license.
 """
 
 import logging
@@ -108,12 +108,13 @@ if not api_settings.disable_cog:
     if os.path.exists('/app'):
         sys.path.append('/app')
 
-    from dependencies import ColorMapParams
+    from dependencies import ColorMapParams, DatasetPathParams
 
     cog = TilerFactory(
         reader=Reader,
         router_prefix="/cog",
         colormap_dependency=ColorMapParams,
+        path_dependency=DatasetPathParams,
         extensions=[
             cogValidateExtension(),
             cogViewerExtension(),

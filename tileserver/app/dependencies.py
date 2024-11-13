@@ -65,3 +65,17 @@ def ColorMapParams(
         return cm
 
     return None
+
+
+ALLOWED_PREFIXES = (
+    'https://storage.googleapis.com/natcap-data-cache',
+)
+
+def DatasetPathParams(url: Annotated[str, Query(description="Dataset URL")]) -> str:
+    """Create dataset path from args"""
+    if not url.startswith(ALLOWED_PREFIXES):
+        raise HTTPException(
+            status_code=401,
+            detail="Access denied; please use an allowed dataset URL."
+        )
+    return url
