@@ -3,3 +3,10 @@ FROM ghcr.io/developmentseed/titiler@sha256:1436b4f43743c11da3661c90f7b59f106557
 
 COPY ./app /app
 RUN python -m pip install matplotlib
+
+ENV HOST=0.0.0.0
+ENV PORT=8000
+ENV PYTHONPATH=/app
+
+# CWD is /app
+CMD python main.py

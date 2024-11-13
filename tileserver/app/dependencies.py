@@ -19,19 +19,19 @@ from typing_extensions import Annotated
 
 
 def ColorMapParams(
-    colormap_name: Annotated[  # type: ignore
-        Literal[tuple(default_cmap.list())],
-        Query(description="Colormap name"),
-    ] = None,
-    colormap: Annotated[
-        str,
-        Query(description="JSON encoded custom Colormap"),
-    ] = None,
-    colormap_type: Annotated[
-        Literal["explicit", "linear"],
-        Query(description="User input colormap type."),
-    ] = "explicit",
-) -> Optional[Dict]:
+            colormap_name: Annotated[  # type: ignore
+                Literal[tuple(default_cmap.list())],
+                Query(description="Colormap name"),
+            ] = None,
+            colormap: Annotated[
+                str,
+                Query(description="JSON encoded custom Colormap"),
+            ] = None,
+            colormap_type: Annotated[
+                Literal["explicit", "linear"],
+                Query(description="User input colormap type."),
+            ] = "explicit",
+        ) -> Optional[Dict]:
     """Colormap Dependency."""
     if colormap_name:
         return default_cmap.get(colormap_name)
