@@ -19,7 +19,8 @@ this.ckan.module('natcap-spatial-query', function ($, _) {
         fillOpacity: 0.1,
         clickable: false
       },
-      default_extent: [[90, 180], [-90, -180]]
+      default_extent: [[90, 180], [-90, -180]],
+      clear_url: null,
     },
     template: {
       buttons: [
@@ -69,6 +70,7 @@ this.ckan.module('natcap-spatial-query', function ($, _) {
     initialize: function () {
       var module = this;
       $.proxyAll(this, /_on/);
+      console.log('initialize', module.options);
 
       var user_default_extent = this.el.data('default_extent');
       if (user_default_extent ){
@@ -240,6 +242,13 @@ this.ckan.module('natcap-spatial-query', function ($, _) {
           var button = L.DomUtil.create('a', 'leaflet-control-custom-button', container);
           button.innerHTML = '<i class="fa fa-pencil"></i>';
           button.title = module._('Draw an extent');
+
+          if (module.options.clear_url && module._getParameterByName('ext_bbox')) {
+            var clearButton = L.DomUtil.create('a', 'leaflet-control-custom-button', container);
+            clearButton.href = module.options.clear_url;
+            clearButton.innerHTML = '<i class="fa fa-trash"></i>';
+            clearButton.title = module._('Clear selection');
+          }
 
           L.DomEvent.on(button, 'click', function(e) {
             module.sandbox.body.append(module._createModal());
