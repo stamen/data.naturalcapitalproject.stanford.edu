@@ -4,7 +4,7 @@ on:
     workflow_dispatch:
     push:
         paths:
-            - 'tileserver/*'
+            - 'tileserver/**/*'
             - '.github/workflows/build-titiler.yml'
 
 concurrency:
