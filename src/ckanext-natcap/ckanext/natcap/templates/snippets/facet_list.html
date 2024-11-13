@@ -15,8 +15,8 @@
                   {% set label_truncated = label|truncate(22) if not label_function else label %}
                   {% set count = count_label(item['count']) if count_label else ('%d' % item['count']) %}
                   <li class="nav-item {% if item.active %} active{% endif %}">
-                    <input type="checkbox" {% if item.active %}checked{% endif %} />
                     <a href="{{ href }}" aria-label="{{ _('Search datasets by {name}: {label}').format(name=name, label=label_truncated) }}" {% if label != label_truncated %} data-bs-title="{{ label }}" data-bs-toggle="tooltip" {% endif %}>
+                      <input type="checkbox" {% if item.active %}checked{% endif %} />
                       <span class="item-label">{{ label_truncated }} ({{ count }})</span>
                     </a>
                   </li>
