@@ -24,14 +24,31 @@ def get_dataset_sources(dataset_metadata):
     return dataset_metadata.get('sources', None)
 
 
+def bounds_valid(bounds):
+    return (
+        abs(bounds[0]) <= 180 and
+        abs(bounds[2]) <= 180 and
+        abs(bounds[1]) <= 90 and
+        abs(bounds[3]) <= 90
+    )
+
+
 def get_raster_info(url):
-    r = requests.get(TITILER_URL + '/cog/info', params={'url': url})
-    j = r.json()
-    return {
-        'bounds': j['bounds'],
-        'minzoom': j['minzoom'],
-        'maxzoom': j['maxzoom'],
-    }
+    try:
+        r = requests.get(TITILER_URL + '/cog/info', params={'url': url})
+        j = r.json()
+        bounds = j['bounds']
+        # TODO titiler used to get min and maxzoom
+        if not bounds or not bounds_valid(bounds):
+            bounds = [-180, -90, 180, 90]
+        return {
+            'bounds': bounds,
+            'minzoom': j.get('minzoom', 1),
+            'maxzoom': j.get('maxzoom', 10),
+        }
+    except Exception as e:
+        print('Failed to get raster info')
+        raise e
 
 
 def get_raster_statistics(url):
