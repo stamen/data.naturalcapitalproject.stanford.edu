@@ -10,6 +10,11 @@
     {# This block is intentionally left blank. #}
 {% endblock %}
 
+{% block package_search_results_list %}
+  {% set search_display = h.get_request_param('ext_search_display') or 'list' %}
+  {% snippet 'snippets/package_list.html', packages=page.items, list_class='dataset-list list-unstyled dataset-list-' + search_display %}
+{% endblock %}
+
 {% block toolbar %}
   {% block page_search_form %}
     {% set facets = {

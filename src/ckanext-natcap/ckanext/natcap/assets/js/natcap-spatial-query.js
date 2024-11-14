@@ -70,7 +70,6 @@ this.ckan.module('natcap-spatial-query', function ($, _) {
     initialize: function () {
       var module = this;
       $.proxyAll(this, /_on/);
-      console.log('initialize', module.options);
 
       var user_default_extent = this.el.data('default_extent');
       if (user_default_extent ){

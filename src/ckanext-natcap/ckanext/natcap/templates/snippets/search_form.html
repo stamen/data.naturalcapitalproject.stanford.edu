@@ -42,6 +42,21 @@
                 </div>
               {% endblock %}
 
+              {% block search_display_toggle %}
+              <div class="search-display-toggle">
+                {% set search_display = h.get_request_param('ext_search_display') %}
+                {% set grid_href = h.add_url_param(new_params={'ext_search_display': 'grid'}, extras=extras) if not search_display else h.remove_url_param('ext_search_display', replace='grid', extras=extras) %}
+                {% set list_href = h.add_url_param(new_params={'ext_search_display': 'list'}, extras=extras) if not search_display else h.remove_url_param('ext_search_display', replace='list', extras=extras) %}
+                {% if not search_display or search_display == 'list' %}
+                  <img src="/img/icon-list-on.png" alt="List" />
+                  <a href="{{ grid_href }}"><img src="/img/icon-grid-off.png" alt="Grid" /></a>
+                {% else %}
+                  <a href="{{ list_href }}"><img src="/img/icon-list-off.png" alt="List" /></a>
+                  <img src="/img/icon-grid-on.png" alt="Grid" />
+                {% endif %}
+              </div>
+              {% endblock %}
+
               {% block search_sortby %}
                 {% if sorting %}
                   <div class="form-group control-order-by">

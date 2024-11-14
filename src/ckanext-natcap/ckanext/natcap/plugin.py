@@ -65,6 +65,5 @@ class NatcapPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         }
 
     def dataset_facets(self, facets_dict, package_type):
-        print(facets_dict) 
         facets_dict['extras_placenames'] = toolkit._('Places')
         return facets_dict
