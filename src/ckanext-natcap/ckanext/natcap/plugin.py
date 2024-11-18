@@ -7,6 +7,22 @@ import ckan.plugins.toolkit as toolkit
 from ckan.types import Schema
 
 
+def get_resource_type_facet_label(resource_type_facet):
+    return get_resource_type_label(resource_type_facet['name'])
+
+
+def get_resource_type_label(resource_type):
+    labels = {
+        'csv': 'CSV',
+        'geojson': 'GeoJSON',
+        'tif': 'GeoTIFF',
+        'shp': 'Shapefile',
+        'txt': 'Text',
+        'yml': 'YML',
+    }
+    return labels.get(resource_type, resource_type)
+
+
 def parse_json(json_str):
     return json.loads(json_str)
 
@@ -61,9 +77,12 @@ class NatcapPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
 
     def get_helpers(self):
         return {
+            'natcap_get_resource_type_facet_label': get_resource_type_facet_label,
+            'natcap_get_resource_type_label': get_resource_type_label,
             'natcap_parse_json': parse_json,
         }
 
     def dataset_facets(self, facets_dict, package_type):
         facets_dict['extras_placenames'] = toolkit._('Places')
+        facets_dict['extras_sources_res_formats'] = toolkit._('Resource Formats')
         return facets_dict

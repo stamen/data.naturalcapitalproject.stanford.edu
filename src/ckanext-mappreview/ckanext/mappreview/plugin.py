@@ -19,7 +19,10 @@ def should_show(pkg):
 
 
 def parse_metadata(pkg):
-    return json.loads(get_mappreview(pkg)['value'])
+    mappreview = get_mappreview(pkg)
+    if not mappreview:
+        return {}
+    return json.loads(mappreview['value'])
 
 
 def get_layer_js(layer, config):
@@ -35,7 +38,7 @@ def get_layer_js(layer, config):
 
 
 def get_layers_js(pkg):
-    layers = parse_metadata(pkg)['layers']
+    layers = parse_metadata(pkg).get('layers') or []
     return '\n'.join([get_layer_js(layer, config) for layer in layers])
 
 

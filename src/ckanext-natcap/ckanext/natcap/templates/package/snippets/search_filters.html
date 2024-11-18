@@ -40,14 +40,14 @@
       <div class="search-filters-section-header collapsed">
         <div class="search-filters-section-header-left">
           <img src="/img/filters-file-type.png" />
-          <div class="search-filters-section-title">File type</div>
+          <div class="search-filters-section-title">{{ _('File type') }}</div>
         </div>
         <div class="search-filters-section-header-right">
           <img class="search-filters-toggle-icon" src="/img/icon-toggle.png" />
         </div>
       </div>
       <div class="search-filters-section-content">
-        {% snippet 'snippets/facet_list.html', title='File type', name='res_format', search_facets=search_facets %}
+        {% snippet 'snippets/facet_list.html', title='File type', name='extras_sources_res_formats', search_facets=search_facets, label_function=h.natcap_get_resource_type_facet_label %}
       </div>
     </div>
 

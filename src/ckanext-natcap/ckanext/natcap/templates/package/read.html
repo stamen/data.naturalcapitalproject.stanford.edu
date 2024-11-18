@@ -1,9 +1,6 @@
 {% ckan_extends %}
 
 {% block package_description %}
-  {% if h.mappreview_should_show(pkg) %}
-    {% snippet "package/snippets/mappreview.html", pkg=pkg %}
-  {% endif %}
 {% endblock %}
 
 {% block package_resources %}

@@ -11,6 +11,30 @@ TITILER_URL = os.environ.get('TITILER_URL',
                              'https://titiler-897938321824.us-west1.run.app')
 
 
+def to_short_format(f):
+    short_formats = {
+        'CSV': 'csv',
+        'GeoJSON': 'geojson',
+        'GeoTIFF': 'tif',
+        'Shapefile': 'shp',
+        'Text': 'txt',
+        'YML': 'yml',
+    }
+    return short_formats.get(f, f)
+
+
+def include_format(f):
+    to_keep = [
+        'csv',
+        'geojson',
+        'tif',
+        'shp',
+        'txt',
+        'yml',
+    ]
+    return f in to_keep
+
+
 def get_dataset_metadata(dataset):
     if dataset['resources']:
         for resource in dataset['resources']:
@@ -186,9 +210,21 @@ def sync_datasets(src, dst, dst_apikey):
         # If dataset has metadata with sources in it, add those
         metadata = get_dataset_metadata(package)
         sources = get_dataset_sources(metadata)
+
+        all_res_formats = [to_short_format(r['format']) for r in package['resources']]
+
         if sources:
             # TODO maybe better on the resource itself?
             package['extras'].append({'key': 'sources', 'value': json.dumps(sources)})
+
+            all_res_formats += [s.split('.')[-1] for s in sources]
+
+        all_res_formats = [s for s in all_res_formats if include_format(s)]
+        sources_res_formats = sorted(list(set(all_res_formats)))
+        package['extras'].append({
+            'key': 'sources_res_formats',
+            'value': json.dumps(sources_res_formats)
+        })
 
         mappreview_metadata = get_mappreview_metadata(package, sources)
         if mappreview_metadata:
