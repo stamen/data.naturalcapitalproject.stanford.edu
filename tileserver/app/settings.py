@@ -12,7 +12,7 @@ from typing import Optional
 class CacheSettings(BaseSettings):
     """Cache settings"""
 
-    endpoint: Optional[str] = os.environ['CACHE_ENDPOINT']
+    endpoint: Optional[str] = os.environ.get('CACHE_ENDPOINT', '')
     ttl: int = int(os.environ.get('CACHE_TTL', 3600))
     namespace: str = os.environ.get('CACHE_NAMESPACE', '')
 

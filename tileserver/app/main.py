@@ -45,8 +45,8 @@ from titiler.extensions import (
 from titiler.mosaic.errors import MOSAIC_STATUS_CODES
 from titiler.mosaic.factory import MosaicTilerFactory
 
-from .cache import setup_cache
-from .routes import cog
+from cache import setup_cache
+from routes import cog
 
 logging.getLogger("botocore.credentials").disabled = True
 logging.getLogger("botocore.utils").disabled = True
