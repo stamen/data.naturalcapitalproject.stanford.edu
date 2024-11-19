@@ -14,7 +14,7 @@ from starlette.responses import Response
 
 from fastapi.dependencies.utils import is_coroutine_callable
 
-from .settings import cache_setting
+from settings import cache_setting
 
 
 class cached(aiocache.cached):

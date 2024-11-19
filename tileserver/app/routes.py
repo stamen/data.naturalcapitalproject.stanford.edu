@@ -19,7 +19,7 @@ from titiler.core.dependencies import RescalingParams
 from titiler.core.models.mapbox import TileJSON
 from titiler.core.resources.enums import ImageType
 
-from .cache import cached
+from cache import cached
 
 
 @dataclass
