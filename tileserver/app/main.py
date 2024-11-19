@@ -115,7 +115,7 @@ if not api_settings.disable_cog:
     app.add_event_handler('startup', setup_cache)
 
     from dependencies import ColorMapParams, DatasetPathParams
-    from .routes import TilerFactory
+    from routes import TilerFactory
 
     cog = TilerFactory(
         reader=Reader,
