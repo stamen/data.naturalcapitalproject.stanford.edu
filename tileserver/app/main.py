@@ -28,7 +28,6 @@ from titiler.core.factory import (
     AlgorithmFactory,
     ColorMapFactory,
     MultiBaseTilerFactory,
-    TilerFactory,
     TMSFactory,
 )
 from titiler.core.middleware import (
@@ -45,6 +44,9 @@ from titiler.extensions import (
 )
 from titiler.mosaic.errors import MOSAIC_STATUS_CODES
 from titiler.mosaic.factory import MosaicTilerFactory
+
+from .cache import setup_cache
+from .routes import cog
 
 logging.getLogger("botocore.credentials").disabled = True
 logging.getLogger("botocore.utils").disabled = True
@@ -102,13 +104,18 @@ app = FastAPI(
     dependencies=[Depends(validate_access_token)],
 )
 
+
 ###############################################################################
 # Simple Dataset endpoints (e.g Cloud Optimized GeoTIFF)
 if not api_settings.disable_cog:
     if os.path.exists('/app'):
         sys.path.append('/app')
 
+    # Setup Cache
+    app.add_Event_handler('startup', setup_cache)
+
     from dependencies import ColorMapParams, DatasetPathParams
+    from .routes import TilerFactory
 
     cog = TilerFactory(
         reader=Reader,
