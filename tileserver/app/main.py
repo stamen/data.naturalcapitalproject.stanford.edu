@@ -112,7 +112,7 @@ if not api_settings.disable_cog:
         sys.path.append('/app')
 
     # Setup Cache
-    app.add_Event_handler('startup', setup_cache)
+    app.add_event_handler('startup', setup_cache)
 
     from dependencies import ColorMapParams, DatasetPathParams
     from .routes import TilerFactory
