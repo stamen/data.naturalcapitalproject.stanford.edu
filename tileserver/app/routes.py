@@ -1,39 +1,28 @@
-"""routes.
-
-app/routes.py
-"""
-from dataclasses import dataclass
 from typing import Callable, Dict, Type, Literal, List, Tuple, Optional
 from urllib.parse import urlencode
 
+from attrs import define
+from titiler.core.factory import TilerFactory as TiTilerFactory
+from titiler.core.factory import img_endpoint_params
+from titiler.core.resources.enums import ImageType
+from titiler.core.models.mapbox import TileJSON
+from titiler.core.utils import render_image
+from rio_tiler.io import BaseReader, Reader
 from fastapi import Depends, Path, Query
+from pydantic import Field
 from starlette.requests import Request
 from starlette.responses import Response
-
-from morecantile import TileMatrixSet
-from rio_tiler.io import BaseReader, Reader
-
-from titiler.core.factory import img_endpoint_params
-from titiler.core.factory import TilerFactory as TiTilerFactory
-from titiler.core.dependencies import RescalingParams
-from titiler.core.models.mapbox import TileJSON
-from titiler.core.resources.enums import ImageType
+import rasterio
+from typing_extensions import Annotated
 
 from cache import cached
 
-
-@dataclass
+@define(kw_only=True)
 class TilerFactory(TiTilerFactory):
 
     reader: Type[BaseReader] = Reader
 
     def register_routes(self):
-        """This Method register routes to the router."""
-
-        @self.router.get(r"/tiles/{z}/{x}/{y}", **img_endpoint_params)
-        @self.router.get(r"/tiles/{z}/{x}/{y}.{format}", **img_endpoint_params)
-        @self.router.get(r"/tiles/{z}/{x}/{y}@{scale}x", **img_endpoint_params)
-        @self.router.get(r"/tiles/{z}/{x}/{y}@{scale}x.{format}", **img_endpoint_params)
         @self.router.get(r"/tiles/{tileMatrixSetId}/{z}/{x}/{y}", **img_endpoint_params)
         @self.router.get(
             r"/tiles/{tileMatrixSetId}/{z}/{x}/{y}.{format}", **img_endpoint_params
@@ -45,58 +34,70 @@ class TilerFactory(TiTilerFactory):
             r"/tiles/{tileMatrixSetId}/{z}/{x}/{y}@{scale}x.{format}",
             **img_endpoint_params,
         )
-        # Add default cache config dictionary into cached alias.
-        # Note: if alias is used, other arguments in cached will be ignored. Add other arguments into default dicttionary in setup_cache function.
         @cached(alias="default")
         def tile(
-            z: int = Path(..., ge=0, le=30, description="TMS tiles's zoom level"),
-            x: int = Path(..., description="TMS tiles's column"),
-            y: int = Path(..., description="TMS tiles's row"),
-            tileMatrixSetId: Literal[tuple(self.supported_tms.list())] = Query(
-                self.default_tms,
-                description=f"TileMatrixSet Name (default: '{self.default_tms}')",
-            ),
-            scale: int = Query(
-                1, gt=0, lt=4, description="Tile size scale. 1=256x256, 2=512x512..."
-            ),
-            format: ImageType = Query(
-                None, description="Output image type. Default is auto."
-            ),
+            z: Annotated[
+                int,
+                Path(
+                    description="Identifier (Z) selecting one of the scales defined in the TileMatrixSet and representing the scaleDenominator the tile.",
+                ),
+            ],
+            x: Annotated[
+                int,
+                Path(
+                    description="Column (X) index of the tile on the selected TileMatrix. It cannot exceed the MatrixHeight-1 for the selected TileMatrix.",
+                ),
+            ],
+            y: Annotated[
+                int,
+                Path(
+                    description="Row (Y) index of the tile on the selected TileMatrix. It cannot exceed the MatrixWidth-1 for the selected TileMatrix.",
+                ),
+            ],
+            tileMatrixSetId: Annotated[
+                Literal[tuple(self.supported_tms.list())],
+                Path(
+                    description="Identifier selecting one of the TileMatrixSetId supported."
+                ),
+            ],
+            scale: Annotated[
+                int,
+                Field(
+                    gt=0, le=4, description="Tile size scale. 1=256x256, 2=512x512..."
+                ),
+            ] = 1,
+            format: Annotated[
+                ImageType,
+                "Default will be automatically defined if the output image needs a mask (png) or not (jpeg).",
+            ] = None,
             src_path=Depends(self.path_dependency),
+            reader_params=Depends(self.reader_dependency),
+            tile_params=Depends(self.tile_dependency),
             layer_params=Depends(self.layer_dependency),
             dataset_params=Depends(self.dataset_dependency),
-            buffer: Optional[float] = Query(
-                None,
-                gt=0,
-                title="Tile buffer.",
-                description="Buffer on each side of the given tile. It must be a multiple of `0.5`. Output **tilesize** will be expanded to `tilesize + 2 * buffer` (e.g 0.5 = 257x257, 1.0 = 258x258).",
-            ),
             post_process=Depends(self.process_dependency),
-            rescale: Optional[List[Tuple[float, ...]]] = Depends(RescalingParams),
-            color_formula: Optional[str] = Query(
-                None,
-                title="Color Formula",
-                description="rio-color formula (info: https://github.com/mapbox/rio-color)",
-            ),
+            rescale=Depends(self.rescale_dependency),
+            color_formula=Depends(self.color_formula_dependency),
             colormap=Depends(self.colormap_dependency),
             render_params=Depends(self.render_dependency),
-            reader_params=Depends(self.reader_dependency),
+            env=Depends(self.environment_dependency),
         ):
             """Create map tile from a dataset."""
             tms = self.supported_tms.get(tileMatrixSetId)
-
-            with self.reader(src_path, tms=tms, **reader_params) as src_dst:
-                image = src_dst.tile(
-                    x,
-                    y,
-                    z,
-                    tilesize=scale * 256,
-                    buffer=buffer,
-                    **layer_params,
-                    **dataset_params,
-                )
-                dst_colormap = getattr(src_dst, "colormap", None)
-
+            with rasterio.Env(**env):
+                with self.reader(
+                    src_path, tms=tms, **reader_params.as_dict()
+                ) as src_dst:
+                    image = src_dst.tile(
+                        x,
+                        y,
+                        z,
+                        tilesize=scale * 256,
+                        **tile_params.as_dict(),
+                        **layer_params.as_dict(),
+                        **dataset_params.as_dict(),
+                    )
+                    dst_colormap = getattr(src_dst, "colormap", None)
 
             if post_process:
                 image = post_process(image)
@@ -107,26 +108,15 @@ class TilerFactory(TiTilerFactory):
             if color_formula:
                 image.apply_color_formula(color_formula)
 
-            if cmap := colormap or dst_colormap:
-                image = image.apply_colormap(cmap)
-
-            if not format:
-                format = ImageType.jpeg if image.mask.all() else ImageType.png
-
-            content = image.render(
-                img_format=format.driver,
-                **format.profile,
-                **render_params,
+            content, media_type = render_image(
+                image,
+                output_format=format,
+                colormap=colormap or dst_colormap,
+                **render_params.as_dict(),
             )
 
-            return Response(content, media_type=format.mediatype)
-
-        @self.router.get(
-            "/tilejson.json",
-            response_model=TileJSON,
-            responses={200: {"description": "Return a tilejson"}},
-            response_model_exclude_none=True,
-        )
+            return Response(content, media_type=media_type)
+        
         @self.router.get(
             "/{tileMatrixSetId}/tilejson.json",
             response_model=TileJSON,
@@ -136,43 +126,43 @@ class TilerFactory(TiTilerFactory):
         @cached(alias="default")
         def tilejson(
             request: Request,
-            tileMatrixSetId: Literal[tuple(self.supported_tms.list())] = Query(
-                self.default_tms,
-                description=f"TileMatrixSet Name (default: '{self.default_tms}')",
-            ),
+            tileMatrixSetId: Annotated[
+                Literal[tuple(self.supported_tms.list())],
+                Path(
+                    description="Identifier selecting one of the TileMatrixSetId supported."
+                ),
+            ],
+            tile_format: Annotated[
+                Optional[ImageType],
+                Query(
+                    description="Default will be automatically defined if the output image needs a mask (png) or not (jpeg).",
+                ),
+            ] = None,
+            tile_scale: Annotated[
+                int,
+                Query(
+                    gt=0, lt=4, description="Tile size scale. 1=256x256, 2=512x512..."
+                ),
+            ] = 1,
+            minzoom: Annotated[
+                Optional[int],
+                Query(description="Overwrite default minzoom."),
+            ] = None,
+            maxzoom: Annotated[
+                Optional[int],
+                Query(description="Overwrite default maxzoom."),
+            ] = None,
             src_path=Depends(self.path_dependency),
-            tile_format: Optional[ImageType] = Query(
-                None, description="Output image type. Default is auto."
-            ),
-            tile_scale: int = Query(
-                1, gt=0, lt=4, description="Tile size scale. 1=256x256, 2=512x512..."
-            ),
-            minzoom: Optional[int] = Query(
-                None, description="Overwrite default minzoom."
-            ),
-            maxzoom: Optional[int] = Query(
-                None, description="Overwrite default maxzoom."
-            ),
-            layer_params=Depends(self.layer_dependency),  # noqa
-            dataset_params=Depends(self.dataset_dependency),  # noqa
-            buffer: Optional[float] = Query(  # noqa
-                None,
-                gt=0,
-                title="Tile buffer.",
-                description="Buffer on each side of the given tile. It must be a multiple of `0.5`. Output **tilesize** will be expanded to `tilesize + 2 * buffer` (e.g 0.5 = 257x257, 1.0 = 258x258).",
-            ),
-            post_process=Depends(self.process_dependency),  # noqa
-            rescale: Optional[List[Tuple[float, ...]]] = Depends(
-                RescalingParams
-            ),  # noqa
-            color_formula: Optional[str] = Query(  # noqa
-                None,
-                title="Color Formula",
-                description="rio-color formula (info: https://github.com/mapbox/rio-color)",
-            ),
-            colormap=Depends(self.colormap_dependency),  # noqa
-            render_params=Depends(self.render_dependency),  # noqa
             reader_params=Depends(self.reader_dependency),
+            tile_params=Depends(self.tile_dependency),
+            layer_params=Depends(self.layer_dependency),
+            dataset_params=Depends(self.dataset_dependency),
+            post_process=Depends(self.process_dependency),
+            rescale=Depends(self.rescale_dependency),
+            color_formula=Depends(self.color_formula_dependency),
+            colormap=Depends(self.colormap_dependency),
+            render_params=Depends(self.render_dependency),
+            env=Depends(self.environment_dependency),
         ):
             """Return TileJSON document for a dataset."""
             route_params = {
@@ -184,7 +174,6 @@ class TilerFactory(TiTilerFactory):
             }
             if tile_format:
                 route_params["format"] = tile_format.value
-
             tiles_url = self.url_for(request, "tile", **route_params)
 
             qs_key_to_remove = [
@@ -203,15 +192,18 @@ class TilerFactory(TiTilerFactory):
                 tiles_url += f"?{urlencode(qs)}"
 
             tms = self.supported_tms.get(tileMatrixSetId)
-            with self.reader(src_path, tms=tms, **reader_params) as src_dst:
-                return {
-                    "bounds": src_dst.geographic_bounds,
-                    "minzoom": minzoom if minzoom is not None else src_dst.minzoom,
-                    "maxzoom": maxzoom if maxzoom is not None else src_dst.maxzoom,
-                    "tiles": [tiles_url],
-                }
-
+            with rasterio.Env(**env):
+                with self.reader(
+                    src_path, tms=tms, **reader_params.as_dict()
+                ) as src_dst:
+                    return {
+                        "bounds": src_dst.get_geographic_bounds(
+                            tms.rasterio_geographic_crs
+                        ),
+                        "minzoom": minzoom if minzoom is not None else src_dst.minzoom,
+                        "maxzoom": maxzoom if maxzoom is not None else src_dst.maxzoom,
+                        "tiles": [tiles_url],
+                    }
+        
         # Register Map viewer
         self.map_viewer()
-
-cog = TilerFactory()
