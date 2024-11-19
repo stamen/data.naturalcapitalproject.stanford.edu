@@ -7,6 +7,7 @@ app/cache.py
 import asyncio
 import urllib
 from typing import Any, Dict
+import logging
 
 import aiocache
 from starlette.concurrency import run_in_threadpool
@@ -15,6 +16,8 @@ from starlette.responses import Response
 from fastapi.dependencies.utils import is_coroutine_callable
 
 from settings import cache_setting
+
+LOGGER = logging.getLogger(__name__)
 
 
 class cached(aiocache.cached):
@@ -102,4 +105,5 @@ def setup_cache():
         elif cache_class == aiocache.Cache.MEMCACHED:
             config["cache"] = "aiocache.MemcachedCache"
 
+    LOGGER.info(f"Setting up cache with configuration: {config}")
     aiocache.caches.set_config({"default": config})
