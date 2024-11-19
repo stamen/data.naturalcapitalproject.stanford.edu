@@ -2,7 +2,7 @@
 FROM ghcr.io/developmentseed/titiler@sha256:1436b4f43743c11da3661c90f7b59f1065578bf48fbdf198db2c7235d7293447
 
 COPY ./app /app
-RUN python -m pip install matplotlib aiocache[redis]
+RUN python -m pip install matplotlib aiocache[redis] pydantic-settings
 
 ENV HOST=0.0.0.0
 ENV PORT=8000
