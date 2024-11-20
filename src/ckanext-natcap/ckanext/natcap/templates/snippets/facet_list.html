@@ -17,7 +17,10 @@
                       <li class="nav-item {% if item.active %} active{% endif %}">
                         <a href="{{ href }}" aria-label="{{ _('Search datasets by {name}: {label}').format(name=name, label=label_truncated) }}" {% if label != label_truncated %} data-bs-title="{{ label }}" data-bs-toggle="tooltip" {% endif %}>
                           <input type="checkbox" {% if item.active %}checked{% endif %} />
-                          <span class="item-label">{{ label_truncated }} ({{ count }})</span>
+                          <span class="item-label">
+                            <span class="item-label-name">{{ label_truncated }}</span>
+                            <span class="item-count">{{ count }}</span></span>
+                          </span>
                         </a>
                       </li>
                     {% endfor %}
