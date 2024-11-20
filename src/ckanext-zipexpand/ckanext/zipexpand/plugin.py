@@ -11,6 +11,8 @@ def parse_sources(sources):
 
     for s in sources_arr:
         components = s.split('\\')
+        if len(components) == 1:
+            components = s.split('/')
         current_dir = None
         dir_options = output_arr
 

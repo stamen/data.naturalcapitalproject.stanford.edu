@@ -119,9 +119,49 @@ body {
     align-items: center;
     gap: 1rem;
     justify-content: space-between;
+    width: 100%;
+    max-width: 100%;
 }
 
-.resources .zipexpand-contents-list {
+.resource-item {
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.resource-item-name {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+}
+
+.resource-item .heading {
+    font-weight: 600;
+}
+
+.resource-item-description {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    max-width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.resource-item-type {
+    font-size: 0.9em;
+    text-transform: uppercase;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.25rem;
+}
+
+.resource-item-type img {
+    width: 1rem;
+}
+
+.resources .nested-source-list {
     list-style: none;
     padding: 0;
     margin-left: calc(-1 * var(--resource-item-padding));
@@ -130,22 +170,25 @@ body {
     border-top: 1px solid var(--color-gray);
 }
 
-.resources .zipexpand-contents-list li {
-    padding-left: calc(2 * var(--resource-item-padding));
+.resources .nested-source-list li {
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    display: flex;
+    flex-direction: column;
 }
 
-.resources .zipexpand-contents-item {
+.resources .nested-source-list.indent-0 .resource-item-description {
+    padding-left: calc(2 * var(--resource-item-padding));
+}
+
+.resources .nested-source-list.indent-1 .resource-item-description {
+    padding-left: calc(4 * var(--resource-item-padding));
+}
+
+.resources .nested-source-item {
     display: flex;
     flex-direction: row;
-    overflow: hidden;
-}
-
-.resources .zipexpand-filename {
-    text-overflow: ellipsis;
-    white-space: nowrap; 
     overflow: hidden;
 }
 
@@ -623,6 +666,11 @@ body {
     background: none;
     border: none;
     cursor: pointer;
+}
+
+.package-textarea-copy.mono .package-usage-textarea {
+    font-family: monospace;
+    font-size: 0.7rem;
 }
 
 @media (max-width: 576px) {

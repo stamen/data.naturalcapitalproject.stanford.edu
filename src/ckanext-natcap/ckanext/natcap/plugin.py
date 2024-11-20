@@ -6,6 +6,14 @@ import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 from ckan.types import Schema
 
+shown_extensions = [
+    'csv',
+    'geojson',
+    'tif',
+    'shp',
+    'txt',
+    'yml',
+]
 
 def get_resource_type_facet_label(resource_type_facet):
     return get_resource_type_label(resource_type_facet['name'])
@@ -21,6 +29,38 @@ def get_resource_type_label(resource_type):
         'yml': 'YML',
     }
     return labels.get(resource_type, resource_type)
+
+
+def get_resource_type_label_short(resource):
+    labels = {
+        'csv': 'CSV',
+        'geojson': 'GEOJSON',
+        'tif': 'TIF',
+        'shp': 'SHP',
+        'txt': 'TXT',
+        'yml': 'YML',
+    }
+    return labels.get(resource_type, resource_type)
+
+
+def get_ext(resource_url):
+    return resource_url.split('.')[-1]
+
+
+def get_filename(resource_url):
+    return resource_url.split('/')[-1].split('.')[0]
+
+
+def get_resource_type_icon_slug(resource_url):
+    return get_ext(resource_url)
+
+
+def show_resource(resource_url):
+    return get_ext(resource_url) in shown_extensions
+
+
+def show_icon(resource_url):
+    return get_ext(resource_url) in shown_extensions
 
 
 def parse_json(json_str):
@@ -77,8 +117,13 @@ class NatcapPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
 
     def get_helpers(self):
         return {
+            'natcap_get_ext': get_ext,
+            'natcap_get_filename': get_filename,
+            'natcap_get_resource_type_icon_slug': get_resource_type_icon_slug,
             'natcap_get_resource_type_facet_label': get_resource_type_facet_label,
             'natcap_get_resource_type_label': get_resource_type_label,
+            'natcap_show_icon': show_icon,
+            'natcap_show_resource': show_resource,
             'natcap_parse_json': parse_json,
         }
 
