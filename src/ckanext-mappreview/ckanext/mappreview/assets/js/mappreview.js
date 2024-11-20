@@ -20,34 +20,29 @@ ckan.module("mappreview", function ($, _) {
       const base = this._getGlobalConfig().titiler_url;
       const endpoint = '/cog/WebMercatorQuad/tilejson.json';
 
-      // Generate custom color map
-      // TODO desired colors
-      /*
       const colors = [
-        '#6DB31E',
-        '#008F5F',
-        '#00646E',
-        '#1C3A6D',
-        '#27003B',
+        [109, 179, 30, 255],
+        [0, 143, 95, 255],
+        [0, 100, 110, 255],
+        [28, 58, 109, 255],
+        [39, 0, 59, 255],
       ];
-      */
 
       const params = {
         tile_scale: 2,
         url: layer.url,
         bidx: 1,
+        format: 'webp',
         // rescale: `${layer.pixel_min_value},${layer.pixel_max_value}`,
         rescale: `${layer.pixel_percentile_2},${layer.pixel_percentile_98}`,
-        /*
         colormap: JSON.stringify({
-          0: [255, 0, 0, 255],
-          255: [0, 255, 0, 255],
+          0: colors[0],
+          75: colors[1],
+          125: colors[2],
+          175: colors[3],
+          255: colors[4],
         }),
         colormap_type: 'linear',
-        */
-        colormap_name: 'viridis',
-        // colormap_name: 'viridis_r',
-        // colormap_name: 'blues',
       };
 
       const paramsPrepared = Object.entries(params)
