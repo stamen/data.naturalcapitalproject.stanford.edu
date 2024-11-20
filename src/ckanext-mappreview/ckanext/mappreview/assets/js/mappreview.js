@@ -21,7 +21,7 @@ ckan.module("mappreview", function ($, _) {
       const endpoint = '/cog/WebMercatorQuad/tilejson.json';
 
       const colors = [
-        [109, 179, 30, 255],
+        [109, 179, 30, 50],
         [0, 143, 95, 255],
         [0, 100, 110, 255],
         [28, 58, 109, 255],
