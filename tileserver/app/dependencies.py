@@ -52,7 +52,7 @@ def ColorMapParams(
             cm = matplotlib.colors.LinearSegmentedColormap.from_list(
                 'custom',
                 [
-                    (k / 255, matplotlib.colors.to_hex([v / 255 for v in rgba]))
+                    (k / 255, matplotlib.colors.to_hex([v / 255 for v in rgba], keep_alpha=True))
                     for (k, rgba) in cm.items()
                 ],
                 256,
