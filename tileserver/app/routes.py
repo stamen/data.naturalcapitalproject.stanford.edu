@@ -204,6 +204,20 @@ class TilerFactory(TiTilerFactory):
                         "maxzoom": maxzoom if maxzoom is not None else src_dst.maxzoom,
                         "tiles": [tiles_url],
                     }
-        
-        # Register Map viewer
-        self.map_viewer()
+                
+        # Register all other routes.  These are copied from the original TilerFactory class.
+        self.bounds()
+        self.info()  # Used by our CKAN instance
+        self.statistics()  # used by our CKAN instance
+        self.tilesets()
+        self.wmts()
+        self.point()
+
+        if self.add_viewer:
+            self.map_viewer()
+
+        if self.add_preview:
+            self.preview()
+
+        if self.add_part:
+            self.part()
