@@ -48,7 +48,6 @@ class cached(aiocache.cached):
             value = await self.get_from_cache(key)
             if value is not None:
                 return value
-            else:
 
         # CUSTOM, we add support for non-async method
         if is_coroutine_callable(f):
