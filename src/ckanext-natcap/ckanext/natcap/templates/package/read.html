@@ -31,7 +31,7 @@
             {% snippet "package/snippets/textarea_copy.html", title='Embed this layer into your website', content=h.mappreview_generate_map_code(pkg_dict), extra_class='mono' %}
           {% endblock %}
           {% block package_code_copy %}
-            {% snippet "package/snippets/textarea_copy.html", title='Use this data in Python (geopandas)', content='Not implemented yet.', extra_class='mono' %}
+            {% snippet "package/snippets/textarea_copy.html", title='Use this data in Python', content=h.mappreview_generate_usage_code(pkg_dict), extra_class='mono' %}
           {% endblock %}
         </div>
       {% endblock %}

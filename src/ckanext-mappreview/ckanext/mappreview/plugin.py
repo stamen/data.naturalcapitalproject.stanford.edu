@@ -60,6 +60,58 @@ def generate_map_code(pkg):
 """
 
 
+def generate_raster_usage_code(url):
+    gdal_example = f"""from osgeo import gdal
+
+raster = gdal.OpenEx('/vsicurl/{url}')
+band = raster.GetRasterBand(1)
+array = band.ReadAsArray(
+    xoff=my_window_x_offset,
+    yoff=my_window_y_offset,
+    win_xsize=my_window_width_in_pixels,
+    win_ysize=my_window_height_in_pixels)"""
+
+    rasterio_example = f"""
+with rasterio.open('{url}') as dataset:
+    array = dataset.read(
+        window=((my_window_y_offset, my_window_y_offset + my_window_height_in_pixels),
+                (my_window_x_offset, my_window_x_offset + my_window_width_in_pixels)))
+"""
+
+    return gdal_example
+
+
+def generate_vector_usage_code(url):
+    return f"""from osgeo import gdal
+
+vector = gdal.OpenEx('/vsicurl/{url}')
+layer = vector.GetLayer()
+for feature in layer:
+    geometry = feature.GetGeometryRef()
+    print(geometry.ExportToWkt())
+
+
+# Geopandas example
+import geopandas
+
+gdf = geopandas.read_file('{HTTPS_URL}')"""
+
+
+def generate_layer_usage_code(url, data_type):
+    if data_type == 'raster':
+        return generate_raster_usage_code(url)
+    elif data_type == 'vector':
+        return generate_vector_usage_code(url)
+    else:
+        return ''
+
+
+def generate_usage_code(pkg):
+    layers = parse_metadata(pkg).get('layers') or []
+    layer = layers[0]
+    return generate_layer_usage_code(layer['url'], layer['type'])
+
+
 class MappreviewPlugin(plugins.SingletonPlugin):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.ITemplateHelpers)
@@ -71,6 +123,7 @@ class MappreviewPlugin(plugins.SingletonPlugin):
 
     def get_helpers(self):
         return {
+            'mappreview_generate_usage_code': generate_usage_code,
             'mappreview_get_config': get_config,
             'mappreview_parse_metadata': parse_metadata,
             'mappreview_should_show': should_show,
