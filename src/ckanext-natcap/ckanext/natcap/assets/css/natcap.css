@@ -4,7 +4,6 @@
 
     --font-headers: "Source Sans 3", sans-serif;
     --color-blue: #007C92;
-    --color-green: #009B76;
     --color-light-gray: #F0F6F4;
     --color-gray: #CBD2D0;
     --color-off-white: #F8F8F8;
@@ -94,7 +93,7 @@ body {
 }
 
 .context-info h1.heading {
-    color: var(--color-green);
+    color: var(--color-dark-plum);
     font-weight: bold;
     font-size: 1.5em;
 }
@@ -420,7 +419,7 @@ body {
 
 .additional-info .table th,
 .additional-info .table-striped > tbody > tr:nth-of-type(odd) > th {
-    color: var(--color-green);
+    color: var(--color-dark-plum);
 }
 
 .additional-info-tag-list {
@@ -454,7 +453,7 @@ body {
 }
 
 .package-usage h3 {
-    color: #009B76;
+    color: var(--color-dark-plum);
     font-size: 0.9rem;
     font-weight: bold;
     margin: 0;
