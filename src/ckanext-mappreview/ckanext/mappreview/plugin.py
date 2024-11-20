@@ -108,8 +108,11 @@ def generate_layer_usage_code(url, data_type):
 
 def generate_usage_code(pkg):
     layers = parse_metadata(pkg).get('layers') or []
-    layer = layers[0]
-    return generate_layer_usage_code(layer['url'], layer['type'])
+    try:
+        layer = layers[0]
+        return generate_layer_usage_code(layer['url'], layer['type'])
+    except IndexError:
+        return ''
 
 
 class MappreviewPlugin(plugins.SingletonPlugin):
