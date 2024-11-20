@@ -48,7 +48,7 @@ import google.cloud.logging
 
 from cache import setup_cache
 
-logging.basicConfig(level=logging.INFO)
+#logging.basicConfig(level=logging.INFO)
 LOGGER = logging.getLogger(__name__)
 
 try:

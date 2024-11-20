@@ -47,10 +47,8 @@ class cached(aiocache.cached):
         if cache_read:
             value = await self.get_from_cache(key)
             if value is not None:
-                LOGGER.info(f"Cache hit: {key}")
                 return value
             else:
-                LOGGER.info(f"Cache miss: {key}")
 
         # CUSTOM, we add support for non-async method
         if is_coroutine_callable(f):
@@ -59,7 +57,6 @@ class cached(aiocache.cached):
             result = await run_in_threadpool(f, *args, **kwargs)
 
         if cache_write:
-            LOGGER.info(f'Writing key to redis cache: {key}')
             if aiocache_wait_for_write:
                 await self.set_in_cache(key, result)
             else:
