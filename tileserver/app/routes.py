@@ -34,7 +34,7 @@ class TilerFactory(TiTilerFactory):
             r"/tiles/{tileMatrixSetId}/{z}/{x}/{y}@{scale}x.{format}",
             **img_endpoint_params,
         )
-        @cached(alias="default")
+        #@cached(alias="default")
         def tile(
             z: Annotated[
                 int,
@@ -123,7 +123,7 @@ class TilerFactory(TiTilerFactory):
             responses={200: {"description": "Return a tilejson"}},
             response_model_exclude_none=True,
         )
-        @cached(alias="default")
+        #@cached(alias="default")
         def tilejson(
             request: Request,
             tileMatrixSetId: Annotated[
