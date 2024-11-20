@@ -9,7 +9,7 @@
     --color-gray: #CBD2D0;
     --color-off-white: #F8F8F8;
     --color-purple: #734675;
-    --color-dark-plum: #350D36
+    --color-dark-plum: #350D36;
     --color-black: #2E2D29;
 }
 
@@ -43,7 +43,7 @@ body {
 
 /* Top menu bar */
 .masthead {
-    background: var(--color-purple);
+    background: var(--color-blue);
     color: #fff;
 }
 
@@ -56,6 +56,13 @@ body {
 
 .masthead .navbar .navbar-left {
   font-family: var(--font-headers);
+  font-size: 1.1em;
+}
+
+.masthead .navbar-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
 }
 
 /* Main body*/
@@ -257,12 +264,16 @@ body {
 }
 
 .homepage .main.hero {
-    background: none;
-    background-color: #009B76;
+    background-image: url(/img/home-page-hero-bg.png);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-position: center;
     color: white;
+    padding: 0;
 }
 
 .homepage .main.hero .container {
+    backdrop-filter: brightness(60%);
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -303,7 +314,7 @@ body {
 }
 
 .home-location-search-container {
-    background-color: var(--color-light-gray);
+    background: rgba(0, 155, 118, 0.15);
 }
 
 .home-location-search-text {
@@ -311,7 +322,7 @@ body {
 }
 
 .home-location-search-text h2 {
-    color: var(--color-blue);
+    color: var(--color-dark-plum);
 }
 
 .home-topics {
@@ -439,9 +450,14 @@ body {
 }
 
 .site-footer {
-    background: var(--color-purple);
+    background: var(--color-blue);
     color: var(--color-off-white);
     padding: 5rem;
+}
+
+.site-footer a {
+    font-weight: 600;
+    color: var(--color-off-white);
 }
 
 .site-footer .icon-link {
