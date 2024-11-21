@@ -87,26 +87,132 @@ def get_raster_statistics(url):
 
 
 def get_map_settings(layers):
+    minzoom = 1
+    try:
+        minzoom = min(filter(None, [l.get('minzoom') for l in layers])),
+    except Exception as e:
+        pass
+
+    maxzoom = 16
+    try:
+        maxzoom = max(filter(None, [l.get('maxzoom') for l in layers])),
+    except Exception as e:
+        pass
+
+    bounds = [-180, -90, 180, 90]
+    try:
+        bounds = [
+            min(filter(None, [l.get('bounds')[0] for l in layers])),
+            min(filter(None, [l.get('bounds')[1] for l in layers])),
+            max(filter(None, [l.get('bounds')[2] for l in layers])),
+            max(filter(None, [l.get('bounds')[3] for l in layers])),
+        ]
+    except Exception as e:
+        pass
+
     return {
-        'minzoom': min([l['minzoom'] for l in layers]),
-        'maxzoom': max([l['maxzoom'] for l in layers]),
-        'bounds': [
-            min([l['bounds'][0] for l in layers]),
-            min([l['bounds'][1] for l in layers]),
-            max([l['bounds'][2] for l in layers]),
-            max([l['bounds'][3] for l in layers]),
-        ],
+        'minzoom': minzoom,
+        'maxzoom': maxzoom,
+        'bounds': bounds,
     }
 
+
+def get_raster_layer_metadata(raster_resource):
+    # Does this GeoTIFF exist?
+    url = raster_resource['url']
+
+    # Avoid redirect from 'storage.cloud.google.com'
+    if url.startswith('https://storage.cloud.google.com/'):
+        url = url.replace('https://storage.cloud.google.com/', 'https://storage.googleapis.com/')
+
+    head_request = requests.head(url)
+    if head_request.status_code != 200 and 'retetion' in url:
+        print('Failed to access GeoTIFF', url)
+        print('Status code:', head_request.status_code)
+        return None
+
+    # If it exists, get all the info about it
+    try:
+        info = get_raster_info(url)
+        stats = get_raster_statistics(url)
+
+        return {
+            'name': raster_resource['name'],
+            'type': 'raster',
+            'url': url,
+            'pixel_min_value': stats['min'],
+            'pixel_max_value': stats['max'],
+            'pixel_percentile_2': stats['percentile_2'],
+            'pixel_percentile_98': stats['percentile_98'],
+            'bounds': info['bounds'],
+            'minzoom': info['minzoom'],
+            'maxzoom': info['maxzoom'],
+        }
+    except Exception as e:
+        print('Failed to access GeoTIFF', url)
+        print('Status code:', head_request.status_code)
+        return None
+
+
+def get_raster_layers_metadata(raster_resources):
+    return filter(None, [get_raster_layer_metadata(r) for r in raster_resources])
+
+
+def get_vector_layer_metadata(vector_resource):
+    url = vector_resource['url']
+
+    # Does this GeoJSON exist?
+    head_request = requests.head(url)
+    if head_request.status_code != 200:
+        print('Failed to access', url)
+        print('Status code:', head_request.status_code)
+        return None
+
+    # If it exists, get all the info about it
+    try:
+        # TODO get bounds
+        bounds = [-180, -90, 180, 90]
+
+        return {
+            'name': vector_resource['name'],
+            'type': 'vector',
+            'url': url,
+            'bounds': bounds,
+        }
+    except Exception as e:
+        print('Failed to access', url)
+        print('Status code:', head_request.status_code)
+        return None
+
+
+def get_vector_layers_metadata(vector_resources):
+    return filter(None, [get_vector_layer_metadata(r) for r in vector_resources])
+
+
 def get_mappreview_metadata(dataset, zip_sources):
-    # TODO vectors
     raster_resources = [r for r in dataset['resources'] if r['format'] == 'GeoTIFF']
+    vector_resources = [r for r in dataset['resources'] if r['format'] == 'Shapefile']
     layers = []
 
     zip_resource = next((r for r in dataset['resources'] if r['format'] == 'ZIP'), None)
 
     if zip_resource and zip_sources:
-        # Look at zip sources for a GeoTIFF, add
+        # Look at zip sources for spatial resources and add
+        shp_sources = [s for s in zip_sources if s.endswith('shp')]
+        for shp_source in shp_sources:
+            path = shp_source.replace('\\', '/')
+            path_start = path.split('/')[0]
+            path_end = '/'.join(path.split('/')[1:]).replace('.shp', '.geojson')
+
+            base = '/'.join(zip_resource['url'].split('/')[0:-1])
+            base = base.replace('https://storage.cloud.google.com/', 'https://storage.googleapis.com/')
+            url = f'{base}/{path_start}/geojsons/{path_end}'
+            name = path.split('/')[-1]
+
+            vector_resources.append({
+                'name': name,
+                'url': url,
+            })
 
         tif_source = next((s for s in zip_sources if s.endswith('tif')), None)
 
@@ -121,41 +227,8 @@ def get_mappreview_metadata(dataset, zip_sources):
                 'url': url,
             })
 
-    for r in raster_resources:
-        # Does this GeoTIFF exist?
-        url = r['url']
-
-        # Avoid redirect from 'storage.cloud.google.com'
-        if url.startswith('https://storage.cloud.google.com/'):
-            url = url.replace('https://storage.cloud.google.com/', 'https://storage.googleapis.com/')
-
-        head_request = requests.head(url)
-        if head_request.status_code != 200 and 'retetion' in url:
-            print('Failed to access GeoTIFF', url)
-            print('Status code:', head_request.status_code)
-            continue
-
-        # If it exists, get all the info about it
-        try:
-            info = get_raster_info(url)
-            stats = get_raster_statistics(url)
-
-            layers.append({
-                'name': r['name'],
-                'type': 'raster',
-                'url': url,
-                'pixel_min_value': stats['min'],
-                'pixel_max_value': stats['max'],
-                'pixel_percentile_2': stats['percentile_2'],
-                'pixel_percentile_98': stats['percentile_98'],
-                'bounds': info['bounds'],
-                'minzoom': info['minzoom'],
-                'maxzoom': info['maxzoom'],
-            })
-        except Exception as e:
-            print('Failed to access GeoTIFF', url)
-            print('Status code:', head_request.status_code)
-            continue
+    layers += get_raster_layers_metadata(raster_resources)
+    layers += get_vector_layers_metadata(vector_resources)
 
     if len(layers) > 0:
         return {
