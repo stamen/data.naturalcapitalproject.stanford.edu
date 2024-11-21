@@ -26,15 +26,19 @@ def parse_metadata(pkg):
 
 
 def get_layer_js(layer, config):
-    titiler_url = get_config()['titiler_url']
-    query_params = {
-        'colormap_name': 'viridis',
-        'bidx': 1,
-        'url': layer['url'],
-        'rescale': f'{layer["pixel_percentile_2"]},{layer["pixel_percentile_98"]}',
-    }
-    layer_url = titiler_url + "/cog/tiles/WebMercatorQuad/{z}/{x}/{y}@2x?" + urlencode(query_params)
-    return f"L.tileLayer('{layer_url}').addTo(map);"
+    # TODO raster vs vector
+    if layer['type'] == 'raster':
+        titiler_url = get_config()['titiler_url']
+        query_params = {
+            'colormap_name': 'viridis',
+            'bidx': 1,
+            'url': layer['url'],
+            'rescale': f'{layer["pixel_percentile_2"]},{layer["pixel_percentile_98"]}',
+        }
+        layer_url = titiler_url + "/cog/tiles/WebMercatorQuad/{z}/{x}/{y}@2x?" + urlencode(query_params)
+        return f"L.tileLayer('{layer_url}').addTo(map);"
+    elif layer['type'] == 'vector':
+        return f'L.geoJson({layer["url"]}).addTo(map);'
 
 
 def get_layers_js(pkg):
@@ -94,7 +98,7 @@ for feature in layer:
 # Geopandas example
 import geopandas
 
-gdf = geopandas.read_file('{HTTPS_URL}')"""
+gdf = geopandas.read_file('{url}')"""
 
 
 def generate_layer_usage_code(url, data_type):

@@ -63,11 +63,25 @@ ckan.module("mappreview", function ($, _) {
       };
     },
 
+    _getVectorLayer: function (layer) {
+      return {
+        id: layer.name,
+        type: 'fill',
+        source: layer.name,
+        /*
+        paint: {
+          'raster-opacity': ['interpolate', ['linear'], ['zoom'], 0, 0.75, 12, 1],
+        },
+        */
+      };
+    },
+
     initialize: function () {
       jQuery.proxyAll(this, '_getGlobalConfig');
       jQuery.proxyAll(this, '_getRasterLayer');
       jQuery.proxyAll(this, '_getRasterTilejsonUrl');
       jQuery.proxyAll(this, '_getRasterPoint');
+      jQuery.proxyAll(this, '_getVectorLayer');
 
       const config = JSON.parse(this.options.config.replace(/'/g, '"'));
       const globalConfig = this._getGlobalConfig();
@@ -91,11 +105,29 @@ ckan.module("mappreview", function ($, _) {
             url,
           };
         }
+        else if (l.type === 'vector') {
+          return {
+            id: l.name,
+            type: 'geojson',
+            data: l.url,
+          };
+        }
+        else {
+          console.warn(`Unsupported source type: ${l.type}`);
+          return null;
+        }
       });
 
       const layers = config.layers.map(l => {
         if (l.type === 'raster') {
           return this._getRasterLayer(l);
+        }
+        else if (l.type === 'vector') {
+          return this._getVectorLayer(l);
+        }
+        else {
+          console.warn(`Unsupported layer type: ${l.type}`);
+          return null;
         }
       });
 
