@@ -858,6 +858,14 @@ body {
     background-image: url("/img/icon-grid-hover.png");
 }
 
+.icon-button-copy {
+    background-image: url("/img/icon-copy.png");
+}
+
+.icon-button-download {
+    background-image: url("/img/icon-download.png");
+}
+
 @media (max-width: 576px) {
     .home-container {
         padding: 4rem 1rem;
