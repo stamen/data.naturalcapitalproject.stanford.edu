@@ -225,11 +225,17 @@ def _create_tags_dicts(config):
 
 def _get_wgs84_bbox(config):
     extent = config['spatial']
-    try:
+    bbox = extent['bounding_box']
+    if isinstance(bbox, list):
         minx, miny, maxx, maxy = extent['bounding_box']
-    except ValueError:
-        LOGGER.error(f"Could not extract bbox from {extent}")
-        return None
+    elif isinstance(bbox, dict):
+        minx = bbox['xmin']
+        miny = bbox['ymin']
+        maxx = bbox['xmax']
+        maxy = bbox['ymax']
+    else:
+        raise NotImplementedError(
+            f"Bounding box is neither a list nor a dict: {bbox}")
 
     if (re.match('(EPSG)|(ESRI):[1-9][0-9]*', str(extent['crs'])) or
             re.match('[0-9][0-9]*', str(extent['crs']))):
@@ -275,18 +281,19 @@ def main(gmm_yaml_path, private=False, group=None):
         print(f"{len(licenses)} licenses found")
 
         license_id = ''
-        if gmm_yaml['licenses']:
+        if gmm_yaml['license']:
             license_id = _find_license(
-                gmm_yaml['licenses'][0]['title'],
-                gmm_yaml['licenses'][0]['path'],
+                gmm_yaml['license']['title'],
+                gmm_yaml['license']['path'],
                 licenses)
 
         # does the package already exist?
         title = gmm_yaml['title']
 
         # Name is uniqely identifiable on CKAN, used in the URL.
-        # Example: sha256-1234567890abcdef
-        name = f'{gmm_yaml["hash"].replace(":", "-")}'
+        # Example: sts-1234567890abcdef
+        name = str(gmm_yaml['uid'].replace(':', '-').replace(
+            'sizetimestamp', 'sts'))
 
         # keys into the first contact info listing
         possible_author_keys = [
@@ -302,26 +309,18 @@ def main(gmm_yaml_path, private=False, group=None):
             _create_resource_dict_from_file(
                 gmm_yaml_path, "Geometamaker YML", upload=True),
         ]
-        identification_url = None
-        for path_key in ('path', 'url'):
-            try:
-                identification_url = gmm_yaml[path_key]
-            except KeyError:
-                pass
-        if identification_url:
-            try:
-                identification_title = gmm_yaml['name']
-            except KeyError:
-                identification_title = os.path.basename(identification_url)
-            resources.append(
-                _create_resource_dict_from_url(
-                    identification_url, identification_title))
-        else:
-            raise ValueError(
-                "Identification URL not found in geometamaker YAML")
 
         # Create a resource dict.  GMM yaml only has 1 possible resource, which
         # is accessed by URL.
+        path_key = None
+        for _path_key in ('path', 'url'):
+            if _path_key in gmm_yaml and gmm_yaml[_path_key]:
+                path_key = _path_key
+                break
+        if not path_key:
+            raise ValueError(
+                "The YAML has neither a valid URL nor path key; "
+                "cannot create any resources.")
         try:
             resource_dict = _create_resource_dict_from_url(
                 gmm_yaml[path_key], gmm_yaml['description'])
@@ -351,14 +350,27 @@ def main(gmm_yaml_path, private=False, group=None):
         # We can define the bbox as a polygon using
         # ckanext-spatial's spatial extra
         extras = []
-        if get_from_config(gmm_yaml, 'spatial.bounding_box')[0]:
+        try:
+            if get_from_config(gmm_yaml, 'spatial.bounding_box'):
+                extras.append({
+                    'key': 'spatial',
+                    'value': json.dumps({
+                        'type': 'Polygon',
+                        'coordinates': _get_wgs84_bbox(gmm_yaml),
+                    }),
+                })
+        except Exception:
+            LOGGER.exception("Something happened when loading the bbox")
+            pass
+
+        try:
             extras.append({
-                'key': 'spatial',
-                'value': json.dumps({
-                    'type': 'Polygon',
-                    'coordinates': _get_wgs84_bbox(gmm_yaml),
-                }),
+                'key': 'placenames',
+                'value': json.dumps(gmm_yaml['placenames'])
             })
+        except KeyError:
+            # KeyError: when no placenames provided.
+            pass
 
         package_parameters = {
             'name': name,
