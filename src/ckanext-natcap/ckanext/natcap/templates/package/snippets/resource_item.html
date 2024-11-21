@@ -11,7 +11,9 @@
         {{ h.natcap_get_filename(res.url) }}
       </div>
     </div>
-    <img src="/img/icon-download.png" />
+    <div class="icon-button">
+      <img src="/img/icon-download.png" />
+    </div>
   </a>
 
   {% set sources = h.get_pkg_dict_extra(c.pkg_dict, 'sources', '') %}

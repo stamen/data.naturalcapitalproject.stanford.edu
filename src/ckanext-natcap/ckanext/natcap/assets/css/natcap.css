@@ -168,7 +168,10 @@ body {
     border-radius: 6px;
     border: 1px solid var(--color-gray);
     margin: 0;
-    background-color: var(--color-off-white);
+}
+
+.resources .resource-item:hover {
+    background-color: transparent;
 }
 
 .resources .resource-list li {
@@ -816,6 +819,43 @@ body {
 
 .source-type-badge img {
     max-height: 1.1rem;
+}
+
+.icon-button {
+    background-repeat: no-repeat;
+    background-position: center;
+    padding: 0.75rem;
+    border-radius: 2px;
+    height: 1.25rem;
+    width: 1.25rem;
+}
+
+.icon-button:hover {
+    background-color: var(--color-light-gray);
+}
+
+.icon-button-list-on {
+    background-image: url("/img/icon-list-on.png");
+}
+
+.icon-button-list {
+    background-image: url("/img/icon-list-off.png");
+}
+
+.icon-button-list:hover {
+    background-image: url("/img/icon-list-hover.png");
+}
+
+.icon-button-grid-on {
+    background-image: url("/img/icon-grid-on.png");
+}
+
+.icon-button-grid {
+    background-image: url("/img/icon-grid-off.png");
+}
+
+.icon-button-grid:hover {
+    background-image: url("/img/icon-grid-hover.png");
 }
 
 @media (max-width: 576px) {

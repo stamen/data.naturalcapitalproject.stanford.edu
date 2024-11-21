@@ -48,11 +48,11 @@
                 {% set grid_href = h.add_url_param(new_params={'ext_search_display': 'grid'}, extras=extras) if not search_display else h.remove_url_param('ext_search_display', replace='grid', extras=extras) %}
                 {% set list_href = h.add_url_param(new_params={'ext_search_display': 'list'}, extras=extras) if not search_display else h.remove_url_param('ext_search_display', replace='list', extras=extras) %}
                 {% if not search_display or search_display == 'list' %}
-                  <img src="/img/icon-list-on.png" alt="List" />
-                  <a href="{{ grid_href }}"><img src="/img/icon-grid-off.png" alt="Grid" /></a>
+                  <div class="icon-button icon-button-list-on"></div>
+                  <a href="{{ grid_href }}" class="icon-button icon-button-grid"></a>
                 {% else %}
-                  <a href="{{ list_href }}"><img src="/img/icon-list-off.png" alt="List" /></a>
-                  <img src="/img/icon-grid-on.png" alt="Grid" />
+                  <a href="{{ list_href }}" class="icon-button icon-button-list"></a>
+                  <div class="icon-button icon-button-grid-on"></div>
                 {% endif %}
               </div>
               {% endblock %}
