@@ -70,15 +70,71 @@ body {
 
 /* Main body*/
 .homepage .module-search .search-form {
+    background-color: unset;
     border-radius: 0.25rem;
-    background-color: #8c1515;
     padding: 0;
+}
+
+.module-search .search-form .form-group {
+    display: flex;
+    align-items: stretch;
+    flex-direction row;
+}
+
+.homepage .module-search .search-form button {
+    right: unset;
+    margin-left: unset;
+    border: 1px solid var(--color-gray);
+}
+
+.search-form .search-input.search-giant button {
+    margin-top: 0;
+}
+
+.search-form .search-input {
+    margin: 0;
+}
+
+.search-form .search-input input {
+    border-radius: 0;
+    border-top-left-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
+}
+
+.search-form .search-input button {
+    color: var(--color-white);
+    background-color: var(--color-dark-plum);
+    border-radius: 0;
+    border-top-right-radius: 0.5rem;
+    border-bottom-right-radius: 0.5rem;
+    font-size: 1.25em;
+    right: unset;
+    margin: 0;
+    display: unset;
+    position: unset;
+    top: unset;
+    margin-top: unset;
+    right: unset;
+    padding: 0 1rem;
+    height: unset;
+}
+
+.search-form .search-input input::placeholder {
+    font-style: italic;
+}
+
+.search-form .search-input button:hover {
+    background-color: var(--color-purple);
 }
 
 .homepage .module-search .tags {
     margin-top: -5px;
     padding: 5px 10px 10px 10px;
     background-color: #8c1515;
+}
+
+.homepage .search-form .search-input input {
+    padding-left: 2rem;
 }
 
 .container {
@@ -526,6 +582,7 @@ body {
     padding-left: 2rem;
 }
 
+.search-form .search-input::before,
 .search-form .search-input-group::before {
     content: '';
     background: url(/img/icon-search.png) no-repeat center center;
@@ -536,6 +593,14 @@ body {
     top: 0.75rem;
     left: 0.5rem;
     z-index: 1000;
+}
+
+.search-form .search-input::before {
+    top: 1.1rem;
+}
+
+.search-form .search-input-group input::placeholder {
+    font-style: italic;
 }
 
 .search-form .control-order-by {
@@ -553,10 +618,14 @@ body {
 
 .search-form .btn-default {
     color: var(--color-off-white);
-    background-color: var(--color-blue);
+    background-color: var(--color-dark-plum);
     border-color: var(--color-gray);
     border-top-left-radius: 0;
     border-bottom-left-radius: 0;
+}
+
+.search-form .btn-default:hover {
+    background-color: var(--color-purple) !important;
 }
 
 .dataset-item {
