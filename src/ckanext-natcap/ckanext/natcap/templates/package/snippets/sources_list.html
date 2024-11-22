@@ -9,6 +9,10 @@
               <img src="/img/icon-filetype-{{ h.natcap_get_resource_type_icon_slug(source.name) }}.png" />
               {{ h.natcap_get_ext(source.name) }}
             </div>
+          {% elif source.type == 'directory' %}
+            <div class="resource-item-type">
+              <img src="/img/icon-filetype-directory.png" />
+            </div>
           {% endif %}
 
           <div class="resource-item-name">
