@@ -1,0 +1,70 @@
+{
+  "Topics": [
+    {
+      "topic": "Coasts and Ocean",
+      "keywords": [
+        "WAVEWATCH",
+        "BATHYMETRY",
+        "COASTAL",
+        "OCEAN",
+        "MARINE",
+        "CONTINENTAL SHELF CONTOUR"
+      ]
+    },
+    {
+      "topic": "Terrestrial",
+      "keywords": [
+        "LULC",
+        "LAND USE LAND COVER",
+        "DEM",
+        "DIGITAL ELEVATION MODEL",
+        "BIOPHYSICAL TABLE/BIOPHYSICAL",
+        "LANDMASSES",
+        "HABITATS/HABITAT",
+        "GEOMORPHOLOGY",
+        "SEA LEVEL",
+        "LAND COVER",
+        "FARMS",
+        "EROSIVITY",
+        "SOIL"
+      ]
+    },
+    {
+      "topic": "Cities",
+      "keywords": [
+        "POPULATION",
+        "HUMAN POPULATION",
+        "BULDINGS",
+        "ADMINISTRATIVE BOUNDARIES"
+      ]
+    },
+    {
+      "topic": "Water",
+      "keywords": [
+        "PRECIPITATION",
+        "EVAPOTRANSPIRATION",
+        "WATERSHEDS",
+        "SUBWATERSHEDS",
+        "AWC",
+        "AVAILABLE WATER CONTENT",
+        "NUTRIENT RUNOFF",
+        "DRAINAGE",
+        "STORMWATER",
+        "RAINFALL"
+      ]
+    },
+    {
+      "topic": "Plants",
+      "keywords": [
+        "ROOT RESTRICTING LAYER DEPTH",
+        "FERTILIZATION",
+        "NUTRIENT RUNOFF",
+        "POLLINATION",
+        "EROSIVITY",
+        "SOIL",
+        "SOIL HYDROLOGIC",
+        "EVAPOTRANSPIRATION"
+      ]
+    }
+  ]
+}

@@ -7,30 +7,9 @@
 
   <div>
     <ul class="home-topics-list">
-      <li class="home-topics-list-item">
-        <div>
-          <img src="/img/topics-water.png" />
-        </div>
-        <div>{{ _('Water') }}</div>
-      </li>
-      <li class="home-topics-list-item">
-        <div>
-          <img src="/img/topics-cities.png" />
-        </div>
-        <div>{{ _('Cities') }}</div>
-      </li>
-      <li class="home-topics-list-item">
-        <div>
-          <img src="/img/topics-coasts.png" />
-        </div>
-        <div>{{ _('Oceans and Coasts') }}</div>
-      </li>
-      <li class="home-topics-list-item">
-        <div>
-          <img src="/img/topics-terrestrial.png" />
-        </div>
-        <div>{{ _('Terrestrial') }}</div>
-      </li>
+      {% for topic in h.natcap_get_topic_keywords() %}
+        {% snippet 'home/snippets/topic.html', url=topic.url, name=topic.name, slug=topic.slug, keywords=topic.keywords %}
+      {% endfor %}
     </ul>
   </div>
 </div>

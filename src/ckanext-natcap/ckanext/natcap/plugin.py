@@ -1,10 +1,19 @@
 # encoding=utf-8
 from __future__ import annotations
 
+from os import path
 import json
+from ckan.lib.helpers import url_for, _url_with_params
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 from ckan.types import Schema
+
+
+topic_keywords = []
+
+with open(path.join(path.dirname(__file__), 'topic_keywords.json'), 'r') as f:
+    topic_keywords = json.load(f)
+
 
 shown_extensions = [
     'csv',
@@ -14,6 +23,7 @@ shown_extensions = [
     'txt',
     'yml',
 ]
+
 
 def get_resource_type_facet_label(resource_type_facet):
     return get_resource_type_label(resource_type_facet['name'])
@@ -55,6 +65,23 @@ def get_resource_type_icon_slug(resource_url):
     return get_ext(resource_url)
 
 
+def get_topic_keywords():
+    topics = topic_keywords['Topics']
+
+    def update_topic(topic):
+        url = _url_with_params(
+            url_for('search'),
+            params=[('topic', topic['topic'])],
+        )
+        return {
+            'slug': topic['topic'].replace(' ', '-').lower(), 'name': topic['topic'],
+            'keywords': topic['keywords'],
+            'url': url,
+        }
+    topics = [update_topic(t) for t in topics if t['topic'] != 'Plants']
+    return topics
+
+
 def show_resource(resource_url):
     return get_ext(resource_url) in shown_extensions
 
@@ -71,6 +98,7 @@ class NatcapPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
     plugins.implements(plugins.IConfigurer)
     plugins.implements(plugins.IDatasetForm)
     plugins.implements(plugins.IFacets)
+    plugins.implements(plugins.IPackageController, inherit=True)
     plugins.implements(plugins.ITemplateHelpers)
 
     # IConfigurer
@@ -122,6 +150,7 @@ class NatcapPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
             'natcap_get_resource_type_icon_slug': get_resource_type_icon_slug,
             'natcap_get_resource_type_facet_label': get_resource_type_facet_label,
             'natcap_get_resource_type_label': get_resource_type_label,
+            'natcap_get_topic_keywords': get_topic_keywords,
             'natcap_show_icon': show_icon,
             'natcap_show_resource': show_resource,
             'natcap_parse_json': parse_json,
@@ -131,3 +160,16 @@ class NatcapPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         facets_dict['extras_placenames'] = toolkit._('Places')
         facets_dict['extras_sources_res_formats'] = toolkit._('Resource Formats')
         return facets_dict
+
+    def before_dataset_search(self, search_params: dict[str, Any]):
+        # Check for topic facet and add tags if found
+        if 'fq' in search_params and search_params['fq'].startswith('topic:'):
+            try:
+                topic = json.loads(search_params['fq'].split(':', 1)[1])
+                keywords = next(t['keywords'] for t in topic_keywords['Topics'] if t['topic'] == topic)
+                tags = ' OR '.join(['"{}"'.format(k) for k in keywords])
+                search_params['fq'] = f'tags:({tags})'
+            except Exception as e:
+                pass
+
+        return search_params
