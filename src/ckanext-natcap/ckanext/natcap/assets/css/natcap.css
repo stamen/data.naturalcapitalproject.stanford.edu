@@ -726,6 +726,10 @@ body {
     background: none;
 }
 
+.search-filters .nav-item input[type="checkbox"] {
+    pointer-events: none;
+}
+
 .search-filters .nav-item.active {
     background: none;
 }
