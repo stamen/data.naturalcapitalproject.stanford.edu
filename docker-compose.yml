@@ -26,6 +26,9 @@ services:
       dockerfile: ckan/Dockerfile
       args:
         - TZ=${TZ}
+        - GITHUB_USER=${GITHUB_USER}
+        - GITHUB_REPO=${GITHUB_REPO}
+        - GITHUB_BRANCH=${GITHUB_BRANCH}
     networks:
       - ckannet
       - dbnet
@@ -84,6 +87,7 @@ services:
     image: ckan/ckan-solr:${SOLR_IMAGE_VERSION}
     volumes:
       - solr_data:/var/solr
+      - ./solr/ckan-config:/opt/solr/server/solr/configsets/ckan/conf
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-qO", "/dev/null", "http://localhost:8983/solr/"]

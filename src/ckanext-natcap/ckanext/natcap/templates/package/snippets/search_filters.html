@@ -1,0 +1,60 @@
+{% set formats = h.get_facet_items_dict('res_format', search_facets) %}
+{% set tags = h.get_facet_items_dict('tags', search_facets) %}
+
+<div class="search-filters">
+  <div class="search-filters-title">
+    Filter by
+    <img src="/img/icon-filter.png" />
+  </div>
+  <div class="search-filters-content">
+    {% set open = h.get_facet_items_dict('extras_placenames', search_facets)|map(attribute='active')|sum %}
+    <div class="search-filters-section {% if open == 0 %}collapsed{% endif %}" data-module="natcap-facet-collapse">
+      <div class="search-filters-section-header collapsed">
+        <div class="search-filters-section-header-left">
+          <img src="/img/filters-place.png" />
+          <div class="search-filters-section-title">Place</div>
+        </div>
+        <div class="search-filters-section-header-right">
+          <img class="search-filters-toggle-icon" src="/img/icon-toggle.png" />
+        </div>
+      </div>
+      <div class="search-filters-section-content">
+        {% snippet "spatial/snippets/spatial_query.html" %}
+        {% snippet 'snippets/facet_list.html', title='Places', name='extras_placenames', search_facets=search_facets %}
+      </div>
+    </div>
+
+    {% set open = h.get_facet_items_dict('res_format', search_facets)|map(attribute='active')|sum %}
+    <div class="search-filters-section {% if open == 0 %}collapsed{% endif %}" data-module="natcap-facet-collapse">
+      <div class="search-filters-section-header collapsed">
+        <div class="search-filters-section-header-left">
+          <img src="/img/filters-file-type.png" />
+          <div class="search-filters-section-title">{{ _('File type') }}</div>
+        </div>
+        <div class="search-filters-section-header-right">
+          <img class="search-filters-toggle-icon" src="/img/icon-toggle.png" />
+        </div>
+      </div>
+      <div class="search-filters-section-content">
+        {# TODO show icons #}
+        {% snippet 'snippets/facet_list.html', title='File type', name='extras_sources_res_formats', search_facets=search_facets, label_function=h.natcap_get_resource_type_facet_label %}
+      </div>
+    </div>
+
+    {% set open = h.get_facet_items_dict('tags', search_facets)|map(attribute='active')|sum %}
+    <div class="search-filters-section {% if open == 0 %}collapsed{% endif %}" data-module="natcap-facet-collapse">
+      <div class="search-filters-section-header">
+        <div class="search-filters-section-header-left">
+          <img src="/img/filters-tag.png" />
+          <div class="search-filters-section-title">Tag</div>
+        </div>
+        <div class="search-filters-section-header-right">
+          <img class="search-filters-toggle-icon" src="/img/icon-toggle.png" />
+        </div>
+      </div>
+      <div class="search-filters-section-content">
+        {% snippet 'snippets/facet_list.html', title='Tags', name='tags', search_facets=search_facets %}
+      </div>
+    </div>
+  </div>
+</div>

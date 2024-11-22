@@ -1,5 +1,9 @@
 FROM ckan/ckan-base:2.10.4
 
+ARG GITHUB_USER
+ARG GITHUB_REPO
+ARG GITHUB_BRANCH
+
 # Set up environment variables
 ENV APP_DIR=/opt/ckan-catalog/data.naturalcapitalproject.stanford.edu
 ENV TZ=UTC
@@ -22,14 +26,28 @@ RUN pip3 install -e git+https://github.com/ckan/ckanext-spatial.git@$CKANEXT_SPA
 RUN pip3 install -e 'git+https://github.com/ckan/ckanext-scheming.git@3af6056bbe16c3f8c6257f18cb2a0805370f85de#egg=ckanext-scheming'
 RUN pip3 install "numpy<2"
 
+RUN pip3 install -e 'git+https://github.com/keitaroinc/ckanext-suggest.git@main#egg=ckanext-suggest'
+RUN pip3 install -r https://raw.githubusercontent.com/keitaroinc/ckanext-suggest/main/requirements.txt
+
 ENV CKANEXT_GOOGLEANALYTICS_GIT_REV=44cb2844a1704bfd9a7a42164652aaf6826a1bc7
 RUN pip3 install -e git+https://github.com/ckan/ckanext-googleanalytics.git@$CKANEXT_GOOGLEANALYTICS_GIT_REV#egg=ckanext-googleanalytics && \
     pip3 install -r https://raw.githubusercontent.com/ckan/ckanext-googleanalytics/$CKANEXT_GOOGLEANALYTICS_GIT_REV/requirements.txt && \
     python3 -m pip install oauth2client
 
 # NOTE: requires that the build context includes ./src/
+# NOTE: Adding version.json to bust cache
+ADD https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/git/refs/heads/${GITHUB_BRANCH} version.json
 COPY ./src/ckanext-natcap /tmp/ckanext-natcap
-RUN pip3 install -r /tmp/ckanext-natcap/requirements.txt && pip3 install /tmp/ckanext-natcap
+RUN pip3 install -r /tmp/ckanext-natcap/requirements.txt 
+RUN pip3 install /tmp/ckanext-natcap
+
+COPY ./src/ckanext-mappreview /tmp/ckanext-mappreview
+RUN pip3 install -r /tmp/ckanext-mappreview/requirements.txt 
+RUN pip3 install /tmp/ckanext-mappreview
+
+COPY ./src/ckanext-zipexpand /tmp/ckanext-zipexpand
+RUN pip3 install -r /tmp/ckanext-zipexpand/requirements.txt 
+RUN pip3 install /tmp/ckanext-zipexpand
 
 # Install any extensions needed by your CKAN instance
 # See Dockerfile.dev for more details and examples
@@ -39,7 +57,7 @@ COPY ./ckan/docker-entrypoint.d/* /docker-entrypoint.d/
 
 # Apply any patches needed to CKAN core or any of the built extensions (not the
 # runtime mounted ones)
-COPY patches ${APP_DIR}/patches
+COPY ./ckan/patches ${APP_DIR}/patches
 
 RUN for d in $APP_DIR/patches/*; do \
         if [ -d $d ]; then \
