@@ -1,4 +1,5 @@
 import json
+import re
 from urllib.parse import urlencode
 from ckan.common import config
 import ckan.plugins as plugins
@@ -25,8 +26,7 @@ def parse_metadata(pkg):
     return json.loads(mappreview['value'])
 
 
-def get_layer_js(layer, config):
-    # TODO raster vs vector
+def get_layer_js(layer):
     if layer['type'] == 'raster':
         titiler_url = get_config()['titiler_url']
         query_params = {
@@ -38,12 +38,20 @@ def get_layer_js(layer, config):
         layer_url = titiler_url + "/cog/tiles/WebMercatorQuad/{z}/{x}/{y}@2x?" + urlencode(query_params)
         return f"L.tileLayer('{layer_url}').addTo(map);"
     elif layer['type'] == 'vector':
-        return f'L.geoJson({layer["url"]}).addTo(map);'
+        slug = re.sub('[^a-zA-Z0-9]', '', layer['name'])
+        url = layer['url']
+        return f"""const add{slug} = async () => {{
+  const r = await fetch('{url}');
+  const geojson = await r.json();
+  L.geoJson(geojson).addTo(map);
+}};
+
+add{slug}();"""
 
 
 def get_layers_js(pkg):
     layers = parse_metadata(pkg).get('layers') or []
-    return '\n'.join([get_layer_js(layer, config) for layer in layers])
+    return '\n'.join([get_layer_js(layer) for layer in layers])
 
 
 def generate_map_code(pkg):
