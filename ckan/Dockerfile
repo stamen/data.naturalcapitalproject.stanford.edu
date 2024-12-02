@@ -38,7 +38,7 @@ RUN pip3 install -e /tmp/ckanext-natcap
 
 COPY ./src/ckanext-mappreview /tmp/ckanext-mappreview
 RUN pip3 install -r /tmp/ckanext-mappreview/requirements.txt
-RUN pip3 install /-e tmp/ckanext-mappreview
+RUN pip3 install -e /tmp/ckanext-mappreview
 
 COPY ./src/ckanext-zipexpand /tmp/ckanext-zipexpand
 RUN pip3 install -r /tmp/ckanext-zipexpand/requirements.txt
