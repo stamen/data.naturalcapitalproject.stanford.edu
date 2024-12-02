@@ -39,8 +39,12 @@ def get_dataset_metadata(dataset):
     if dataset['resources']:
         for resource in dataset['resources']:
             if resource['description'] == 'Geometamaker YML':
-                r = requests.get(resource['url'])
-                return yaml.safe_load(r.text)
+                try:
+                    r = requests.get(resource['url'])
+                    return yaml.safe_load(r.text)
+                except Exception as e:
+                    print(f'Failed to get dataset metadata {resource["url"]}')
+                    return {}
     return None
 
 
