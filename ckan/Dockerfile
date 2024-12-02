@@ -33,16 +33,16 @@ RUN pip3 install -e git+https://github.com/ckan/ckanext-googleanalytics.git@$CKA
 
 # NOTE: requires that the build context includes ./src/
 COPY ./src/ckanext-natcap .
-RUN pip3 install -r /tmp/ckanext-natcap/requirements.txt && \
-    pip3 install -e /tmp/ckanext-natcap
+RUN pip3 install -r ckanext-natcap/requirements.txt && \
+    pip3 install -e ckanext-natcap
 
 COPY ./src/ckanext-mappreview .
-RUN pip3 install -r /tmp/ckanext-mappreview/requirements.txt && \
-    pip3 install -e /tmp/ckanext-mappreview
+RUN pip3 install -r ckanext-mappreview/requirements.txt && \
+    pip3 install -e ckanext-mappreview
 
 COPY ./src/ckanext-zipexpand .
-RUN pip3 install -r /tmp/ckanext-zipexpand/requirements.txt && \
-    pip3 install -e /tmp/ckanext-zipexpand
+RUN pip3 install -r ckanext-zipexpand/requirements.txt && \
+    pip3 install -e ckanext-zipexpand
 
 # Install any extensions needed by your CKAN instance
 # See Dockerfile.dev for more details and examples
