@@ -58,15 +58,11 @@ services:
       test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]
 
   solr:
-    build:
-      context: .
-      dockerfile: solr/Dockerfile.dev
     image: ckan/ckan-solr:${SOLR_IMAGE_VERSION}
     ports:
      - "8983:8983"
     volumes:
       - solr_data:/var/solr
-      - ./solr/ckan-config:/opt/solr/server/solr/configsets/ckan/conf
     restart: unless-stopped
     healthcheck:
       test: ["CMD", "wget", "-qO", "/dev/null", "http://localhost:8983/solr/"]
