@@ -4,6 +4,20 @@ import os
 import requests
 import yaml
 
+#
+# Sync CKAN datasets between two servers.
+#
+# Adds extras fields specific to this installation, such as sources,
+# sources_res_formats, and mappreview. Datasets on the destination server are
+# deleted, then datasets from the source server are added.
+#
+# If the source and destination servers are the same, the extra fields will be
+# added/udpated instead of deleting and adding datasets. 
+#
+# Usage:
+#  SYNC_DST_CKAN_APIKEY=... SYNC_SRC_URL=... SYNC_DST_URL=... python sync-datasets.py
+#
+
 SRC = os.environ.get('SYNC_SRC_URL', 'https://data.naturalcapitalproject.stanford.edu')
 DST = os.environ.get('SYNC_DST_URL', 'http://localhost:5000')
 DST_APIKEY = os.environ['SYNC_DST_CKAN_APIKEY']
@@ -256,73 +270,116 @@ def delete_datasets(dst, dst_apikey):
                                         headers={'Authorization': dst_apikey})
 
 
-def sync_datasets(src, dst, dst_apikey):
+def get_dataset(id, src):
+    package_response = requests.get(src + '/api/3/action/package_show?id=' + id)
+    package = package_response.json()['result']
+
+    for extra in package['extras']:
+        if extra['key'] == 'suggested_citation':
+            package['suggested_citation'] = extra['value']
+
+    package['extras'] = [e for e in package['extras'] if e['key'] not in
+                         ('suggested_citation',)]
+
+    # If dataset has metadata with sources in it, add those
+    metadata = get_dataset_metadata(package)
+    sources = get_dataset_sources(metadata)
+
+    all_res_formats = [to_short_format(r['format']) for r in package['resources']]
+
+    # Remove extras that we will add
+    package['extras'] = [e for e in package['extras'] if e['key'] not in ('sources', 'sources_res_formats', 'mappreview')]
+
+    # Add sources
+    if sources:
+        package['extras'].append({'key': 'sources', 'value': json.dumps(sources)})
+        all_res_formats += [s.split('.')[-1] for s in sources]
+
+    # Add sources_res_formats
+    all_res_formats = [s for s in all_res_formats if include_format(s)]
+    sources_res_formats = sorted(list(set(all_res_formats)))
+    package['extras'].append({
+        'key': 'sources_res_formats',
+        'value': json.dumps(sources_res_formats)
+    })
+
+    # Add mappreview
+    mappreview_metadata = get_mappreview_metadata(package, sources)
+    if mappreview_metadata:
+        package['extras'].append({'key': 'mappreview', 'value': json.dumps(mappreview_metadata)})
+
+    return package
+
+
+def add_dataset(id, dataset, dst, dst_apikey):
+    print('Adding ' + id)
+    organization_id = None
+    organization_response = requests.get(dst + '/api/action/organization_show?id=' + dataset['owner_org'])
+
+    if organization_response.status_code == 404:
+        print('Creating org')
+        organization_post_response = requests.post(
+            dst + '/api/action/organization_create',
+            headers={'Authorization': dst_apikey},
+            json=package_response.json()['result']['organization']
+        )
+        organization_id = organization_post_response.json()['result']['id']
+
+    for resource in dataset['resources']:
+        # We aren't uploading resources here, just linking to existing ones
+        resource['url_type'] = None
+
+    post_response = requests.post(
+        dst + '/api/action/package_create',
+        headers={'Authorization': dst_apikey},
+        json=dataset
+    )
+
+    if (post_response.status_code != 200):
+        print(post_response.json()['error'])
+        raise Exception('Failed to add ' + id)
+
+
+def update_dataset(id, dataset, dst, dst_apikey):
+    print('Updating ' + id)
+
+    post_response = requests.post(
+        dst + '/api/action/package_update',
+        headers={'Authorization': dst_apikey},
+        json=dataset
+    )
+
+    if (post_response.status_code != 200):
+        print(post_response.json()['error'])
+        raise Exception('Failed to update ' + id)
+
+
+def sync_dataset(id, src, dst, dst_apikey, update=False):
+    dataset = get_dataset(id, src)
+
+    if not update:
+        add_dataset(id, dataset, dst, dst_apikey)
+    else:
+        update_dataset(id, dataset, dst, dst_apikey)
+
+
+def sync_datasets(src, dst, dst_apikey, update=False):
     list_response = requests.get(src + '/api/3/action/package_list')
 
     for id in list_response.json()['result']:
-        print('Adding ' + id)
-        package_response = requests.get(src + '/api/3/action/package_show?id=' + id)
-
-        organization_id = None
-        organization_response = requests.get(dst + '/api/action/organization_show?id=' + package_response.json()['result']['owner_org'])
-
-        if organization_response.status_code == 404:
-            print('Creating org')
-            organization_post_response = requests.post(
-                dst + '/api/action/organization_create',
-                headers={'Authorization': dst_apikey},
-                json=package_response.json()['result']['organization']
-            )
-            organization_id = organization_post_response.json()['result']['id']
-
-        package = package_response.json()['result']
-
-        for extra in package['extras']:
-            if extra['key'] == 'suggested_citation':
-                package['suggested_citation'] = extra['value']
-
-        package['extras'] = [e for e in package['extras'] if e['key'] not in
-                             ('suggested_citation',)]
-
-        # If dataset has metadata with sources in it, add those
-        metadata = get_dataset_metadata(package)
-        sources = get_dataset_sources(metadata)
-
-        all_res_formats = [to_short_format(r['format']) for r in package['resources']]
-
-        if sources:
-            # TODO maybe better on the resource itself?
-            package['extras'].append({'key': 'sources', 'value': json.dumps(sources)})
-
-            all_res_formats += [s.split('.')[-1] for s in sources]
-
-        all_res_formats = [s for s in all_res_formats if include_format(s)]
-        sources_res_formats = sorted(list(set(all_res_formats)))
-        package['extras'].append({
-            'key': 'sources_res_formats',
-            'value': json.dumps(sources_res_formats)
-        })
-
-        mappreview_metadata = get_mappreview_metadata(package, sources)
-        if mappreview_metadata:
-            package['extras'].append({'key': 'mappreview', 'value': json.dumps(mappreview_metadata)})
-
-        post_response = requests.post(
-            dst + '/api/action/package_create',
-            headers={'Authorization': dst_apikey},
-            json=package
-        )
-
-        if (post_response.status_code != 200):
-            print(post_response.json()['error'])
-            break
+        sync_dataset(id, src, dst, dst_apikey, update=update)
 
 
 if __name__ == '__main__':
-    print('Deleting existing datasets...')
-    delete_datasets(DST, DST_APIKEY)
-    print('Done.')
+    update = False
+    if DST == SRC:
+        update = True
+
+    if not update:
+        print('Deleting existing datasets...')
+        delete_datasets(DST, DST_APIKEY)
+        print('Done.')
 
     print('Syncing datasets...')
-    sync_datasets(SRC, DST, DST_APIKEY)
+    sync_datasets(SRC, DST, DST_APIKEY, update=update)
     print('Done.')
