@@ -8,6 +8,7 @@
     --color-gray: #CBD2D0;
     --color-dark-gray: #909795;
     --color-gray-hover: #E2EEEA;
+    --color-gray-border: #E2EEEA;
     --color-off-white: #F8F8F8;
     --color-purple: #734675;
     --color-dark-plum: #350D36;
@@ -91,6 +92,21 @@ body {
 
 .search-form .search-input.search-giant button {
     margin-top: 0;
+}
+
+.search-input-group {
+    border: 1px solid var(--color-gray-border);
+    border-radius: 0.5rem;
+}
+
+.search-input-group .input-group-btn .btn {
+    border: none;
+}
+
+.search-input-group .form-control {
+    border: none;
+    border-top-left-radius: 0.5rem;
+    border-bottom-left-radius: 0.5rem;
 }
 
 .search-form .search-input {
