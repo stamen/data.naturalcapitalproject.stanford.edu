@@ -1,5 +1,20 @@
 {% ckan_extends %}
 
+{% set facets = {
+  'fields': fields_grouped,
+  'search': search_facets,
+  'titles': facet_titles,
+  'translated_fields': translated_fields,
+  'remove_field': remove_field }
+%}
+{% set sorting = [
+  (_('Relevance'), 'score desc, metadata_modified desc'),
+  (_('Name Ascending'), 'title_string asc'),
+  (_('Name Descending'), 'title_string desc'),
+  (_('Last Modified'), 'metadata_modified desc')
+]
+%}
+
 {% block wrapper_class %} {{ super() }} package-search-wrapper{% endblock %}
 
 {% block secondary_content %}
@@ -11,26 +26,45 @@
 {% endblock %}
 
 {% block package_search_results_list %}
+
+  {% block search_facets %}
+    {% if facets %}
+      <div class="filter-list">
+        {% for field in facets.fields %}
+          {% set search_facets_items = facets.search.get(field)['items'] if facets.search and field in facets.search else [] %}
+          {% for value in facets.fields[field] %}
+            <span class="filtered pill facet-{{ field }}">
+              {% if field == 'extras_placenames' %}
+                <img class="field-icon" src="/img/filters-place.png" />
+              {% elif field == 'extras_sources_res_formats' %}
+                <img class="field-icon" src="/img/filters-file-type.png" />
+              {% elif field == 'tags' %}
+                <img class="field-icon" src="/img/filters-tag.png" />
+              {% endif %}
+
+              <span class="facet-value">
+                {%- if facets.translated_fields and (field,value) in facets.translated_fields -%}
+                  {{ facets.translated_fields[(field,value)] }}
+                {%- elif field == 'extras_sources_res_formats' -%}
+                  {{ h.natcap_get_resource_type_label(value) }}
+                {%- else -%}
+                  {{ h.list_dict_filter(search_facets_items, 'name', 'display_name', value) }}
+                {%- endif %}
+              </span>
+
+              <a href="{{ facets.remove_field(field, value) }}" class="remove" aria-label="{{ _('Remove applied filter: {value}').format(value=value) }}" data-bs-title="{{ _('Remove') }}" data-bs-toggle="tooltip"><img src="/img/icon-close.png" /></a>
+            </span>
+          {% endfor %}
+        {% endfor %}
+      </div>
+    {% endif %}
+  {% endblock %}
   {% set search_display = h.get_request_param('ext_search_display') or 'list' %}
   {% snippet 'snippets/package_list.html', packages=page.items, list_class='dataset-list list-unstyled dataset-list-' + search_display %}
 {% endblock %}
 
 {% block toolbar %}
   {% block page_search_form %}
-    {% set facets = {
-      'fields': fields_grouped,
-      'search': search_facets,
-      'titles': facet_titles,
-      'translated_fields': translated_fields,
-      'remove_field': remove_field }
-    %}
-    {% set sorting = [
-      (_('Relevance'), 'score desc, metadata_modified desc'),
-      (_('Name Ascending'), 'title_string asc'),
-      (_('Name Descending'), 'title_string desc'),
-      (_('Last Modified'), 'metadata_modified desc')
-    ]
-    %}
     {% snippet 'snippets/search_form.html', form_id='dataset-search-form', type=dataset_type, query=q, sorting=sorting, sorting_selected=sort_by_selected, count=page.item_count, placeholder=h.humanize_entity_type('package', dataset_type, 'search placeholder'), facets=facets, show_empty=request.args, error=query_error, fields=fields %}
   {% endblock %}
 {% endblock %}

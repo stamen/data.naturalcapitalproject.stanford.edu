@@ -6,6 +6,8 @@
     --color-blue: #007C92;
     --color-light-gray: #F0F6F4;
     --color-gray: #CBD2D0;
+    --color-dark-gray: #909795;
+    --color-gray-hover: #E2EEEA;
     --color-off-white: #F8F8F8;
     --color-purple: #734675;
     --color-dark-plum: #350D36;
@@ -140,6 +142,13 @@ body {
 .container {
     --bs-gutter-x: 1.5rem;
     max-width: unset;
+}
+
+.package-search-wrapper .primary .module-content {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding-top: 0.25rem;
 }
 
 .package-search-wrapper .secondary {
@@ -785,6 +794,40 @@ body {
     flex-direction: row;
     align-items: center;
     gap: 0.5rem;
+}
+
+.filter-list {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.filter-list .filtered.pill {
+    background: var(--color-light-gray);
+    color: var(--color-black);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 600;
+    padding: 0.25rem 0.5rem;
+}
+
+.filter-list .filtered.pill:hover {
+    background: var(--color-gray-hover);
+}
+
+.filter-list .filtered.pill .facet-value {
+    line-height: 1em;
+}
+
+.filter-list .filtered.pill .field-icon {
+    height: 1.1em;
+}
+
+.filter-list .filtered.pill a.remove {
+    color: var(--color-dark-gray);
 }
 
 .package-textarea-copy {
