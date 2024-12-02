@@ -1,0 +1,58 @@
+{% ckan_extends %}
+
+{% block package_item %}
+ <li class="{{ item_class or "dataset-item" }}">
+    {% block content %}
+      <div class="dataset-content">
+        {% block heading %}
+          <div class="dataset-heading-wrapper">
+              <h2 class="dataset-heading">
+                {% block heading_private %}
+                  {% if package.private %}
+                    <span class="dataset-private badge bg-secondary">
+                        <i class="fa fa-lock"></i>
+                        {{ _('Private') }}
+                    </span>
+                  {% endif %}
+                {% endblock %}
+                {% block heading_title %}
+        <a href="{{ h.url_for('%s.read' % package.type, id=package.name) }}" aria-label="{{ _('Navigate to dataset: {title}').format(title=title|truncate(80)) }}">
+          {{title|truncate(80)}}
+        </a>
+                {% endblock %}
+                {% block heading_meta %}
+                  {% if package.get('state', '').startswith('draft') %}
+                    <span class="badge bg-info">{{ _('Draft') }}</span>
+                  {% elif package.get('state', '').startswith('deleted') %}
+                    <span class="badge bg-danger">{{ _('Deleted') }}</span>
+                  {% endif %}
+                {% endblock %}
+              </h2>
+              {% block resources %}
+                {% if package.resources and not hide_resources %}
+                  {% block resources_outer %}
+                    <ul class="dataset-resources list-unstyled">
+                      {% block resources_inner %}
+                        {% for resource in h.natcap_parse_json(h.get_pkg_dict_extra(package, 'sources_res_formats')) %}
+                        <li>
+                          {% snippet 'package/snippets/source_type_badge.html', ext=h.natcap_get_resource_type_icon_slug(resource) %}
+                        </li>
+                        {% endfor %}
+                      {% endblock %}
+                    </ul>
+                  {% endblock %}
+                {% endif %}
+              {% endblock %}
+          </div>
+        {% endblock %}
+        {% block notes %}
+          {% if notes %}
+            <div>{{ notes|urlize }}</div>
+          {% else %}
+            <p class="empty">{{ h.humanize_entity_type('package', package.type, 'no description') or _("There is no description for this dataset") }}</p>
+          {% endif %}
+        {% endblock %}
+      </div>
+    {% endblock %}
+  </li>
+{% endblock %}

@@ -3,17 +3,15 @@
 {% block styles %}
   {{ super() }}
 
-  <link rel="stylesheet" href="/natcap.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Source+Sans+3:ital,wght@0,200..900;1,200..900&display=swap" rel="stylesheet">
 
-
-  {# Import example_theme.css using Webassets.  'example_theme/' is
-    the name that the example_theme/fanstatic directory was registered
-    with when the toolkit.add_resource() function was called.
-    'example_theme' is the name to the Webassets bundle file,
-    registered inside webassets.yml file. #}
-  {#
-  {% asset 'natcap/natcap' %}
-  #}
+  {% asset 'natcap/natcap-css' %}
 
 {% endblock %}
 
+{% block scripts %}
+  {{ super() }}
+  {% asset 'natcap/natcap-js' %}
+{% endblock %}

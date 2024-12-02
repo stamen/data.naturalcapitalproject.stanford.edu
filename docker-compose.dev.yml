@@ -10,8 +10,8 @@ services:
 
   ckan-dev:
     build:
-      context: ckan/
-      dockerfile: Dockerfile.dev
+      context: .
+      dockerfile: ckan/Dockerfile.dev
       args:
         - TZ=${TZ}
     env_file:
@@ -59,6 +59,8 @@ services:
 
   solr:
     image: ckan/ckan-solr:${SOLR_IMAGE_VERSION}
+    ports:
+     - "8983:8983"
     volumes:
       - solr_data:/var/solr
     restart: unless-stopped

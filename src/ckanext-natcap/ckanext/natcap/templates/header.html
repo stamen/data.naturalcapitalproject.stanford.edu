@@ -1,0 +1,15 @@
+{% ckan_extends %}
+
+{% block header_site_navigation_tabs %}
+  {{ h.build_nav_main(
+    (dataset_type ~ '.search', h.humanize_entity_type('package', dataset_type, 'main nav') or _('Datasets'), ["dataset", "resource"]),
+    ('home.index', _('Home')) ) }}
+{% endblock %}
+
+{% block header_logo %}
+  <div>The Natural Capital Project <strong>Data Hub</strong></div>
+  <img src="/img/logo-natcap-small.png" alt="The Natural Capital Project logo" />
+{% endblock %}
+
+{% block header_site_search %}
+{% endblock %}

@@ -1,1 +1,2 @@
 pytest-ckan
+flask-debugtoolbar==0.14.1
