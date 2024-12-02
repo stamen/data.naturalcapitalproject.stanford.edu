@@ -32,17 +32,17 @@ RUN pip3 install -e git+https://github.com/ckan/ckanext-googleanalytics.git@$CKA
     python3 -m pip install oauth2client
 
 # NOTE: requires that the build context includes ./src/
-COPY ./src/ckanext-natcap /tmp/ckanext-natcap
-RUN pip3 install -r /tmp/ckanext-natcap/requirements.txt
-RUN pip3 install -e /tmp/ckanext-natcap
+COPY ./src/ckanext-natcap .
+RUN pip3 install -r /tmp/ckanext-natcap/requirements.txt && \
+    pip3 install -e /tmp/ckanext-natcap
 
-COPY ./src/ckanext-mappreview /tmp/ckanext-mappreview
-RUN pip3 install -r /tmp/ckanext-mappreview/requirements.txt
-RUN pip3 install -e /tmp/ckanext-mappreview
+COPY ./src/ckanext-mappreview .
+RUN pip3 install -r /tmp/ckanext-mappreview/requirements.txt && \
+    pip3 install -e /tmp/ckanext-mappreview
 
-COPY ./src/ckanext-zipexpand /tmp/ckanext-zipexpand
-RUN pip3 install -r /tmp/ckanext-zipexpand/requirements.txt
-RUN pip3 install -e /tmp/ckanext-zipexpand
+COPY ./src/ckanext-zipexpand .
+RUN pip3 install -r /tmp/ckanext-zipexpand/requirements.txt && \
+    pip3 install -e /tmp/ckanext-zipexpand
 
 # Install any extensions needed by your CKAN instance
 # See Dockerfile.dev for more details and examples
