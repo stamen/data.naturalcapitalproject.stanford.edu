@@ -1,0 +1,13 @@
+{% ckan_extends %}
+
+{% block nums %}
+{% endblock %}
+
+{% block package_info_inner %}
+  {{ super() }}
+  {% block package_info_description %}
+    <div class="package-description">
+      {{ pkg.notes }}
+    </div>
+  {% endblock %}
+{% endblock %}

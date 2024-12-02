@@ -1,0 +1,41 @@
+{% ckan_extends %}
+
+{% block promoted %}
+{% endblock %}
+
+{% block primary_content %}
+<div role="main">
+  <div class="main hero">
+    <div class="container home-container">
+      <div class="home-site-title">
+        <div>The Natural Capital Project</div>
+        <div class="home-site-title-main">Data Hub</div>
+      </div>
+      <div class="home-site-subtitle">
+        Empowering sustainable decision-making with open-access ecosystem services data and analytics.
+      </div>
+      {% block search %}
+      {% snippet 'home/snippets/search.html', search_facets=search_facets %}
+      {% endblock %}
+    </div>
+  </div>
+
+  <div class="home-container home-topics-container">
+      {% block home_topics %}
+      {% snippet 'home/snippets/topics.html' %}
+      {% endblock %}
+  </div>
+
+  <div class="home-container home-location-search-container">
+      {% block home_location_search %}
+      {% snippet 'home/snippets/location_search.html' %}
+      {% endblock %}
+  </div>
+
+  <div class="home-container home-invest-container">
+      {% block home_invest %}
+      {% snippet 'home/snippets/invest.html' %}
+      {% endblock %}
+  </div>
+</div>
+{% endblock %}

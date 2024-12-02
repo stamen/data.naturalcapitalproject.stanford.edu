@@ -1,0 +1,15 @@
+<div class="home-topics">
+  <h2>Browse topics</h2>
+
+  <div class="home-topics-description">
+    Ecosystem services represent the benefits that nature provides to people. Providing data on these services can help incorporate them into decisions and improve the well-being of both people and nature. Search by topic to find datasets relevant to your data needs.
+  </div>
+
+  <div>
+    <ul class="home-topics-list">
+      {% for topic in h.natcap_get_topic_keywords() %}
+        {% snippet 'home/snippets/topic.html', url=topic.url, name=topic.name, slug=topic.slug, keywords=topic.keywords %}
+      {% endfor %}
+    </ul>
+  </div>
+</div>

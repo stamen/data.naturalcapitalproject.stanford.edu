@@ -1,0 +1,14 @@
+# zipexpand-js:
+#   filter: rjsmin
+#   output: ckanext-zipexpand/%(version)s-zipexpand.js
+#   contents:
+#     - js/zipexpand.js
+#   extra:
+#     preload:
+#       - base/main
+
+# zipexpand-css:
+#   filter: cssrewrite
+#   output: ckanext-zipexpand/%(version)s-zipexpand.css
+#   contents:
+#     - css/zipexpand.css

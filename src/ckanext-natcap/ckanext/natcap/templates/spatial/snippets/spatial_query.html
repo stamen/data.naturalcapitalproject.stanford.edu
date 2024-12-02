@@ -1,0 +1,12 @@
+<script>
+</script>
+
+<section id="dataset-map" class="module module-narrow module-shallow">
+    {% set map_config = h.get_common_map_config() %}
+    <div class="dataset-map" data-module="natcap-spatial-query" data-module-map_config="{{ h.dump_json(map_config) }}" data-module-clear_url="{{ h.remove_url_param(['ext_bbox']) }}">
+        <div id="dataset-map-container"></div>
+    </div>
+</section>
+
+{% set type = 'asset' if h.ckan_version().split('.')[1] | int >= 9 else 'resource' %}
+{% include 'spatial/snippets/spatial_query_' ~ type ~ '.html' %}

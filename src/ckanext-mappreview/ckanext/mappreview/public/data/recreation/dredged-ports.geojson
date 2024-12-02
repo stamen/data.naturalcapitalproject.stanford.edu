@@ -1,0 +1,21 @@
+{
+"type": "FeatureCollection",
+"name": "dredged-ports",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "Id": 0, "Descrptn": "KW added Oct 29, 2015, uncertain", "Source": "Current_digitized_from_aerial", "Type": "Dredging" }, "geometry": { "type": "Point", "coordinates": [ -77.890631680209268, 24.843223761790842 ] } },
+{ "type": "Feature", "properties": { "Id": 0, "Descrptn": "TNC digitized", "Source": "Current_digitized_from_aerial", "Type": "Dredging" }, "geometry": { "type": "Point", "coordinates": [ -78.029037158162481, 25.173967449943031 ] } },
+{ "type": "Feature", "properties": { "Id": 0, "Descrptn": "TNC digitized", "Source": "Current_digitized_from_aerial", "Type": "Dredging" }, "geometry": { "type": "Point", "coordinates": [ -77.522060795518797, 24.008305575323647 ] } },
+{ "type": "Feature", "properties": { "Id": 0, "Descrptn": "TNC digitized", "Source": "Current_digitized_from_aerial", "Type": "Dredging" }, "geometry": { "type": "Point", "coordinates": [ -77.599612256819597, 24.211647873720285 ] } },
+{ "type": "Feature", "properties": { "Id": 0, "Descrptn": "TNC digitized", "Source": "Current_digitized_from_aerial", "Type": "Dredging" }, "geometry": { "type": "Point", "coordinates": [ -77.632558974987973, 24.213967974377802 ] } },
+{ "type": "Feature", "properties": { "Id": 0, "Descrptn": "TNC digitized", "Source": "Current_digitized_from_aerial", "Type": "Dredging" }, "geometry": { "type": "Point", "coordinates": [ -77.714873601882687, 24.498180125451857 ] } },
+{ "type": "Feature", "properties": { "Id": 0, "Descrptn": "TNC digitized", "Source": "Current_digitized_from_aerial", "Type": "Dredging" }, "geometry": { "type": "Point", "coordinates": [ -78.024890628126684, 25.181805810034515 ] } },
+{ "type": "Feature", "properties": { "Id": 0, "Descrptn": "TNC digitized", "Source": "Current_digitized_from_aerial", "Type": "Dredging" }, "geometry": { "type": "Point", "coordinates": [ -77.796831037430437, 24.713705659601292 ] } },
+{ "type": "Feature", "properties": { "Id": 0, "Descrptn": "TNC digitized", "Source": "Current_digitized_from_aerial", "Type": "Dredging" }, "geometry": { "type": "Point", "coordinates": [ -77.512348004257191, 23.860459331002154 ] } },
+{ "type": "Feature", "properties": { "Id": 0, "Descrptn": "TNC digitized", "Source": "Current_digitized_from_aerial", "Type": "Dredging" }, "geometry": { "type": "Point", "coordinates": [ -77.965175135545877, 25.071725244512944 ] } },
+{ "type": "Feature", "properties": { "Id": 0, "Descrptn": "TNC digitized", "Source": "Current_digitized_from_aerial", "Type": "Dredging" }, "geometry": { "type": "Point", "coordinates": [ -77.682595774556447, 24.337804345769058 ] } },
+{ "type": "Feature", "properties": { "Id": 0, "Descrptn": "dredging at stafford creek", "Source": "Current_digitized_from_aerial", "Type": "Dredging" }, "geometry": { "type": "Point", "coordinates": [ -77.935221924440853, 24.89776489610561 ] } },
+{ "type": "Feature", "properties": { "Id": 0, "Descrptn": "TNC digitized", "Source": "Current_digitized_from_aerial", "Type": "Dredging" }, "geometry": { "type": "Point", "coordinates": [ -77.76050283739437, 24.709820217690609 ] } },
+{ "type": "Feature", "properties": { "Id": 0, "Descrptn": "Dredging to open Sandy Creek", "Source": "Stakeholder_Proposed_ID", "Type": "Dredging" }, "geometry": { "type": "Point", "coordinates": [ -77.794558935711692, 24.720677535045898 ] } }
+]
+}

@@ -26,6 +26,9 @@ services:
       dockerfile: ckan/Dockerfile
       args:
         - TZ=${TZ}
+        - GITHUB_USER=${GITHUB_USER}
+        - GITHUB_REPO=${GITHUB_REPO}
+        - GITHUB_BRANCH=${GITHUB_BRANCH}
     networks:
       - ckannet
       - dbnet

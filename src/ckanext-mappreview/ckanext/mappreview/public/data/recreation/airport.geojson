@@ -1,0 +1,10 @@
+{
+"type": "FeatureCollection",
+"name": "airport",
+"crs": { "type": "name", "properties": { "name": "urn:ogc:def:crs:OGC:1.3:CRS84" } },
+"features": [
+{ "type": "Feature", "properties": { "ID": 0, "LAT": 24.15655, "LONG": -77.583891, "DESCRPTN": "Airport - Congo Town Airport, South Andros", "Shape_Leng": 3935.2341902500002, "Shape_Area": 207770.17975099999, "ORIG_FID": 0 }, "geometry": { "type": "Point", "coordinates": [ -77.589265812390096, 24.158600954146134 ] } },
+{ "type": "Feature", "properties": { "ID": 0, "LAT": 25.05354, "LONG": -78.042967, "DESCRPTN": "Airport - San Andros Airport, North Andros", "Shape_Leng": 4250.4613542799998, "Shape_Area": 243040.84105700001, "ORIG_FID": 2 }, "geometry": { "type": "Point", "coordinates": [ -78.050751553805981, 25.054633875025882 ] } },
+{ "type": "Feature", "properties": { "ID": 0, "LAT": 24.699217, "LONG": -77.789732, "DESCRPTN": "Airport - Andros Town, Central Andros", "Shape_Leng": 3705.3513320799998, "Shape_Area": 228149.874824, "ORIG_FID": 3 }, "geometry": { "type": "Point", "coordinates": [ -77.794287228801906, 24.698265476215532 ] } }
+]
+}

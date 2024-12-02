@@ -1,4 +1,4 @@
-ckan.module("natcap-module", function ($, _) {
+ckan.module("zipexpand-module", function ($, _) {
   "use strict";
   return {
     options: {

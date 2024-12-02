@@ -8,7 +8,7 @@ body {
 body .account-masthead {
     min-height: 30px;
     color: #fff;
-    background: #2e2d29;
+    background: red;
 }
 
 body .account-masthead .account ul li a {
