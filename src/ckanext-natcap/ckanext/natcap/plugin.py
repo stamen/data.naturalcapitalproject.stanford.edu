@@ -1,13 +1,17 @@
 # encoding=utf-8
 from __future__ import annotations
 
-from os import path
 import json
-from ckan.lib.helpers import url_for, _url_with_params
+import logging
+from os import path
+
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
+from ckan.lib.helpers import _url_with_params
+from ckan.lib.helpers import url_for
 from ckan.types import Schema
 
+LOGGER = logging.getLogger(__name__)
 
 topic_keywords = []
 
@@ -91,7 +95,10 @@ def show_icon(resource_url):
 
 
 def parse_json(json_str):
-    return json.loads(json_str)
+    try:
+        return json.loads(json_str)
+    except ValueError:
+        LOGGER.exception("Could not load string as JSON: %s", json_str)
 
 
 class NatcapPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
@@ -116,7 +123,7 @@ class NatcapPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
                                    toolkit.get_converter('convert_to_extras')],
         })
         return schema
-    
+
     def update_package_schema(self) -> Schema:
         schema = super(NatcapPlugin, self).update_package_schema()
         schema.update({
@@ -124,7 +131,7 @@ class NatcapPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
                                    toolkit.get_converter('convert_to_extras')],
         })
         return schema
-    
+
     def show_package_schema(self) -> Schema:
         schema = super(NatcapPlugin, self).show_package_schema()
         schema.update({
@@ -132,7 +139,7 @@ class NatcapPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
                                    toolkit.get_validator('ignore_missing')],
         })
         return schema
-    
+
     def is_fallback(self):
         # Return True to register this plugin as the default handler for
         # package types not handled by any other IDatasetForm plugin.
