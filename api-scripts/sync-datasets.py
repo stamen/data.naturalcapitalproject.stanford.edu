@@ -94,13 +94,16 @@ def get_raster_info(url):
 
 
 def get_raster_statistics(url):
-    statistics_response = requests.get(TITILER_URL + '/cog/statistics', params={'url': url})
+    percentiles = [2, 20, 40, 60, 80, 98]
+    statistics_response = requests.get(TITILER_URL + '/cog/statistics', params={
+        'url': url,
+        'p': percentiles,
+    })
     stats = statistics_response.json()['b1']
     return {
         'min': stats['min'],
         'max': stats['max'],
-        'percentile_2': stats['percentile_2'],
-        'percentile_98': stats['max'],
+        **{ f'percentile_{p}': stats[f'percentile_{p}'] for p in percentiles },
     }
 
 

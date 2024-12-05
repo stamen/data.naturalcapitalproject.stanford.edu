@@ -28,6 +28,8 @@ ckan.module("mappreview", function ($, _) {
         [39, 0, 59, 255],
       ];
 
+      // TODO optionally do quintile
+
       const params = {
         tile_scale: 2,
         url: layer.url,
@@ -36,7 +38,7 @@ ckan.module("mappreview", function ($, _) {
         // rescale: `${layer.pixel_min_value},${layer.pixel_max_value}`,
         rescale: `${layer.pixel_percentile_2},${layer.pixel_percentile_98}`,
         colormap: JSON.stringify({
-          0: colors[0],
+          0: colors[0], // TODO better interpolation
           75: colors[1],
           125: colors[2],
           175: colors[3],
@@ -68,11 +70,6 @@ ckan.module("mappreview", function ($, _) {
         id: layer.name,
         type: 'fill',
         source: layer.name,
-        /*
-        paint: {
-          'raster-opacity': ['interpolate', ['linear'], ['zoom'], 0, 0.75, 12, 1],
-        },
-        */
       };
     },
 
