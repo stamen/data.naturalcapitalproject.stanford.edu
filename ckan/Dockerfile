@@ -1,8 +1,10 @@
-FROM ckan/ckan-base:2.10.4
+FROM ckan/ckan-base:2.11.0
 
 ARG GITHUB_USER
 ARG GITHUB_REPO
 ARG GITHUB_BRANCH
+
+USER root
 
 # Set up environment variables
 ENV APP_DIR=/opt/ckan-catalog/data.naturalcapitalproject.stanford.edu
@@ -19,10 +21,10 @@ ENV PROJ_DIR=/usr
 ENV PROJ_LIBDIR=/usr/lib
 ENV PROJ_INCDIR=/usr/include
 # Using latest commit from master branch to avoid having to compile PROJ from source
-ENV CKANEXT_SPATIAL_GIT_REVISION=938308469892e4bcf7389cb4adee5ccdd5a0ccca
-RUN apk add --no-cache geos geos-dev proj proj-dev proj-util py3-shapely
+ENV CKANEXT_SPATIAL_GIT_REVISION=v2.2.0
+RUN apt-get update && apt-get install -y libgeos-dev libgeos3.11.1 libproj-dev proj-bin python3-shapely
 RUN pip3 install -e git+https://github.com/ckan/ckanext-spatial.git@$CKANEXT_SPATIAL_GIT_REVISION#egg=ckanext-spatial && \
-    pip3 install -r https://raw.githubusercontent.com/ckan/ckanext-spatial/$CKANEXT_SPATIAL_GIT_REVISION/requirements.txt
+    pip3 install -r https://raw.githubusercontent.com/ckan/ckanext-spatial/refs/tags/$CKANEXT_SPATIAL_GIT_REVISION/requirements.txt
 RUN pip3 install -e 'git+https://github.com/ckan/ckanext-scheming.git@3af6056bbe16c3f8c6257f18cb2a0805370f85de#egg=ckanext-scheming'
 RUN pip3 install "numpy<2"
 
@@ -32,19 +34,17 @@ RUN pip3 install -e git+https://github.com/ckan/ckanext-googleanalytics.git@$CKA
     python3 -m pip install oauth2client
 
 # NOTE: requires that the build context includes ./src/
-# NOTE: Adding version.json to bust cache
-ADD https://api.github.com/repos/${GITHUB_USER}/${GITHUB_REPO}/git/refs/heads/${GITHUB_BRANCH} version.json
-COPY ./src/ckanext-natcap /tmp/ckanext-natcap
-RUN pip3 install -r /tmp/ckanext-natcap/requirements.txt 
-RUN pip3 install /tmp/ckanext-natcap
+COPY ./src/ckanext-natcap /srv/app/src/ckanext-natcap
+RUN pip3 install -r /srv/app/src/ckanext-natcap/requirements.txt && \
+    pip3 install -e /srv/app/src/ckanext-natcap
 
-COPY ./src/ckanext-mappreview /tmp/ckanext-mappreview
-RUN pip3 install -r /tmp/ckanext-mappreview/requirements.txt 
-RUN pip3 install /tmp/ckanext-mappreview
+COPY ./src/ckanext-mappreview /srv/app/src/ckanext-mappreview
+RUN pip3 install -r /srv/app/src/ckanext-mappreview/requirements.txt && \
+    pip3 install -e /srv/app/src/ckanext-mappreview
 
-COPY ./src/ckanext-zipexpand /tmp/ckanext-zipexpand
-RUN pip3 install -r /tmp/ckanext-zipexpand/requirements.txt 
-RUN pip3 install /tmp/ckanext-zipexpand
+COPY ./src/ckanext-zipexpand /srv/app/src/ckanext-zipexpand
+RUN pip3 install -r /srv/app/src/ckanext-zipexpand/requirements.txt && \
+    pip3 install -e /srv/app/src/ckanext-zipexpand
 
 # Install any extensions needed by your CKAN instance
 # See Dockerfile.dev for more details and examples
