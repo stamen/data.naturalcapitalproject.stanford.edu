@@ -4,7 +4,7 @@
 <div class="search-filters">
   <div class="search-filters-title">
     Filter by
-    <img src="/img/icon-filter.png" />
+    <button class="icon-button icon-button-filter advanced-search-toggle" data-bs-toggle="modal" data-bs-target="#advancedSearchModal"></button>
   </div>
   <div class="search-filters-content">
     {% set open = h.get_facet_items_dict('extras_placenames', search_facets)|map(attribute='active')|sum %}
