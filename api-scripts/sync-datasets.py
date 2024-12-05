@@ -101,9 +101,9 @@ def get_raster_statistics(url):
     })
     stats = statistics_response.json()['b1']
     return {
-        'min': stats['min'],
-        'max': stats['max'],
-        **{ f'percentile_{p}': stats[f'percentile_{p}'] for p in percentiles },
+        'pixel_min_value': stats['min'],
+        'pixel_max_value': stats['max'],
+        **{ f'pixel_percentile_{p}': stats[f'percentile_{p}'] for p in percentiles },
     }
 
 
@@ -161,13 +161,10 @@ def get_raster_layer_metadata(raster_resource):
             'name': raster_resource['name'],
             'type': 'raster',
             'url': url,
-            'pixel_min_value': stats['min'],
-            'pixel_max_value': stats['max'],
-            'pixel_percentile_2': stats['percentile_2'],
-            'pixel_percentile_98': stats['percentile_98'],
             'bounds': info['bounds'],
             'minzoom': info['minzoom'],
             'maxzoom': info['maxzoom'],
+            **stats,
         }
     except Exception as e:
         print('Failed to access GeoTIFF', url)
