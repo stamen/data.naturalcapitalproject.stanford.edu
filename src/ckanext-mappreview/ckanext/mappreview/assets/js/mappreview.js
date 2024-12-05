@@ -30,16 +30,17 @@ ckan.module("mappreview", function ($, _) {
       const endpoint = '/cog/WebMercatorQuad/tilejson.json';
 
       const colors = [
-        [109, 179, 30, 50],
-        [0, 143, 95, 255],
-        [0, 100, 110, 255],
-        [28, 58, 109, 255],
-        [39, 0, 59, 255],
+        [75, 171, 57, 50], // #4BAB39
+        [0, 143, 95, 255], // #008F5F
+        [0, 100, 110, 255], // #00646E
+        [28, 58, 109, 255], // #1C3A6D
+        [32, 40, 93, 255], // #20285D
+        [39, 0, 59, 255], // #27003B
       ];
 
       const colormap = {};
 
-      const percentiles = [2, 20, 40, 60, 80];
+      const percentiles = [2, 20, 40, 60, 80, 98];
       percentiles.forEach((percentile, i) => {
         let colorIndex = this._getColorMapValue(layer.pixel_min_value, layer.pixel_max_value, layer[`pixel_percentile_${percentile}`]);
 
@@ -49,7 +50,6 @@ ckan.module("mappreview", function ($, _) {
 
         colormap[colorIndex] = colors[i];
       });
-      console.log(colormap);
 
       const params = {
         tile_scale: 2,
