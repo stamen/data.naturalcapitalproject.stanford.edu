@@ -11,14 +11,16 @@
       </div>
       <div class="modal-body">
         <div class="row">
-          <div class="col-md-6 left-column">
+          <div class="col-md-5 left-column">
             <div class="advanced-search-section">
               <h6>
                 <img src="/img/icon-search.png" /> 
                 Search
                 {# TODO on update, update q #}
-                <input type="search" />
               <h6>
+              <div>
+                <input type="search" />
+              </div>
             </div>
             <div class="advanced-search-section">
               <h6>
@@ -42,7 +44,7 @@
               </div>
             </div>
           </div>
-          <div class="col-md-3">
+          <div class="col-md-4 right-column">
             <div class="advanced-search-section">
               <h6>
                 <img src="/img/filters-tag.png" />
@@ -52,7 +54,7 @@
                 {% snippet 'snippets/facet_list.html', title='Tags', name='tags', search_facets=all_facets, without_links=true %}
               </div>
             </div>
-            <div class="row">
+            <div class="action-buttons">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
               <a class="submit" href="#">Update filter</a>
             </div>

@@ -992,10 +992,37 @@ body {
     background: none;
 }
 
-.advanced-search .left-column {
+.advanced-search .left-column,
+.advanced-search .right-column {
     display: flex;
     flex-direction: column;
     gap: 1rem;
+}
+
+
+.advanced-search .action-buttons {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: center;
+    gap: 0.25rem;
+}
+
+.advanced-search .action-buttons .btn {
+    background: var(--color-dark-gray);
+    border: none;
+}
+
+.advanced-search .action-buttons a.submit {
+    background: var(--color-blue);
+    color: white;
+    padding: 0.375rem 0.75rem;
+    border-radius: 6px;
+    font-weight: bold;
+}
+
+.advanced-search .action-buttons a.submit:hover {
+    text-decoration: none;
 }
 
 .module-narrow .dataset-map-container {
