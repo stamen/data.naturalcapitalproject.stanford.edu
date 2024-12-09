@@ -992,6 +992,12 @@ body {
     background: none;
 }
 
+.advanced-search .left-column {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
 .module-narrow .dataset-map-container {
     font-size: 14px;
     height: 200px;
