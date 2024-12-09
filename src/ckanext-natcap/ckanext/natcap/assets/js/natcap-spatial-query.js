@@ -21,6 +21,7 @@ this.ckan.module('natcap-spatial-query', function ($, _) {
       },
       default_extent: [[90, 180], [-90, -180]],
       clear_url: null,
+      map_container_id: 'dataset-map-container',
     },
     template: {
       buttons: [
@@ -231,7 +232,7 @@ this.ckan.module('natcap-spatial-query', function ($, _) {
       module.ext_bbox_input = $('#dataset-search-form #ext_bbox');
 
       // OK map time
-      this.mainMap = map = this._createMap('dataset-map-container');
+      this.mainMap = map = this._createMap(this.options.map_container_id);
 
       var expandButton = L.Control.extend({
         position: 'topright',

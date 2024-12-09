@@ -1,4 +1,8 @@
-<div class="modal fade" id="advancedSearchModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="advancedSearchModalLabel" aria-hidden="true">
+{% set formats = h.get_facet_items_dict('res_format', search_facets) %}
+{% set tags = h.get_facet_items_dict('tags', search_facets) %}
+{% set all_facets = h.natcap_get_all_search_facets() %}
+
+<div class="modal fade" id="advancedSearchModal" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1" aria-labelledby="advancedSearchModalLabel" aria-hidden="true" data-module="natcap-advanced-search" data-module-base_url="{% url_for 'dataset.search' %}">
   <div class="modal-dialog advanced-search">
     <div class="modal-content">
       <div class="modal-header">
@@ -12,6 +16,8 @@
               <h6>
                 <img src="/img/icon-search.png" /> 
                 Search
+                {# TODO on update, update q #}
+                <input type="search" />
               <h6>
             </div>
             <div class="advanced-search-section">
@@ -19,6 +25,10 @@
                 <img src="/img/filters-place.png" />
                 Place
               </h6>
+              <div>
+                {% snippet "spatial/snippets/spatial_query.html", map_container_id="advanced-search-map-container" %}
+                {% snippet 'snippets/facet_list.html', title='Places', name='extras_placenames', search_facets=all_facets, without_links=true %}
+              </div>
             </div>
           </div>
           <div class="col-md-3">
@@ -27,6 +37,9 @@
                 <img src="/img/filters-file-type.png" />
                 File type
               </h6>
+              <div>
+                {% snippet 'snippets/facet_list.html', title='File type', name='extras_sources_res_formats', search_facets=all_facets, label_function=h.natcap_get_resource_type_facet_label, without_links=true %}
+              </div>
             </div>
           </div>
           <div class="col-md-3">
@@ -35,10 +48,13 @@
                 <img src="/img/filters-tag.png" />
                 Tag
               </h6>
+              <div>
+                {% snippet 'snippets/facet_list.html', title='Tags', name='tags', search_facets=all_facets, without_links=true %}
+              </div>
             </div>
             <div class="row">
               <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
-              <button type="button" class="btn btn-primary">Update filter</button>
+              <a class="submit" href="#">Update filter</a>
             </div>
           </div>
         </div>
