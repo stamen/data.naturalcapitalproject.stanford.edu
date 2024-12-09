@@ -3,8 +3,9 @@
 
 <section id="dataset-map" class="module module-narrow module-shallow">
     {% set map_config = h.get_common_map_config() %}
-    <div class="dataset-map" data-module="natcap-spatial-query" data-module-map_config="{{ h.dump_json(map_config) }}" data-module-clear_url="{{ h.remove_url_param(['ext_bbox']) }}">
-        <div id="dataset-map-container"></div>
+    {% set map_container_id = map_container_id if map_container_id else 'dataset-map-container' %}
+    <div class="dataset-map" data-module="natcap-spatial-query" data-module-map_config="{{ h.dump_json(map_config) }}" data-module-clear_url="{{ h.remove_url_param(['ext_bbox']) }}" data-module-map_container_id="{{ map_container_id }}">
+        <div id="{{ map_container_id }}" class="dataset-map-container"></div>
     </div>
 </section>
 
