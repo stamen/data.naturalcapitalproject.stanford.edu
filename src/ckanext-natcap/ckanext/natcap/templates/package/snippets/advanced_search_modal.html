@@ -14,12 +14,11 @@
           <div class="col-md-5 left-column">
             <div class="advanced-search-section">
               <h6>
-                <img src="/img/icon-search.png" /> 
+                <img src="/img/icon-search-light.png" /> 
                 Search
-                {# TODO on update, update q #}
-              <h6>
+              </h6>
               <div>
-                <input type="search" />
+                <input type="search" placeholder="{{ _('Search by dataset title, keyword, location, and more…') }}" value="{{ query }}" class="form-control" />
               </div>
             </div>
             <div class="advanced-search-section">

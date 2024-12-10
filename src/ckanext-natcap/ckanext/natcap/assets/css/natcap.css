@@ -1010,6 +1010,24 @@ body {
     gap: 1rem;
 }
 
+.advanced-search input[type="search"] {
+    border-radius: 6px;
+    border: 1px solid var(--color-dark-gray);
+    padding: 0.5em 1em;
+    width: 100%;
+}
+
+.advanced-search input[type="search"]::before {
+    content: '';
+    background: url(/img/icon-search-light.png) no-repeat center center;
+    display: block;
+    position: absolute;
+    height: 1.2rem;
+    width: 1.2rem;
+    top: 0.75rem;
+    left: 0.5rem;
+    z-index: 1000;
+}
 
 .advanced-search .action-buttons {
     display: flex;
