@@ -793,7 +793,12 @@ body {
     display: flex;
     flex-direction: row;
     align-items: center;
+    flex-wrap: wrap;
     gap: 0.5rem;
+}
+
+.search-filters .item-label-name {
+    white-space: wrap;
 }
 
 .search-filters .item-count,
@@ -1062,6 +1067,10 @@ body {
 .module-narrow .dataset-map-container {
     font-size: 14px;
     height: 200px;
+}
+.module-narrow .nav-item.active > a span,
+.module-narrow .nav-aside li.active a span {
+    white-space: wrap;
 }
 
 @media (max-width: 576px) {
