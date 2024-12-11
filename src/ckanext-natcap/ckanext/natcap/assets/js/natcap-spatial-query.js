@@ -22,6 +22,7 @@ this.ckan.module('natcap-spatial-query', function ($, _) {
       default_extent: [[90, 180], [-90, -180]],
       clear_url: null,
       map_container_id: 'dataset-map-container',
+      outside_form: false,
     },
     template: {
       buttons: [
@@ -83,6 +84,15 @@ this.ckan.module('natcap-spatial-query', function ($, _) {
         }
       }
       this.el.ready(this._onReady);
+      this.sandbox.subscribe('natcapMapShown', this._onMapShown);
+    },
+
+    _onMapShown: function (id) {
+      // If id == this.map_container_id, invalidate size and set bounds
+      if (id === this.options.map_container_id) {
+        this.mainMap.invalidateSize();
+        this.mainMap.fitWorld();
+      }
     },
 
     _getBootstrapVersion: function () {
@@ -179,7 +189,22 @@ this.ckan.module('natcap-spatial-query', function ($, _) {
     },
 
     _onApply: function() {
-      $(".search-form").submit();
+      if (this.options.outside_form) {
+        // Update the map
+        const bbox = this.ext_bbox_input.val();
+        this.extentLayer = this._drawExtentFromCoords(bbox.split(','))
+        this.mainMap.addLayer(this.extentLayer);
+        this.mainMap.fitBounds(this.extentLayer.getBounds(), {"animate": false, "padding": [20, 20]});
+
+        // Close the modal
+        this.modal.find('.btn-cancel').click();
+
+        // Let subscribers know
+        this.sandbox.publish('natcapSpatialQueryBboxDrawn', bbox);
+      }
+      else {
+        $(".search-form").submit();
+      }
     },
 
     _onCancel: function() {

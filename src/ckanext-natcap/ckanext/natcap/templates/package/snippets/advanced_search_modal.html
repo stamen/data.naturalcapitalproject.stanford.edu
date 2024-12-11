@@ -27,7 +27,8 @@
                 Place
               </h6>
               <div>
-                {% snippet "spatial/snippets/spatial_query.html", map_container_id="advanced-search-map-container" %}
+                <input type="hidden" name="adv_search_ext_bbox" value="{{ h.get_request_param('ext_bbox') }}" />
+                {% snippet "spatial/snippets/spatial_query.html", map_container_id="advanced-search-map-container", outside_form=true %}
                 {% snippet 'snippets/facet_list.html', title='Places', name='extras_placenames', search_facets=all_facets, without_links=true %}
               </div>
             </div>
