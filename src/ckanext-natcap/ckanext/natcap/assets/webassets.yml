@@ -5,6 +5,7 @@ natcap-js:
     - js/natcap-facet-collapse.js
     - js/natcap-spatial-query.js
     - js/natcap-textarea-copy.js
+    - js/natcap-advanced-search.js
   extra:
     preload:
       - base/main

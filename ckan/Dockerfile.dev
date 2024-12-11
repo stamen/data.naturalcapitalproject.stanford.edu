@@ -55,6 +55,9 @@ RUN pip3 install -e git+https://github.com/ckan/ckanext-googleanalytics.git@$CKA
     pip3 install -r https://raw.githubusercontent.com/ckan/ckanext-googleanalytics/$CKANEXT_GOOGLEANALYTICS_GIT_REV/requirements.txt && \
     python3 -m pip install oauth2client
 
+ENV CKANEXT_ORFACET_GIT_REV=7a01391186761ff112a76bc7e62dd487330a2371
+RUN pip3 install -e git+https://github.com/DataShades/ckanext-or_facet.git@$CKANEXT_ORFACET_GIT_REV#egg=ckanext-or_facet
+
 # Enable SQLAlchemy support by installing it
 RUN pip3 install Flask-SQLAlchemy "flask<2.4" "Werkzeug<=2.1.2"
 

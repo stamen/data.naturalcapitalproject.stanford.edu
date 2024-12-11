@@ -4,7 +4,11 @@ from __future__ import annotations
 import json
 import logging
 from os import path
+from collections import OrderedDict
 
+from ckan.common import _
+from ckan.lib.helpers import helper_functions as h
+import ckan.logic as logic
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
 from ckan.lib.helpers import _url_with_params
@@ -67,6 +71,34 @@ def get_filename(resource_url):
 
 def get_resource_type_icon_slug(resource_url):
     return get_ext(resource_url)
+
+
+def get_all_search_facets():
+    facets: dict[str, str] = OrderedDict()
+
+    default_facet_titles = {
+        u'tags': _(u'Tags'),
+        u'res_format': _(u'Formats'),
+        u'license_id': _(u'Licenses'),
+    }
+
+    for facet in h.facets():
+        if facet in default_facet_titles:
+            facets[facet] = default_facet_titles[facet]
+        else:
+            facets[facet] = facet
+    for plugin in plugins.PluginImplementations(plugins.IFacets):
+        facets = plugin.dataset_facets(facets, 'dataset')
+
+    # Perform an empty search to get all facets
+    context = {}
+    data_dict = {
+        u'q': '',
+        u'facet.field': list(facets.keys()),
+    }
+    query = logic.get_action(u'package_search')(context, data_dict)
+
+    return query['search_facets']
 
 
 def get_topic_keywords():
@@ -158,6 +190,7 @@ class NatcapPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
             'natcap_get_resource_type_facet_label': get_resource_type_facet_label,
             'natcap_get_resource_type_label': get_resource_type_label,
             'natcap_get_topic_keywords': get_topic_keywords,
+            'natcap_get_all_search_facets': get_all_search_facets,
             'natcap_show_icon': show_icon,
             'natcap_show_resource': show_resource,
             'natcap_parse_json': parse_json,

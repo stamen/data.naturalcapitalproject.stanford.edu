@@ -21,6 +21,8 @@ this.ckan.module('natcap-spatial-query', function ($, _) {
       },
       default_extent: [[90, 180], [-90, -180]],
       clear_url: null,
+      map_container_id: 'dataset-map-container',
+      outside_form: false,
     },
     template: {
       buttons: [
@@ -71,6 +73,8 @@ this.ckan.module('natcap-spatial-query', function ($, _) {
       var module = this;
       $.proxyAll(this, /_on/);
 
+      this.options.outside_form = this.options.outside_form.toLowerCase() === 'true';
+
       var user_default_extent = this.el.data('default_extent');
       if (user_default_extent ){
         if (user_default_extent instanceof Array) {
@@ -82,6 +86,15 @@ this.ckan.module('natcap-spatial-query', function ($, _) {
         }
       }
       this.el.ready(this._onReady);
+      this.sandbox.subscribe('natcapMapShown', this._onMapShown);
+    },
+
+    _onMapShown: function (id) {
+      // If id == this.map_container_id, invalidate size and set bounds
+      if (id === this.options.map_container_id) {
+        this.mainMap.invalidateSize();
+        this.mainMap.fitWorld();
+      }
     },
 
     _getBootstrapVersion: function () {
@@ -177,8 +190,42 @@ this.ckan.module('natcap-spatial-query', function ($, _) {
         return new L.GeoJSON(geom, {style: this.options.style});
     },
 
+    _addClearButton: function () {
+      let module = this;
+      if (!((module.options.clear_url && module._getParameterByName('ext_bbox')) || module.extentLayer)) return;
+      var clearButton = L.DomUtil.create('a', 'leaflet-control-custom-button', module.buttonsContainer);
+      clearButton.innerHTML = '<i class="fa fa-trash"></i>';
+      clearButton.title = module._('Clear selection');
+
+      if (!this.options.outside_form) {
+        clearButton.href = module.options.clear_url;
+      }
+      else {
+        L.DomEvent.on(clearButton, 'click', function() {
+          module.mainMap.removeLayer(module.extentLayer);
+          module.mainMap.fitWorld();
+          module.sandbox.publish('natcapSpatialQueryBboxDrawn', '');
+        });
+      }
+    },
+
     _onApply: function() {
-      $(".search-form").submit();
+      if (this.options.outside_form) {
+        // Update the map
+        const bbox = this.ext_bbox_input.val();
+        this.extentLayer = this._drawExtentFromCoords(bbox.split(','))
+        this.mainMap.addLayer(this.extentLayer);
+        this.mainMap.fitBounds(this.extentLayer.getBounds(), {"animate": false, "padding": [20, 20]});
+
+        // Close the modal
+        this.modal.find('.btn-cancel').click();
+
+        // Let subscribers know
+        this.sandbox.publish('natcapSpatialQueryBboxDrawn', bbox);
+      }
+      else {
+        $(".search-form").submit();
+      }
     },
 
     _onCancel: function() {
@@ -231,31 +278,25 @@ this.ckan.module('natcap-spatial-query', function ($, _) {
       module.ext_bbox_input = $('#dataset-search-form #ext_bbox');
 
       // OK map time
-      this.mainMap = map = this._createMap('dataset-map-container');
+      this.mainMap = map = this._createMap(this.options.map_container_id);
 
-      var expandButton = L.Control.extend({
+      const expandButton = L.Control.extend({
         position: 'topright',
         onAdd: function(map) {
-          var container = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
+          module.buttonsContainer = L.DomUtil.create('div', 'leaflet-bar leaflet-control leaflet-control-custom');
 
-          var button = L.DomUtil.create('a', 'leaflet-control-custom-button', container);
+          var button = L.DomUtil.create('a', 'leaflet-control-custom-button', module.buttonsContainer);
           button.innerHTML = '<i class="fa fa-pencil"></i>';
           button.title = module._('Draw an extent');
 
-          if (module.options.clear_url && module._getParameterByName('ext_bbox')) {
-            var clearButton = L.DomUtil.create('a', 'leaflet-control-custom-button', container);
-            clearButton.href = module.options.clear_url;
-            clearButton.innerHTML = '<i class="fa fa-trash"></i>';
-            clearButton.title = module._('Clear selection');
-          }
+          module._addClearButton();
 
           L.DomEvent.on(button, 'click', function(e) {
             module.sandbox.body.append(module._createModal());
             module.modal.modal('show');
-
           });
 
-          return container;
+          return module.buttonsContainer;
         }
       });
       map.addControl(new expandButton());
