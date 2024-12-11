@@ -19,9 +19,11 @@ ckan.module("natcap-advanced-search", function ($, _) {
       const bbox = this.bboxInput.val();
       const searchInput = this.searchInput.val();
       const checkedCheckboxes = this.checkboxes.filter(":checked");
-      const params = {
-        q: searchInput || '',
-      };
+      const params = {};
+
+      if (searchInput) {
+        params.q = searchInput;
+      }
 
       if (bbox) {
         params.ext_bbox = bbox;
