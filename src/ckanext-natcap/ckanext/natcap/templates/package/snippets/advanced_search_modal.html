@@ -29,7 +29,7 @@
               <div>
                 <input type="hidden" name="adv_search_ext_bbox" value="{{ h.get_request_param('ext_bbox') or '' }}" />
                 {% snippet "spatial/snippets/spatial_query.html", map_container_id="advanced-search-map-container", outside_form=true %}
-                {% snippet 'snippets/facet_list.html', title='Places', name='extras_placenames', search_facets=all_facets, without_links=true %}
+                {% snippet 'snippets/facet_list.html', title='Places', name='extras_placenames', search_facets=all_facets, without_links=true, show_label=true %}
               </div>
             </div>
           </div>
@@ -40,7 +40,7 @@
                 File type
               </h6>
               <div>
-                {% snippet 'snippets/facet_list.html', title='File type', name='extras_sources_res_formats', search_facets=all_facets, label_function=h.natcap_get_resource_type_facet_label, without_links=true %}
+                {% snippet 'snippets/facet_list.html', title='File type', name='extras_sources_res_formats', search_facets=all_facets, label_function=h.natcap_get_resource_type_facet_label, without_links=true, show_badge=true %}
               </div>
             </div>
           </div>
@@ -51,7 +51,7 @@
                 Tag
               </h6>
               <div>
-                {% snippet 'snippets/facet_list.html', title='Tags', name='tags', search_facets=all_facets, without_links=true %}
+                {% snippet 'snippets/facet_list.html', title='Tags', name='tags', search_facets=all_facets, without_links=true, show_label=true  %}
               </div>
             </div>
             <div class="action-buttons">

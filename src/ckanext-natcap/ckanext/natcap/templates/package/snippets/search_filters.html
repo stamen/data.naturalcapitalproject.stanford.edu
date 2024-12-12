@@ -20,7 +20,7 @@
       </div>
       <div class="search-filters-section-content">
         {% snippet "spatial/snippets/spatial_query.html", map_container_id="search-filters-map-container" %}
-        {% snippet 'snippets/facet_list.html', title='Places', name='extras_placenames', search_facets=search_facets %}
+        {% snippet 'snippets/facet_list.html', title='Places', name='extras_placenames', search_facets=search_facets, show_label=true  %}
       </div>
     </div>
 
@@ -36,8 +36,7 @@
         </div>
       </div>
       <div class="search-filters-section-content">
-        {# TODO show icons #}
-        {% snippet 'snippets/facet_list.html', title='File type', name='extras_sources_res_formats', search_facets=search_facets, label_function=h.natcap_get_resource_type_facet_label %}
+        {% snippet 'snippets/facet_list.html', title='File type', name='extras_sources_res_formats', search_facets=search_facets, show_badge=true, show_label=false %}
       </div>
     </div>
 
@@ -53,7 +52,7 @@
         </div>
       </div>
       <div class="search-filters-section-content">
-        {% snippet 'snippets/facet_list.html', title='Tags', name='tags', search_facets=search_facets %}
+        {% snippet 'snippets/facet_list.html', title='Tags', name='tags', search_facets=search_facets, show_label=true  %}
       </div>
     </div>
   </div>
