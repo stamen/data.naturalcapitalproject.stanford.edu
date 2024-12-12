@@ -77,7 +77,6 @@ def get_resource_type_icon_slug(resource_url):
     return get_ext(resource_url)
 
 
-<<<<<<< HEAD
 def get_invest_models():
     models = invest_keywords['InVEST_Models']
 
@@ -103,7 +102,8 @@ def get_invest_models():
         }
     models = [update_model(m) for m in models]
     return models
-=======
+
+
 def get_all_search_facets():
     facets: dict[str, str] = OrderedDict()
 
@@ -130,7 +130,6 @@ def get_all_search_facets():
     query = logic.get_action(u'package_search')(context, data_dict)
 
     return query['search_facets']
->>>>>>> master
 
 
 def get_topic_keywords():
