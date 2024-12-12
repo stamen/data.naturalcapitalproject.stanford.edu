@@ -13,10 +13,14 @@ from ckan.types import Schema
 
 LOGGER = logging.getLogger(__name__)
 
+invest_keywords = []
 topic_keywords = []
 
 with open(path.join(path.dirname(__file__), 'topic_keywords.json'), 'r') as f:
     topic_keywords = json.load(f)
+
+with open(path.join(path.dirname(__file__), 'invest_keywords.json'), 'r') as f:
+    invest_keywords = json.load(f)
 
 
 shown_extensions = [
@@ -69,6 +73,33 @@ def get_resource_type_icon_slug(resource_url):
     return get_ext(resource_url)
 
 
+def get_invest_models():
+    models = invest_keywords['InVEST_Models']
+
+    highlighted = [
+        'Sediment Delivery Ratio',
+        'Annual Water Yield',
+        'Nutrient Delivery Ratio',
+        'Seasonal Water Yield',
+    ]
+
+    def update_model(model):
+        url = _url_with_params(
+            url_for('search'),
+            params=[('invest_model', model['model'])],
+        )
+        name = model['model']
+        return {
+            'slug': name.replace(' ', '-').lower(),
+            'name': name,
+            'keywords': model['keywords'],
+            'highlighted': name in highlighted,
+            'url': url,
+        }
+    models = [update_model(m) for m in models]
+    return models
+
+
 def get_topic_keywords():
     topics = topic_keywords['Topics']
 
@@ -78,7 +109,8 @@ def get_topic_keywords():
             params=[('topic', topic['topic'])],
         )
         return {
-            'slug': topic['topic'].replace(' ', '-').lower(), 'name': topic['topic'],
+            'slug': topic['topic'].replace(' ', '-').lower(),
+            'name': topic['topic'],
             'keywords': topic['keywords'],
             'url': url,
         }
@@ -158,6 +190,7 @@ class NatcapPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
             'natcap_get_resource_type_facet_label': get_resource_type_facet_label,
             'natcap_get_resource_type_label': get_resource_type_label,
             'natcap_get_topic_keywords': get_topic_keywords,
+            'natcap_get_invest_models': get_invest_models,
             'natcap_show_icon': show_icon,
             'natcap_show_resource': show_resource,
             'natcap_parse_json': parse_json,
@@ -174,6 +207,16 @@ class NatcapPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
             try:
                 topic = json.loads(search_params['fq'].split(':', 1)[1])
                 keywords = next(t['keywords'] for t in topic_keywords['Topics'] if t['topic'] == topic)
+                tags = ' OR '.join(['"{}"'.format(k) for k in keywords])
+                search_params['fq'] = f'tags:({tags})'
+            except Exception as e:
+                pass
+
+        if 'fq' in search_params and search_params['fq'].startswith('invest_model:'):
+            invest_model = json.loads(search_params['fq'].split(':', 1)[1])
+            try:
+                invest_model = json.loads(search_params['fq'].split(':', 1)[1])
+                keywords = next(m['keywords'] for m in invest_keywords['InVEST_Models'] if m['model'] == invest_model)
                 tags = ' OR '.join(['"{}"'.format(k) for k in keywords])
                 search_params['fq'] = f'tags:({tags})'
             except Exception as e:
