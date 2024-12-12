@@ -4,11 +4,11 @@
 <div class="search-filters">
   <div class="search-filters-title">
     Filter by
-    <img src="/img/icon-filter.png" />
+    <button class="icon-button icon-button-filter advanced-search-toggle" data-bs-toggle="modal" data-bs-target="#advancedSearchModal"></button>
   </div>
   <div class="search-filters-content">
     {% set open = h.get_facet_items_dict('extras_placenames', search_facets)|map(attribute='active')|sum %}
-    <div class="search-filters-section {% if open == 0 %}collapsed{% endif %}" data-module="natcap-facet-collapse">
+    <div class="search-filters-section {% if open == 0 %}collapsed{% endif %}" data-module="natcap-facet-collapse" data-module-map_container_id="search-filters-map-container">
       <div class="search-filters-section-header collapsed">
         <div class="search-filters-section-header-left">
           <img src="/img/filters-place.png" />
@@ -19,8 +19,8 @@
         </div>
       </div>
       <div class="search-filters-section-content">
-        {% snippet "spatial/snippets/spatial_query.html" %}
-        {% snippet 'snippets/facet_list.html', title='Places', name='extras_placenames', search_facets=search_facets %}
+        {% snippet "spatial/snippets/spatial_query.html", map_container_id="search-filters-map-container" %}
+        {% snippet 'snippets/facet_list.html', title='Places', name='extras_placenames', search_facets=search_facets, show_label=true  %}
       </div>
     </div>
 
@@ -36,8 +36,7 @@
         </div>
       </div>
       <div class="search-filters-section-content">
-        {# TODO show icons #}
-        {% snippet 'snippets/facet_list.html', title='File type', name='extras_sources_res_formats', search_facets=search_facets, label_function=h.natcap_get_resource_type_facet_label %}
+        {% snippet 'snippets/facet_list.html', title='File type', name='extras_sources_res_formats', search_facets=search_facets, show_badge=true, show_label=false %}
       </div>
     </div>
 
@@ -53,7 +52,7 @@
         </div>
       </div>
       <div class="search-filters-section-content">
-        {% snippet 'snippets/facet_list.html', title='Tags', name='tags', search_facets=search_facets %}
+        {% snippet 'snippets/facet_list.html', title='Tags', name='tags', search_facets=search_facets, show_label=true  %}
       </div>
     </div>
   </div>

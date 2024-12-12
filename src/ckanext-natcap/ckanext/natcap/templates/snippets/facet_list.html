@@ -1,3 +1,5 @@
+{% set without_links = without_links or false %}
+
 {% block facet_list %}
   {% set hide_empty = hide_empty or false %}
   {% with items = items or h.get_facet_items_dict(name, search_facets) %}
@@ -15,13 +17,37 @@
                       {% set label_truncated = label|truncate(22) if not label_function else label %}
                       {% set count = count_label(item['count']) if count_label else ('%d' % item['count']) %}
                       <li class="nav-item {% if item.active %} active{% endif %}">
-                        <a href="{{ href }}" aria-label="{{ _('Search datasets by {name}: {label}').format(name=name, label=label_truncated) }}" {% if label != label_truncated %} data-bs-title="{{ label }}" data-bs-toggle="tooltip" {% endif %}>
-                          <input type="checkbox" {% if item.active %}checked{% endif %} />
-                          <span class="item-label">
-                            <span class="item-label-name">{{ label_truncated }}</span>
-                            <span class="item-count">{{ count }}</span></span>
-                          </span>
-                        </a>
+                        {% if without_links %}
+                          <label>
+                            <input type="checkbox" {% if item.active %}checked{% endif %} data-value="{{ item.name }}" data-field="{{ name }}" />
+                            <span class="item-label">
+                              <span class="item-label-name">
+                                {% if show_label %}
+                                  {{ label_truncated }}
+                                {% endif %}
+                                {% if show_badge %}
+                                  {% snippet 'package/snippets/source_type_badge.html', ext=item.name %}
+                                {% endif %}
+                              </span>
+                              <span class="item-count">{{ count }}</span></span>
+                            </span>
+                          </label>
+                        {% else %}
+                          <a href="{{ href }}" aria-label="{{ _('Search datasets by {name}: {label}').format(name=name, label=label_truncated) }}" {% if label != label_truncated %} data-bs-title="{{ label }}" data-bs-toggle="tooltip" {% endif %}>
+                            <input type="checkbox" {% if item.active %}checked{% endif %} />
+                            <span class="item-label">
+                              <span class="item-label-name">
+                                {% if show_label %}
+                                  {{ label_truncated }}
+                                {% endif %}
+                                {% if show_badge %}
+                                  {% snippet 'package/snippets/source_type_badge.html', ext=item.name %}
+                                {% endif %}
+                              </span>
+                              <span class="item-count">{{ count }}</span></span>
+                            </span>
+                          </a>
+                        {% endif %}
                       </li>
                     {% endfor %}
                   </ul>
