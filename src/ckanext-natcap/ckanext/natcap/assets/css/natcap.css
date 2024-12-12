@@ -488,6 +488,23 @@ body {
     margin-top: 1rem;
 }
 
+.home-invest-model-list {
+    column-count: 2;
+    margin: 0;
+    padding: 0;
+}
+
+.home-invest-model-list-item {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.home-invest-model-list-item a {
+    color: var(--color-black);
+}
+
 .additional-info .table {
     --bs-table-striped-bg: none;
 }

@@ -1,0 +1,240 @@
+{
+  "InVEST_Models": [
+    {
+      "model": "Annual Water Yield",
+      "keywords": [
+        "LULC",
+        "LAND USE LAND COVER",
+        "PRECIPITATION",
+        "AWC",
+        "PLANT AVAILABLE WATER CONTENT",
+        "WATERSHEDS",
+        "SUBWATERSHEDS",
+        "AWY",
+        "ANNUAL WATER YIELD"
+      ]
+    },
+    {
+      "model": "Carbon",
+      "keywords": [
+        "LULC",
+        "LAND USE LAND COVER",
+        "CARBON POOLS"
+      ]
+    },
+    {
+      "model": "Coastal Blue Carbon",
+      "keywords": [
+        "COASTAL BLUE CARBON"
+      ]
+    },
+    {
+      "model": "Coastal Blue Carbon Preprocessor",
+      "keywords": [
+        "COASTAL BLUE CARBON PREPROCESSOR"
+      ]
+    },
+    {
+      "model": "Coastal Vulnerability",
+      "keywords": [
+        "AOI",
+        "WAVEWATCH",
+        "BATHYMETRY",
+        "CONTINENTIAL SHELF CONTOUR",
+        "DEM",
+        "DIGITAL ELEVATION MODEL",
+        "GEOMORPHOLOGY",
+        "SEA LEVEL RISE"
+      ]
+    },
+    {
+      "model": "Crop Production Percentile",
+      "keywords": [
+        "AOI",
+        "LULC",
+        "LAND USE LAND COVER",
+        "CROP PRODUCTION PERCENTILE"
+      ]
+    },
+    {
+      "model": "Crop Production Regression",
+      "keywords": [
+        "LULC",
+        "LAND USE LAND COVER",
+        "FERTILIZATION RATE",
+        "AOI",
+        "CROP PRODUCTION REGRESSION"
+      ]
+    },
+    {
+      "model": "DelineateIt",
+      "keywords": [
+        "DEM",
+        "DIGITAL ELEVATION MODEL",
+        "DELINEATE IT",
+        "WATERSHED OUTLETS"
+      ]
+    },
+    {
+      "model": "Forest Carbon Edge Effect",
+      "keywords": [
+        "AOI",
+        "LULC",
+        "LAND USE LAND COVER",
+        "GLOBAL REGRESSION MODEL",
+        "FOREST CARBON EDGE EFFECT"
+      ]
+    },
+    {
+      "model": "Habitat Quality",
+      "keywords": [
+        "LULC",
+        "LAND USE LAND COVER",
+        "HABITAT QUALITY"
+      ]
+    },
+    {
+      "model": "Habitat Risk Assessment",
+      "keywords": [
+        "AOI",
+        "HABITAT RISK ASSESSMENT"
+      ]
+    },
+    {
+      "model": "Nutrient Delivery Ratio",
+      "keywords": [
+        "NDR",
+        "NUTRIENT DELIVERY RATIO",
+        "LULC",
+        "LAND USE LAND COVER",
+        "WATERSHEDS"
+      ]
+    },
+    {
+      "model": "Pollination",
+      "keywords": [
+        "FARMS",
+        "LULC",
+        "LAND USE LAND COVER",
+        "POLLINATION"
+      ]
+    },
+    {
+      "model": "Recreation",
+      "keywords": [
+        "AOI",
+        "RECREATION"
+      ]
+    },
+    {
+      "model": "RouteDEM",
+      "keywords": [
+        "ROUTEDEM",
+        "DEM",
+        "DIGITAL ELEVATION MODEL"
+      ]
+    },
+    {
+      "model": "Scenario Generator Proximity",
+      "keywords": [
+        "LULC",
+        "LAND USE LAND COVER",
+        "AOI",
+        "SCENARIO GENERATOR PROXIMITY"
+      ]
+    },
+    {
+      "model": "Scenic Quality",
+      "keywords": [
+        "AOI",
+        "DEM",
+        "DIGITAL ELEVATION MODEL",
+        "SCENIC QUALITY"
+      ]
+    },
+    {
+      "model": "Sediment Delivery Ratio",
+      "keywords": [
+        "SDR",
+        "SEASONAL DELIVERY RATIO",
+        "DEM",
+        "DIGITAL ELEVATION MODEL",
+        "LULC",
+        "LAND USE LAND COVER",
+        "WATERSHEDS",
+        "SOIL ERODIBILITY",
+        "EROSIVITY",
+        "DRAINAGES"
+      ]
+    },
+    {
+      "model": "Seasonal Water Yield",
+      "keywords": [
+        "SWY",
+        "SEASONAL WATER YIELD",
+        "DEM",
+        "DIGITAL ELEVATION MODEL",
+        "LULC",
+        "LAND USE LAND COVER",
+        "SOIL HYDROLOGIC GROUP",
+        "RAIN EVENTS",
+        "CLIMATE ZONE MAP"
+      ]
+    },
+    {
+      "model": "Stormwater",
+      "keywords": [
+        "LULC",
+        "LAND USE LAND COVER",
+        "PRECIPITATION",
+        "AOI",
+        "STORMWATER"
+      ]
+    },
+    {
+      "model": "Wave Energy",
+      "keywords": [
+        "AOI",
+        "BATHYMETRY",
+        "WAVE ENERGY"
+      ]
+    },
+    {
+      "model": "Wind Energy",
+      "keywords": [
+        "AOI",
+        "BATHYMETRY",
+        "WIND ENERGY"
+      ]
+    },
+    {
+      "model": "Urban Flood Risk Mitigation",
+      "keywords": [
+        "AOI",
+        "LAND USE LAND COVER",
+        "LULC",
+        "SOIL HYDROLOGIC GROUP",
+        "BUILD INFRASTRUCTURE",
+        "URBAN FLOOD RISK MITIGATION"
+      ]
+    },
+    {
+      "model": "Urban Cooling Model",
+      "keywords": [
+        "AOI",
+        "BUILDINGS",
+        "URBAN COOLING MODEL"
+      ]
+    },
+    {
+      "model": "Urban Nature Access",
+      "keywords": [
+        "LAND USE LAND COVER",
+        "LULC",
+        "POPULATION",
+        "ADMINISTRATIVE BOUNDARIES",
+        "URBAN NATURE ACCESS"
+      ]
+    }
+  ]
+}
