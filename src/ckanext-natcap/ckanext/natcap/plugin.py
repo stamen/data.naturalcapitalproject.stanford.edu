@@ -164,6 +164,7 @@ def parse_json(json_str):
         return json.loads(json_str)
     except (ValueError, TypeError):
         LOGGER.exception("Could not load string as JSON: %s", json_str)
+        return []
 
 
 class NatcapPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
