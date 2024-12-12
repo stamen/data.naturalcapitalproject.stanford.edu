@@ -3,15 +3,16 @@ from __future__ import annotations
 
 import json
 import logging
-from os import path
 from collections import OrderedDict
+from os import path
+from typing import Any
 
-from ckan.common import _
-from ckan.lib.helpers import helper_functions as h
 import ckan.logic as logic
 import ckan.plugins as plugins
 import ckan.plugins.toolkit as toolkit
+from ckan.common import _
 from ckan.lib.helpers import _url_with_params
+from ckan.lib.helpers import helper_functions as h
 from ckan.lib.helpers import url_for
 from ckan.types import Schema
 
@@ -161,7 +162,7 @@ def show_icon(resource_url):
 def parse_json(json_str):
     try:
         return json.loads(json_str)
-    except ValueError:
+    except (ValueError, TypeError):
         LOGGER.exception("Could not load string as JSON: %s", json_str)
 
 
@@ -242,7 +243,7 @@ class NatcapPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
                 keywords = next(t['keywords'] for t in topic_keywords['Topics'] if t['topic'] == topic)
                 tags = ' OR '.join(['"{}"'.format(k) for k in keywords])
                 search_params['fq'] = f'tags:({tags})'
-            except Exception as e:
+            except Exception:
                 pass
 
         if 'fq' in search_params and search_params['fq'].startswith('invest_model:'):
@@ -252,7 +253,7 @@ class NatcapPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
                 keywords = next(m['keywords'] for m in invest_keywords['InVEST_Models'] if m['model'] == invest_model)
                 tags = ' OR '.join(['"{}"'.format(k) for k in keywords])
                 search_params['fq'] = f'tags:({tags})'
-            except Exception as e:
+            except Exception:
                 pass
 
         return search_params
