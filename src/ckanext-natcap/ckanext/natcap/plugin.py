@@ -232,8 +232,8 @@ class NatcapPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         }
 
     def dataset_facets(self, facets_dict, package_type):
-        facets_dict['extras_placenames'] = toolkit._('Places')
-        facets_dict['extras_sources_res_formats'] = toolkit._('Resource Formats')
+        facets_dict['placenames'] = toolkit._('Places')
+        facets_dict['sources_res_formats'] = toolkit._('Resource Formats')
         return facets_dict
 
     def before_dataset_search(self, search_params: dict[str, Any]):

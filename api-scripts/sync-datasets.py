@@ -278,35 +278,36 @@ def get_dataset(id, src):
         if extra['key'] == 'suggested_citation':
             package['suggested_citation'] = extra['value']
 
-    package['extras'] = [e for e in package['extras'] if e['key'] not in
-                         ('suggested_citation',)]
-
     # If dataset has metadata with sources in it, add those
     metadata = get_dataset_metadata(package)
     sources = get_dataset_sources(metadata)
 
     all_res_formats = [to_short_format(r['format']) for r in package['resources']]
 
-    # Remove extras that we will add
-    package['extras'] = [e for e in package['extras'] if e['key'] not in ('sources', 'sources_res_formats', 'mappreview')]
+    placenames = next((e for e in package['extras'] if e['key'] == 'placenames'), None)
+    if placenames:
+        package['placenames'] = json.dumps(placenames['value'])
 
     # Add sources
     if sources:
-        package['extras'].append({'key': 'sources', 'value': json.dumps(sources)})
+        package['sources'] = json.dumps(sources)
         all_res_formats += [s.split('.')[-1] for s in sources]
 
     # Add sources_res_formats
     all_res_formats = [s for s in all_res_formats if include_format(s)]
     sources_res_formats = sorted(list(set(all_res_formats)))
-    package['extras'].append({
-        'key': 'sources_res_formats',
-        'value': json.dumps(sources_res_formats)
-    })
+    if sources_res_formats:
+        package['sources_res_formats'] = json.dumps(sources_res_formats)
 
     # Add mappreview
     mappreview_metadata = get_mappreview_metadata(package, sources)
     if mappreview_metadata:
-        package['extras'].append({'key': 'mappreview', 'value': json.dumps(mappreview_metadata)})
+        package['mappreview'] = json.dumps(mappreview_metadata)
+
+    print(json.dumps(package, indent=2))
+
+    # Remove extras that we will add
+    package['extras'] = [e for e in package['extras'] if e['key'] not in ('sources', 'sources_res_formats', 'mappreview', 'placenames', 'suggested_citation')]
 
     return package
 

@@ -12,7 +12,10 @@ def get_config():
 
 
 def get_mappreview(pkg):
-    return next((x for x in pkg['extras'] if x['key'] == 'mappreview'), None)
+    try:
+        return pkg['mappreview']
+    except KeyError:
+        return None
 
 
 def should_show(pkg):
@@ -23,7 +26,7 @@ def parse_metadata(pkg):
     mappreview = get_mappreview(pkg)
     if not mappreview:
         return {}
-    return json.loads(mappreview['value'])
+    return json.loads(mappreview)
 
 
 def get_layer_js(layer):

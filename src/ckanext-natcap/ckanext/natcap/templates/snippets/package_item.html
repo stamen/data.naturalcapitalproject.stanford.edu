@@ -33,7 +33,7 @@
                   {% block resources_outer %}
                     <ul class="dataset-resources list-unstyled">
                       {% block resources_inner %}
-                        {% for resource in h.natcap_parse_json(h.get_pkg_dict_extra(package, 'sources_res_formats')) %}
+                        {% for resource in h.natcap_parse_json(package.sources_res_formats) %}
                         <li>
                           {% snippet 'package/snippets/source_type_badge.html', ext=h.natcap_get_resource_type_icon_slug(resource) %}
                         </li>

@@ -34,9 +34,9 @@
           {% set search_facets_items = facets.search.get(field)['items'] if facets.search and field in facets.search else [] %}
           {% for value in facets.fields[field] %}
             <span class="filtered pill facet-{{ field }}">
-              {% if field == 'extras_placenames' %}
+              {% if field == 'placenames' %}
                 <img class="field-icon" src="/img/filters-place.png" />
-              {% elif field == 'extras_sources_res_formats' %}
+              {% elif field == 'sources_res_formats' %}
                 <img class="field-icon" src="/img/filters-file-type.png" />
               {% elif field == 'tags' %}
                 <img class="field-icon" src="/img/filters-tag.png" />
@@ -45,7 +45,7 @@
               <span class="facet-value">
                 {%- if facets.translated_fields and (field,value) in facets.translated_fields -%}
                   {{ facets.translated_fields[(field,value)] }}
-                {%- elif field == 'extras_sources_res_formats' -%}
+                {%- elif field == 'sources_res_formats' -%}
                   {{ h.natcap_get_resource_type_label(value) }}
                 {%- else -%}
                   {{ h.list_dict_filter(search_facets_items, 'name', 'display_name', value) }}
