@@ -245,14 +245,29 @@ def _get_wgs84_bbox(config):
         raise NotImplementedError(
             f"Bounding box is neither a list nor a dict: {bbox}")
 
-    if (re.match('(EPSG)|(ESRI):[1-9][0-9]*', str(extent['crs'])) or
-            re.match('[0-9][0-9]*', str(extent['crs']))):
+    if re.match('(EPSG)|(ESRI):[1-9][0-9]*', str(extent['crs'])):
         source_srs = osr.SpatialReference()
+        result = source_srs.SetFromUserInput(extent['crs'])
+        if result != ogr.OGRERR_NONE:
+            warnings.warn(
+                f'Could not parse CRS string {extent["crs"]}', UserWarning)
+        source_srs_wkt = source_srs.ExportToWkt()
+    elif re.match('[0-9][0-9]*', str(extent['crs'])):
+        source_srs = osr.SpatialReference()
+        found_match = False
         for prefix in ('EPSG', 'ESRI'):
-            LOGGER.debug(f"Trying {prefix}:{extent['crs']}")
-            result = source_srs.SetFromUserInput(f"{prefix}:{extent['crs']}")
+            prefixed_crs = f"{prefix}:{extent['crs']}"
+            LOGGER.debug(f"Trying {prefixed_crs}")
+            result = source_srs.SetFromUserInput(prefixed_crs)
             if result == ogr.OGRERR_NONE:
+                found_match = True
                 break
+
+        if not found_match:
+            warnings.warn(
+                f"Numeric code {extent['crs']} does not appear to be either "
+                "an EPSG or ESRI code, which may cause problems.", UserWarning)
+
         source_srs_wkt = source_srs.ExportToWkt()
     else:
         source_srs_wkt = extent['crs']
