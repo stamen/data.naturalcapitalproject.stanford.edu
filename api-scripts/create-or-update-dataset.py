@@ -41,6 +41,13 @@ URL = "https://data.naturalcapitalproject.stanford.edu"
 
 MODIFIED_APIKEY = os.environ['CKAN_APIKEY']
 
+RESOURCES_BY_EXTENSION = {
+    '.csv': 'CSV Table',
+    '.aux.xml': 'GDAL Auxiliary XML',
+    '.tfw': 'ESRI World File',
+    '.gcolors': 'GRASS Color Table',
+}
+
 # Add a few mimetypes for extensions we're likely to encounter
 for extension, mimetype in [
         ('.shp', 'application/octet-stream'),
@@ -343,9 +350,29 @@ def main(gmm_yaml_path, private=False, group=None):
 
         # If sidecar .xml exists, add it as ISO XML.
         sidecar_xml = re.sub(".yml$", ".xml", gmm_yaml_path)
-        if os.path.exists(sidecar_xml):
+        if (os.path.exists(sidecar_xml)
+                and not sidecar_xml.endswith('.aux.xml')):
             resources.append(_create_resource_dict_from_file(
                 sidecar_xml, "ISO 19139 Metadata XML", upload=True))
+
+        # iterate through the source items and add each as a resource.
+        for source_path in gmm_yaml['sources']:
+            # Don't duplicate the resource for the main dataset
+            if gmm_yaml[path_key].endswith(source_path):
+                continue
+
+            if os.path.basename(source_path).upper().startswith('README'):
+                label = 'Dataset Documentation'
+            else:
+                # regex here allows us to support nested extensions such as
+                # .aux.xml, .tar.gz, as extensions, which isn't supported by
+                # os.path.splitext().
+                extension = re.search(
+                    '\\..*$', os.path.basename(source_path)).group()
+                label = RESOURCES_BY_EXTENSION.get(
+                    extension.lower(), 'Resource')
+            resources.append(_create_resource_dict_from_file(
+                source_path, label, upload=True))
 
         # We can define the bbox as a polygon using
         # ckanext-spatial's spatial extra

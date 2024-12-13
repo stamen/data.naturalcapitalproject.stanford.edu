@@ -12,6 +12,7 @@ services:
       context: nginx/
       dockerfile: Dockerfile
     networks:
+      - foo
       - webnet
       - ckannet
     depends_on:
