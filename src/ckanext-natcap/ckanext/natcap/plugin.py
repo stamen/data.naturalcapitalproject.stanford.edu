@@ -236,6 +236,25 @@ class NatcapPlugin(plugins.SingletonPlugin, toolkit.DefaultDatasetForm):
         facets_dict['sources_res_formats'] = toolkit._('Resource Formats')
         return facets_dict
 
+    def before_dataset_index(self, data_dict):
+        print('before_dataset_index')
+        #placenames = []
+        #for placename in data_dict.get('placenames', []):
+            #placenames.append(placename['placename'])
+
+        # replace list of dicts with plain text to prevent Solr errors
+        # TODO handle sources_res_formats too
+        # TODO ckan search-index rebuild to reload
+        data_dict['placenames'] = json.loads(data_dict['placenames'])
+        # data_dict['sources_res_formats'] = json.loads(data_dict['sources_res_formats'])
+        # print(json.dumps(data_dict, indent=2))
+        # data_dict['sources_res_formats'] = json.loads(data_dict['sources_res_formats'])
+        # data_dict['sources_res_formats'] = data_dict['sources_res_formats']
+
+        # print(json.dumps(data_dict['sources_res_formats'], indent=2))
+
+        return data_dict
+
     def before_dataset_search(self, search_params: dict[str, Any]):
         # Check for topic facet and add tags if found
         if 'fq' in search_params and search_params['fq'].startswith('topic:'):

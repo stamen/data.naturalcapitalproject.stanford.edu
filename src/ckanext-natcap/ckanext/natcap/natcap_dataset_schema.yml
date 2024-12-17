@@ -78,6 +78,7 @@ dataset_fields:
 - field_name: placenames
   label: Placenames associated with this dataset
   help_text: This should be automatically generated
+  preset: multiple_text
 
 - field_name: sources
   label: Sources within zip files
@@ -86,6 +87,7 @@ dataset_fields:
 - field_name: sources_res_formats
   label: Resource formats for all files on this dataset, including those within zip files
   help_text: This should be automatically generated
+  preset: multiple_text
 
 - field_name: mappreview
   label: Map Preview

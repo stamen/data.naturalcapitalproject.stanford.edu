@@ -58,7 +58,9 @@ services:
       test: ["CMD", "pg_isready", "-U", "${POSTGRES_USER}", "-d", "${POSTGRES_DB}"]
 
   solr:
-    image: ckan/ckan-solr:${SOLR_IMAGE_VERSION}
+    build:
+      context: .
+      dockerfile: solr/Dockerfile
     ports:
      - "8983:8983"
     volumes:
