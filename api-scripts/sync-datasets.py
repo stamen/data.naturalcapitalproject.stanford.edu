@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+import urllib.request
 import json
 import os
 import requests
@@ -178,6 +179,7 @@ def get_raster_layers_metadata(raster_resources):
 
 def get_vector_layer_metadata(vector_resource):
     url = vector_resource['url']
+    # TODO vectors have separate ymls we should load
 
     # Does this GeoJSON exist?
     head_request = requests.head(url)
@@ -185,6 +187,16 @@ def get_vector_layer_metadata(vector_resource):
         print('Failed to access', url)
         print('Status code:', head_request.status_code)
         return None
+
+    vector_type = None
+    feature_count = None
+
+    with urllib.request.urlopen(url) as req:
+        data = json.load(req)
+
+        features = data['features']
+        feature_count = len(features)
+        vector_type = features[0]['geometry']['type']
 
     # If it exists, get all the info about it
     try:
@@ -196,6 +208,8 @@ def get_vector_layer_metadata(vector_resource):
             'type': 'vector',
             'url': url,
             'bounds': bounds,
+            'vector_type': vector_type,
+            'feature_count': feature_count,
         }
     except Exception as e:
         print('Failed to access', url)
