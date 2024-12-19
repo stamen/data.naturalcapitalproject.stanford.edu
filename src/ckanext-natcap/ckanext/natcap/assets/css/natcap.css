@@ -622,9 +622,17 @@ body {
     padding: 5rem;
 }
 
+.site-footer .row {
+    align-items: center;
+}
+
 .site-footer a {
     font-weight: 600;
     color: var(--color-off-white);
+}
+
+.site-footer p:last-of-type {
+    margin-bottom: 0;
 }
 
 .site-footer .icon-link {
