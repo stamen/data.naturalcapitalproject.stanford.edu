@@ -119,6 +119,11 @@ def update_dataset(user, dataset, resources):
         return
 
     metadata = get_dataset_metadata(resources)
+
+    if not metadata:
+        LOGGER.info(f"Skipping update of dataset {dataset['id']}, no metadata found")
+        return
+
     extras = update_sources(dataset, resources, metadata, extras)
     extras = update_mappreview(dataset, metadata, extras)
     extras = update_last_updated(extras)
