@@ -4,6 +4,9 @@ import os
 import requests
 import yaml
 
+# TODO move
+# TODO make this something that can be run from the worker thread
+
 #
 # Sync CKAN datasets between two servers.
 #
